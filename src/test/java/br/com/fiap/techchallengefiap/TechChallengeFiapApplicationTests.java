@@ -1,0 +1,13 @@
+package br.com.fiap.techchallengefiap;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class TechChallengeFiapApplicationTests {
+
+    @Test
+    void contextLoads() {
+    }
+
+}
