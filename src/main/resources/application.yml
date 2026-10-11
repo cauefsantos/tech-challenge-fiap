@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: oficina-api
+  profiles:
+    default: dev
+server:
+  port: 8080
+app:
+  security:
+    jwt-secret: ${JWT_SECRET:ZXN0YS1lLXVtYS1jaGF2ZS1kZS1kZXNlbnZvbHZpbWVudG8tMzItYnl0ZXM=}
+    token-validity: PT2H
+  admin:
+    username: ${ADMIN_USERNAME:admin}
+    password: ${ADMIN_PASSWORD:admin123}
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
