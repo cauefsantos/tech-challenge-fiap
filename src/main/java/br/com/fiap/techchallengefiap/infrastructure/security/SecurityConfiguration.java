@@ -68,6 +68,7 @@ public class SecurityConfiguration {
                                 "/v3/api-docs.yaml"
                         ).permitAll()
                         .requestMatchers("/api/v1/protected/**").authenticated()
+                        .anyRequest().authenticated()
                         )
                 .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> {
                 }))

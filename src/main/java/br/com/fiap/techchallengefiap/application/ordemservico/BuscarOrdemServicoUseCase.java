@@ -2,6 +2,7 @@ package br.com.fiap.techchallengefiap.application.ordemservico;
 
 import br.com.fiap.techchallengefiap.domain.ordemservico.model.OrdemServico;
 import br.com.fiap.techchallengefiap.domain.ordemservico.repository.OrdemServicoRepository;
+import br.com.fiap.techchallengefiap.domain.shared.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,6 +14,6 @@ public class BuscarOrdemServicoUseCase {
     }
 
     public OrdemServico executar(Long id) {
-        return repository.buscarPorId(id).orElseThrow(() -> new IllegalArgumentException("Ordem de servico nao encontrada."));
+        return repository.buscarPorId(id).orElseThrow(() -> new ResourceNotFoundException("Ordem de servico nao encontrada."));
     }
 }

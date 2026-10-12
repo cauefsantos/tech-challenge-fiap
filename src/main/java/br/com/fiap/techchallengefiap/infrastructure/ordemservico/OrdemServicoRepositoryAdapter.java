@@ -27,14 +27,23 @@ public class OrdemServicoRepositoryAdapter implements OrdemServicoRepository {
         e.id = os.getId();
         e.clienteId = os.getClienteId();
         e.veiculoId = os.getVeiculoId();
+        e.numero = os.getNumero();
         e.status = os.getStatus();
         e.orcamentoAprovado = os.isOrcamentoAprovado();
         e.valorTotal = os.getValorTotal();
         e.criadaEm = os.getCriadaEm();
+        e.descricaoProblema = os.getDescricaoProblema();
+        e.diagnostico = os.getDiagnostico();
+        e.dataInicioExecucao = os.getDataInicioExecucao();
+        e.dataFinalizacao = os.getDataFinalizacao();
+        e.dataEntrega = os.getDataEntrega();
+        e.observacoes = os.getObservacoes();
         return e;
     }
 
     private OrdemServico toDomain(OrdemServicoJpaEntity e) {
-        return new OrdemServico(e.id, e.clienteId, e.veiculoId, e.status, e.orcamentoAprovado, e.valorTotal, e.criadaEm);
+        return new OrdemServico(e.id, e.numero, e.clienteId, e.veiculoId, e.status, e.orcamentoAprovado,
+                e.valorTotal, e.criadaEm, e.descricaoProblema, e.diagnostico, e.dataInicioExecucao,
+                e.dataFinalizacao, e.dataEntrega, e.observacoes);
     }
 }

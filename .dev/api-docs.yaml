@@ -1,0 +1,120 @@
+openapi: 3.1.0
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+paths:
+  /api/v1/ordens-servico:
+    post:
+      tags:
+      - ordem-servico-controller
+      operationId: criar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CriarOrdemServicoRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrdemServicoResponse"
+  /api/v1/auth/login:
+    post:
+      tags:
+      - authentication-controller
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+  /api/v1/ordens-servico/{id}:
+    get:
+      tags:
+      - ordem-servico-controller
+      operationId: buscar
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrdemServicoResponse"
+components:
+  schemas:
+    CriarOrdemServicoRequest:
+      type: object
+      properties:
+        clienteId:
+          type: integer
+          format: int64
+        veiculoId:
+          type: integer
+          format: int64
+      required:
+      - clienteId
+      - veiculoId
+    OrdemServicoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        clienteId:
+          type: integer
+          format: int64
+        veiculoId:
+          type: integer
+          format: int64
+        status:
+          type: string
+        orcamentoAprovado:
+          type: boolean
+        valorTotal:
+          type: number
+        criadaEm:
+          type: string
+          format: date-time
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          minLength: 1
+      required:
+      - password
+      - username
+    TokenResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        tokenType:
+          type: string
+        expiresIn:
+          type: integer
+          format: int64
