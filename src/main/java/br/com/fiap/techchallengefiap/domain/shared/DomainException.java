@@ -1,4 +1,4 @@
-package br.com.fiap.oficina.domain.shared;
+package br.com.fiap.techchallengefiap.domain.shared;
 
 public class DomainException extends RuntimeException {
     public DomainException(String message) {

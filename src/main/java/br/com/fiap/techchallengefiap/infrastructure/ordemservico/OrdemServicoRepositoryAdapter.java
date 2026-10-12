@@ -1,7 +1,7 @@
-package br.com.fiap.oficina.infrastructure.persistence.ordemservico;
+package br.com.fiap.techchallengefiap.infrastructure.ordemservico;
 
-import br.com.fiap.oficina.domain.ordemservico.model.OrdemServico;
-import br.com.fiap.oficina.domain.ordemservico.repository.OrdemServicoRepository;
+import br.com.fiap.techchallengefiap.domain.ordemservico.model.OrdemServico;
+import br.com.fiap.techchallengefiap.domain.ordemservico.repository.OrdemServicoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

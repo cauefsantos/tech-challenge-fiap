@@ -1,6 +1,6 @@
-package br.com.fiap.oficina.presentation.rest.exception;
+package br.com.fiap.techchallengefiap.presentation.rest.exception;
 
-import br.com.fiap.oficina.domain.shared.DomainException;
+import br.com.fiap.techchallengefiap.domain.shared.DomainException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;

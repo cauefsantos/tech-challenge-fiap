@@ -1,6 +1,6 @@
-package br.com.fiap.oficina.domain.ordemservico.model;
+package br.com.fiap.techchallengefiap.domain.ordemservico.model;
 
-import br.com.fiap.oficina.domain.shared.DomainException;
+import br.com.fiap.techchallengefiap.domain.shared.DomainException;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;

@@ -1,4 +1,4 @@
-package br.com.fiap.oficina.presentation.rest.auth;
+package br.com.fiap.techchallengefiap.presentation.rest.auth;
 
 import jakarta.validation.constraints.NotBlank;
 

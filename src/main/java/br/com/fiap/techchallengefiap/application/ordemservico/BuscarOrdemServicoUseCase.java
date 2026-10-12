@@ -1,7 +1,7 @@
-package br.com.fiap.oficina.application.ordemservico;
+package br.com.fiap.techchallengefiap.application.ordemservico;
 
-import br.com.fiap.oficina.domain.ordemservico.model.OrdemServico;
-import br.com.fiap.oficina.domain.ordemservico.repository.OrdemServicoRepository;
+import br.com.fiap.techchallengefiap.domain.ordemservico.model.OrdemServico;
+import br.com.fiap.techchallengefiap.domain.ordemservico.repository.OrdemServicoRepository;
 import org.springframework.stereotype.Service;
 
 @Service

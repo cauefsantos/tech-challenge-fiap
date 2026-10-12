@@ -1,6 +1,6 @@
-package br.com.fiap.oficina.presentation.rest.ordemservico;
+package br.com.fiap.techchallengefiap.presentation.rest.ordemservico;
 
-import br.com.fiap.oficina.domain.ordemservico.model.OrdemServico;
+import br.com.fiap.techchallengefiap.domain.ordemservico.model.OrdemServico;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;

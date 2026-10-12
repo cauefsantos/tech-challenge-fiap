@@ -1,6 +1,6 @@
-package br.com.fiap.oficina.domain.ordemservico.repository;
+package br.com.fiap.techchallengefiap.domain.ordemservico.repository;
 
-import br.com.fiap.oficina.domain.ordemservico.model.OrdemServico;
+import br.com.fiap.techchallengefiap.domain.ordemservico.model.OrdemServico;
 
 import java.util.Optional;
 

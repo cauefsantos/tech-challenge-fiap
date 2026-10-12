@@ -1,4 +1,4 @@
-package br.com.fiap.oficina.presentation.rest.ordemservico;
+package br.com.fiap.techchallengefiap.presentation.rest.ordemservico;
 
 import jakarta.validation.constraints.NotNull;
 

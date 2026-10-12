@@ -1,6 +1,6 @@
-package br.com.fiap.oficina.presentation.rest.auth;
+package br.com.fiap.techchallengefiap.presentation.rest.auth;
 
-import br.com.fiap.oficina.infrastructure.security.SecurityProperties;
+import br.com.fiap.techchallengefiap.infrastructure.security.SecurityProperties;
 import jakarta.validation.Valid;
 
 import java.time.Instant;

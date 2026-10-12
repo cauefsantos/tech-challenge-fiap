@@ -1,4 +1,4 @@
-package br.com.fiap.oficina.infrastructure.security;
+package br.com.fiap.techchallengefiap.infrastructure.security;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

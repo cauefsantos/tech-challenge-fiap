@@ -1,4 +1,4 @@
-package br.com.fiap.oficina.infrastructure.security;
+package br.com.fiap.techchallengefiap.infrastructure.security;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 
@@ -67,7 +67,8 @@ public class SecurityConfiguration {
                                 "/v3/api-docs/**",
                                 "/v3/api-docs.yaml"
                         ).permitAll()
-                        .anyRequest().authenticated())
+                        .requestMatchers("/api/v1/protected/**").authenticated()
+                        )
                 .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> {
                 }))
                 .build();

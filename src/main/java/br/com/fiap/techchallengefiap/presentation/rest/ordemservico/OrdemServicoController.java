@@ -1,6 +1,6 @@
-package br.com.fiap.oficina.presentation.rest.ordemservico;
+package br.com.fiap.techchallengefiap.presentation.rest.ordemservico;
 
-import br.com.fiap.oficina.application.ordemservico.*;
+import br.com.fiap.techchallengefiap.application.ordemservico.*;
 import jakarta.validation.Valid;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;

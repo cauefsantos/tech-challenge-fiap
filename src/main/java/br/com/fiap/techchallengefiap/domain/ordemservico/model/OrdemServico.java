@@ -1,6 +1,6 @@
-package br.com.fiap.oficina.domain.ordemservico.model;
+package br.com.fiap.techchallengefiap.domain.ordemservico.model;
 
-import br.com.fiap.oficina.domain.shared.DomainException;
+import br.com.fiap.techchallengefiap.domain.shared.DomainException;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;

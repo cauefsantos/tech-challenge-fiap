@@ -1,6 +1,6 @@
-package br.com.fiap.oficina.infrastructure.persistence.ordemservico;
+package br.com.fiap.techchallengefiap.infrastructure.ordemservico;
 
-import br.com.fiap.oficina.domain.ordemservico.model.StatusOrdemServico;
+import br.com.fiap.techchallengefiap.domain.ordemservico.model.StatusOrdemServico;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;

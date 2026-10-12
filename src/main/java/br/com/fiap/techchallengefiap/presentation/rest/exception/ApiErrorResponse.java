@@ -1,4 +1,4 @@
-package br.com.fiap.oficina.presentation.rest.exception;
+package br.com.fiap.techchallengefiap.presentation.rest.exception;
 
 import java.time.OffsetDateTime;
 
