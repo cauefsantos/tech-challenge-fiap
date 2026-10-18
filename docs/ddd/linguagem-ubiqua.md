@@ -96,3 +96,9 @@ Estado atual da Ordem de Serviço durante seu ciclo de vida.
 - Em Execução
 - Finalizada
 - Entregue
+
+---
+
+## Cancelamento
+
+Encerramento da Ordem de Serviço sem execução dos serviços, decorrente da rejeição do orçamento pelo cliente.

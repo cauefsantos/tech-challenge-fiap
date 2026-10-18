@@ -1,6 +1,6 @@
 # Tech Challenge FIAP
 
-Breve descrição da solução, problema que resolve e objetivo do sistema.
+Projeto desenvolvido para a Fase 1 do Tech Challenge do curso de Pós em arquitetura de software.
 
 ---
 
@@ -8,30 +8,85 @@ Breve descrição da solução, problema que resolve e objetivo do sistema.
 
 | Nome | RM |
 |--------|--------|
-| Integrante 1 | RM123456 |
-| Integrante 2 | RM123457 |
-| Integrante 3 | RM123458 |
+| Caue Santos | RM123456 |
+| Gabriel da Costa Silva | RM123457 |
+| Guilherme Mateus | RM1234567 |
+| Renato Novais | RM123458 |
+| Ricardo Barbosa | RM1234567 |
 
 ---
 
 # Objetivo
 
-Sistema de gerenciamento de Ordens de Serviço para oficinas mecânicas, permitindo o cadastro de clientes, veículos, serviços, peças, geração de orçamento e acompanhamento da execução dos serviços.
+A solução tem como objetivo apoiar a operação de uma oficina mecânica por meio da centralização e rastreabilidade dos atendimentos realizados. O sistema permite registrar clientes e veículos, abrir Ordens de Serviço, documentar diagnósticos, adicionar serviços, peças e insumos, calcular e disponibilizar orçamentos e acompanhar a evolução do atendimento até a finalização e entrega do veículo.
+
+# Descrição
+
+Como parte da Fase 1 do Tech Challenge, o projeto também busca demonstrar a aplicação prática de conceitos de arquitetura de software, Domain-Driven Design (DDD), segurança, persistência de dados, documentação de APIs e qualidade de software.
 
 ---
 
 # Arquitetura da Solução
 
-Descrever brevemente a arquitetura utilizada.
+A solução foi desenvolvida como uma aplicação monolítica organizada em camadas, utilizando princípios de Domain-Driven Design (DDD) para separar as regras de negócio dos detalhes técnicos da aplicação. A arquitetura divide o sistema entre as camadas de domínio, aplicação, infraestrutura e apresentação, permitindo que cada parte possua responsabilidades bem definidas. 
 
-Exemplo:
+O domínio concentra as entidades e regras da oficina, a aplicação coordena os casos de uso, a infraestrutura implementa persistência, segurança e configurações técnicas, enquanto a apresentação disponibiliza as funcionalidades por meio de uma API REST. Essa organização favorece a manutenção, os testes automatizados e a evolução do projeto sem introduzir a complexidade de uma arquitetura distribuída.
 
-    API
-    │
-    ├── Application
-    ├── Domain
-    ├── Infrastructure
-    └── Persistence
+## Fluxo de dependencia entre as camadas
+```
+Presentation
+      │
+      ▼
+Application
+      │
+      ▼
+Domain
+      ▲
+      │
+Infrastructure
+```
+
+## Estrutura de pastas
+```
+oficina-api/
+├── docs/
+│   ├── ddd/
+│   ├── diagrams/
+│   └── security/
+│
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── br/com/fiap/oficina/
+│   │   │       ├── OficinaApplication.java
+│   │   │       ├── domain/
+│   │   │       ├── application/
+│   │   │       ├── infrastructure/
+│   │   │       └── presentation/
+│   │   │
+│   │   └── resources/
+│   │       ├── db/
+│   │       │   └── migration/
+│   │       ├── application.yml
+│   │       ├── application-dev.yml
+│   │       └── application-prod.yml
+│   │
+│   └── test/
+│       └── java/
+│           └── br/com/fiap/oficina/
+│               ├── unit/
+│               ├── integration/
+│               └── architecture/
+│
+├── .env.example
+├── .gitignore
+├── compose.yml
+├── Dockerfile
+├── mvnw
+├── mvnw.cmd
+├── pom.xml
+└── README.md
+```
 
 ## Padrões Utilizados
 
@@ -45,28 +100,38 @@ Exemplo:
 
 # Tecnologias Utilizadas
 
-## Backend
+A aplicação foi desenvolvida em Java utilizando o ecossistema Spring para construção da API REST, implementação da segurança, persistência dos dados e organização das regras da aplicação. O PostgreSQL foi adotado como banco de dados relacional, enquanto o Flyway é responsável pelo versionamento e pela evolução do schema. O projeto também utiliza Docker para padronizar o ambiente de execução e ferramentas de testes e cobertura para apoiar a qualidade do código.
 
-- .NET 8
-- ASP.NET Core
-- Entity Framework Core
-
-## Banco de Dados
-
-- SQL Server
-- PostgreSQL
-
-## Testes
-
-- xUnit
-- FluentAssertions
-- Moq
-
-## Ferramentas
-
-- Docker
-- Swagger/OpenAPI
-- SonarQube (Opcional)
+## Linguagem e framework
+- Java 21: linguagem principal utilizada no desenvolvimento da aplicação.
+- Spring Boot 4: responsável pela configuração, inicialização e execução da aplicação.
+- Spring Framework 7: base do ecossistema Spring utilizado pelo Spring Boot 4.
+- Maven: gerenciamento de dependências, compilação, testes e empacotamento do projeto.
+## API e validação
+- Spring Web MVC: criação dos controllers e endpoints REST.
+- Jakarta Validation: validação dos dados recebidos pela API.
+- Jackson: serialização e desserialização de objetos JSON.
+- Springdoc OpenAPI: geração da especificação OpenAPI e disponibilização do Swagger UI.
+## Persistência
+- Spring Data JPA: abstração da camada de acesso aos dados.
+- Hibernate: implementação de persistência e mapeamento objeto-relacional.
+- PostgreSQL: banco de dados relacional utilizado pela aplicação.
+- Flyway: criação, versionamento e evolução controlada do schema do banco de dados.
+- HikariCP: gerenciamento do pool de conexões com o banco.
+## Segurança
+- Spring Security: autenticação e autorização dos acessos à API.
+- OAuth2 Resource Server: validação das requisições autenticadas com token.
+- JWT: geração e utilização de tokens para autenticação stateless.
+- BCrypt: geração segura do hash das senhas.
+## Testes e qualidade
+- JUnit 5: execução dos testes automatizados.
+- Mockito: criação de objetos simulados nos testes unitários.
+- Spring Security Test: suporte aos testes de autenticação e autorização.
+- JaCoCo: geração do relatório de cobertura dos testes.
+## Infraestrutura
+- Docker: construção e execução da imagem da aplicação.
+- Docker Compose: inicialização coordenada da API e do PostgreSQL.
+- Maven Wrapper: execução padronizada do Maven sem exigir uma instalação global.
 
 ---
 
