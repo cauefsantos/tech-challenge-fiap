@@ -212,10 +212,9 @@ Exemplo de `src/main/resources/application-dev.yml`:
 ```yaml
 spring:
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/oficina}
-    username: ${DB_USERNAME:oficina}
-    password: ${DB_PASSWORD:oficina}
-    driver-class-name: org.postgresql.Driver
+    url: ${DB_URL:jdbc:h2:mem:testdb}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
 
   jpa:
     open-in-view: false
@@ -227,7 +226,7 @@ spring:
 
   flyway:
     enabled: true
-    locations: classpath:db/migration
+    locations: classpath:db/migration/{vendor}
     baseline-on-migrate: false
     validate-on-migrate: true
 
@@ -268,21 +267,25 @@ O `pom.xml` deve conter:
 
 ### Localização das migrations
 
-Os scripts devem estar em:
+As migrations são selecionadas automaticamente pelo tipo de banco:
 
-    src/main/resources/db/migration/
+    src/main/resources/db/migration/h2/
+    src/main/resources/db/migration/postgresql/
 
-Exemplo:
+O placeholder `{vendor}` do Flyway resolve o diretório como `h2` ou `postgresql`, de acordo com a conexão JDBC. Os dois scripts V1 preservam as mesmas regras; no H2, colunas calculadas e índices únicos substituem os índices parciais usados no PostgreSQL.
 
-    V1__create_ordem_servico.sql
-    V2__create_cliente.sql
-    V3__create_veiculo.sql
+Para usar o PostgreSQL no profile `dev`, defina as variáveis antes de iniciar a aplicação:
 
-O nome segue o padrão:
+```powershell
+$env:DB_URL = "jdbc:postgresql://localhost:5432/oficina"
+$env:DB_USERNAME = "oficina"
+$env:DB_PASSWORD = "oficina"
+./mvnw.cmd clean package
+```
 
-    V<versão>__<descrição>.sql
+Sem essas variáveis, o profile `dev` usa o H2 em memória.
 
-Há dois underscores entre a versão e a descrição.
+Os nomes seguem o padrão `V<versão>__<descrição>.sql`, com dois underscores entre a versão e a descrição.
 
 ---
 

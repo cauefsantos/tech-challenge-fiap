@@ -147,37 +147,14 @@ A aplicação foi desenvolvida em Java utilizando o ecossistema Spring para cons
 
 ---
 
-# Decisões Arquiteturais
-
-## Arquitetura em Camadas
-
-A solução foi organizada utilizando separação de responsabilidades entre as camadas:
-
-- API
-- Application
-- Domain
-- Infrastructure
-
-## DDD
-
-Os conceitos de Domain-Driven Design foram utilizados para organizar:
-
-- Linguagem Ubíqua
-- Entidades
-- Value Objects
-- Regras de Negócio
-- Aggregate Root
-
----
-
 # Requisitos
 
 ## Pré-requisitos
 
-- .NET SDK 8
-- Docker Desktop
-- Banco de Dados SQL Server ou PostgreSQL
-- Git
+- Git instalado para o download do código fonte, caso não tenha feito o download do repositório ainda
+- Java 17 ou 21 instalado (de preferencia 21) e pré configurado  
+- Apache Maven 3.6.3 instalado 
+- Banco de Dados Relacional PostgreSQL
 
 ---
 
@@ -185,53 +162,29 @@ Os conceitos de Domain-Driven Design foram utilizados para organizar:
 
 ## Clonar Repositório
 
+Se o repositório ainda não foi clonado, com o git instalado execute o comando abaixo para download de projeto.
+
 ```bash
-git clone https://github.com/seu-usuario/seu-repositorio.git
-
-cd seu-repositorio
+git clone https://github.com/cauefsantos/tech-challenge-fiap.git && cd tech-challenge-fiap
 ```
-
-## Configurar Variáveis de Ambiente
-
-Exemplo:
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;Database=Oficina;"
-  },
-  "Jwt": {
-    "Key": "MinhaChaveSecreta"
-  }
-}
-```
-
 ---
 
 # Executando o Projeto
 
-## Restaurar Dependências
+Com as variaveis de ambiente configuradas, para os próximos passos abrir cmd na pasta ou projeto 
+
+## Buildar o projeto
+
+Compila o código fonte e builda em pacote .jar
 
 ```bash
-dotnet restore
-```
-
-## Compilar
-
-```bash
-dotnet build
-```
-
-## Executar Migrações
-
-```bash
-dotnet ef database update
+mvn clean package
 ```
 
 ## Executar Aplicação
 
 ```bash
-dotnet run
+mvn spring-boot:run
 ```
 
 ---
