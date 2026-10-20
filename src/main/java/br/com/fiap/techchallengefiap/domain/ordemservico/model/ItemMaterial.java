@@ -51,6 +51,7 @@ public class ItemMaterial {
         material.consumir(quantidade);
     }
 
+    public void setId(Long id) { this.id = id; }
     public Long getId() { return id; }
     public Long getOrdemServicoId() { return ordemServicoId; }
     public Long getMaterialId() { return materialId; }

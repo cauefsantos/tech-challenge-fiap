@@ -46,6 +46,7 @@ public class ItemServico {
         this.tempoEstimadoSegundos = tempoEstimadoSegundos;
     }
 
+    public void setId(Long id) { this.id = id; }
     public Long getId() { return id; }
     public Long getOrdemServicoId() { return ordemServicoId; }
     public Long getServicoId() { return servicoId; }

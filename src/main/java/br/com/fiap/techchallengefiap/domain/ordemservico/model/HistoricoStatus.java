@@ -29,6 +29,7 @@ public class HistoricoStatus {
         this.observacao = observacao == null || observacao.isBlank() ? null : observacao.trim();
     }
 
+    public void setId(Long id) { }
     public Long getId() { return id; }
     public Long getOrdemServicoId() { return ordemServicoId; }
     public StatusOrdemServico getStatusAnterior() { return statusAnterior; }

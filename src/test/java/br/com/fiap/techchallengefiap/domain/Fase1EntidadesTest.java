@@ -80,9 +80,14 @@ class Fase1EntidadesTest {
     @Test
     void registraTransicoesEImpossibilitaAlteracaoAposEntrega() {
         OrdemServico ordem = new OrdemServico(1L, 2L);
+        ordem.setId(1L);
         ordem.enviarParaDiagnostico();
-        ordem.aguardarAprovacao(new BigDecimal("250.00"));
-        ordem.aprovarOrcamento();
+        Servico servico = new Servico(3L, "REV-02", "Revisao", null, new BigDecimal("250.00"),
+                Duration.ofHours(1), OffsetDateTime.now(), true);
+        ordem.adicionarItemServico(new ItemServico(1L, servico, BigDecimal.ONE));
+        Orcamento orcamento = ordem.gerarOrcamento();
+        ordem.disponibilizarOrcamento(orcamento);
+        ordem.aprovarOrcamento(orcamento, "Aprovado");
         ordem.finalizar();
         ordem.entregar();
         assertEquals(StatusOrdemServico.ENTREGUE, ordem.getStatus());

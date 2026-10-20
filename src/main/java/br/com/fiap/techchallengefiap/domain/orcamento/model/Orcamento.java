@@ -104,6 +104,7 @@ public class Orcamento {
         return valor;
     }
 
+    public void setId(Long id) { this.id = id; }
     public Long getId() { return id; }
     public Long getOrdemServicoId() { return ordemServicoId; }
     public int getVersao() { return versao; }

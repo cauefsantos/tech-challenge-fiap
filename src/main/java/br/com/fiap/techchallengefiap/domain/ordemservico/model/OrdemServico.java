@@ -75,14 +75,19 @@ public class OrdemServico {
     }
 
     public void registrarDiagnostico(String descricao) {
-        verificarEdicao();
         if (status != StatusOrdemServico.EM_DIAGNOSTICO) throw new DomainException("A OS deve estar em diagnostico.");
         if (descricao == null || descricao.isBlank()) throw new DomainException("O diagnostico e obrigatorio.");
         diagnostico = descricao.trim();
     }
 
+    public void concluirDiagnostico() {
+        if (status != StatusOrdemServico.EM_DIAGNOSTICO) throw new DomainException("A OS deve estar em diagnostico para concluir o diagnostico.");
+        if (diagnostico == null || diagnostico.isBlank()) throw new DomainException("O diagnostico deve ser preenchido antes da conclusao.");
+    }
+
     public void adicionarItemServico(ItemServico item) {
         verificarEdicao();
+        if (status != StatusOrdemServico.EM_DIAGNOSTICO) throw new DomainException("Itens de servico so podem ser adicionados em diagnostico.");
         if (item == null) throw new DomainException("O item de servico e obrigatorio.");
         validarVinculo(item.getOrdemServicoId());
         itensServico.add(item);
@@ -91,6 +96,7 @@ public class OrdemServico {
 
     public void adicionarItemMaterial(ItemMaterial item) {
         verificarEdicao();
+        if (status != StatusOrdemServico.EM_DIAGNOSTICO) throw new DomainException("Itens de material so podem ser adicionados em diagnostico.");
         if (item == null) throw new DomainException("O item de material e obrigatorio.");
         validarVinculo(item.getOrdemServicoId());
         itensMaterial.add(item);
@@ -126,7 +132,6 @@ public class OrdemServico {
         verificarEdicao();
         if (orcamento == null || !orcamentos.contains(orcamento)) throw new DomainException("O orcamento nao pertence a esta OS.");
         if (status != StatusOrdemServico.EM_DIAGNOSTICO) throw new DomainException("A OS deve estar em diagnostico.");
-        if (orcamento.getValorTotal().signum() <= 0) throw new DomainException("O orcamento deve ser positivo.");
         orcamento.disponibilizar();
         aguardarAprovacao(orcamento.getValorTotal());
     }
@@ -146,6 +151,24 @@ public class OrdemServico {
         }
         orcamento.aprovar(observacao);
         aprovarOrcamento();
+    }
+
+    public void rejeitarOrcamento(Long orcamentoId, String observacao) {
+        Orcamento orcamento = orcamentos.stream()
+                .filter(item -> item.getId() != null && item.getId().equals(orcamentoId))
+                .findFirst().orElseThrow(() -> new DomainException("Orcamento nao encontrado nesta OS."));
+        rejeitarOrcamento(orcamento, observacao);
+    }
+
+    public void rejeitarOrcamento(Orcamento orcamento, String observacao) {
+        if (status != StatusOrdemServico.AGUARDANDO_APROVACAO) {
+            throw new DomainException("A OS deve estar aguardando aprovacao para rejeitar o orcamento.");
+        }
+        if (orcamento == null || !orcamentos.contains(orcamento)) {
+            throw new DomainException("O orcamento nao pertence a esta OS.");
+        }
+        orcamento.rejeitar(observacao);
+        transicionar(StatusOrdemServico.AGUARDANDO_APROVACAO, StatusOrdemServico.CANCELADA);
     }
 
     public void enviarParaDiagnostico() {
@@ -180,6 +203,7 @@ public class OrdemServico {
 
     public void finalizar() {
         if (!orcamentoAprovado) throw new DomainException("O orcamento precisa estar aprovado.");
+        if (itensServico.isEmpty()) throw new DomainException("A OS deve ter pelo menos um item de servico para finalizar.");
         transicionar(StatusOrdemServico.EM_EXECUCAO, StatusOrdemServico.FINALIZADA);
         dataFinalizacao = OffsetDateTime.now();
     }
@@ -197,7 +221,9 @@ public class OrdemServico {
     }
 
     private void verificarEdicao() {
-        if (status == StatusOrdemServico.ENTREGUE) throw new DomainException("A OS nao pode ser alterada depois de entregue.");
+        if (status == StatusOrdemServico.ENTREGUE || status == StatusOrdemServico.CANCELADA) {
+            throw new DomainException("A OS nao pode ser alterada depois de entregue ou cancelada.");
+        }
         if (orcamentoAprovado) throw new DomainException("Os itens nao podem ser alterados depois da aprovacao do orcamento.");
     }
 
@@ -221,6 +247,30 @@ public class OrdemServico {
     public void definirObservacoes(String observacoes) {
         verificarEdicao();
         this.observacoes = observacoes == null || observacoes.isBlank() ? null : observacoes.trim();
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void carregarItensPersistidos(List<ItemServico> itens) {
+        itensServico.clear();
+        itensServico.addAll(itens == null ? List.of() : itens);
+    }
+
+    public void carregarMateriaisPersistidos(List<ItemMaterial> itens) {
+        itensMaterial.clear();
+        itensMaterial.addAll(itens == null ? List.of() : itens);
+    }
+
+    public void carregarOrcamentosPersistidos(List<Orcamento> itens) {
+        orcamentos.clear();
+        orcamentos.addAll(itens == null ? List.of() : itens);
+    }
+
+    public void carregarHistoricoPersistido(List<HistoricoStatus> itens) {
+        historicoStatus.clear();
+        historicoStatus.addAll(itens == null ? List.of() : itens);
     }
 
     public Long getId() {

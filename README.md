@@ -1,83 +1,62 @@
-# Tech Challenge FIAP
+﻿# Tech Challenge FIAP
 
-Projeto desenvolvido para a Fase 1 do Tech Challenge do curso de Pós em arquitetura de software.
+Projeto de backend para gestão de oficina mecânica, desenvolvido em Java 21 com Spring Boot 4.
 
----
+## Objetivo
 
-# Integrantes
+Centralizar atendimento, clientes, veículos, serviços, materiais, ordens de serviço e orçamentos em uma API REST para apoiar a operação da oficina.
 
-| Nome | RM |
-|--------|--------|
-| Caue Santos | RM123456 |
-| Gabriel da Costa Silva | RM123457 |
-| Guilherme Mateus | RM1234567 |
-| Renato Novais | RM123458 |
-| Ricardo Barbosa | RM1234567 |
+## Status atual
 
----
+O projeto já contempla a base implementada e os avanços principais do fluxo de Ordem de Serviço:
 
-# Objetivo
+- persistência do agregado de Ordem de Serviço;
+- regras de domínio e transições de status da OS;
+- diagnóstico e itens de serviço/material;
+- geração, disponibilidade, aprovação e rejeição de orçamento;
+- validação de estoque na aprovação;
+- consulta pública da OS por número e documento;
+- métrica de tempo médio de execução;
+- Docker e PostgreSQL como base de execução local/produtiva.
 
-A solução tem como objetivo apoiar a operação de uma oficina mecânica por meio da centralização e rastreabilidade dos atendimentos realizados. O sistema permite registrar clientes e veículos, abrir Ordens de Serviço, documentar diagnósticos, adicionar serviços, peças e insumos, calcular e disponibilizar orçamentos e acompanhar a evolução do atendimento até a finalização e entrega do veículo.
+## Arquitetura
 
-# Descrição
+A aplicação segue estrutura monolítica em camadas:
 
-Como parte da Fase 1 do Tech Challenge, o projeto também busca demonstrar a aplicação prática de conceitos de arquitetura de software, Domain-Driven Design (DDD), segurança, persistência de dados, documentação de APIs e qualidade de software.
+- domain: regras e agregados;
+- application: casos de uso;
+- infrastructure: persistência, segurança e integrações;
+- presentation: controllers REST e DTOs.
 
----
+## Tecnologias
 
-# Arquitetura da Solução
+- Java 21
+- Spring Boot 4
+- Spring Security + JWT
+- Spring Data JPA + Hibernate
+- Flyway
+- PostgreSQL
+- H2 para desenvolvimento e testes
+- Docker e Docker Compose
+- Springdoc OpenAPI / Swagger UI
+- Maven Wrapper
 
-A solução foi desenvolvida como uma aplicação monolítica organizada em camadas, utilizando princípios de Domain-Driven Design (DDD) para separar as regras de negócio dos detalhes técnicos da aplicação. A arquitetura divide o sistema entre as camadas de domínio, aplicação, infraestrutura e apresentação, permitindo que cada parte possua responsabilidades bem definidas. 
+## Estrutura do projeto
 
-O domínio concentra as entidades e regras da oficina, a aplicação coordena os casos de uso, a infraestrutura implementa persistência, segurança e configurações técnicas, enquanto a apresentação disponibiliza as funcionalidades por meio de uma API REST. Essa organização favorece a manutenção, os testes automatizados e a evolução do projeto sem introduzir a complexidade de uma arquitetura distribuída.
-
-## Fluxo de dependencia entre as camadas
-```
-Presentation
-      │
-      ▼
-Application
-      │
-      ▼
-Domain
-      ▲
-      │
-Infrastructure
-```
-
-## Estrutura de pastas
-```
-oficina-api/
+```text
+.
+├── .dev/
+│   ├── plans/
+│   └── ...
 ├── docs/
-│   ├── ddd/
-│   ├── diagrams/
-│   └── security/
-│
+│   ├── README.md
+│   ├── decisoes-fase1.md
+│   └── ...
 ├── src/
 │   ├── main/
 │   │   ├── java/
-│   │   │   └── br/com/fiap/oficina/
-│   │   │       ├── OficinaApplication.java
-│   │   │       ├── domain/
-│   │   │       ├── application/
-│   │   │       ├── infrastructure/
-│   │   │       └── presentation/
-│   │   │
 │   │   └── resources/
-│   │       ├── db/
-│   │       │   └── migration/
-│   │       ├── application.yml
-│   │       ├── application-dev.yml
-│   │       └── application-prod.yml
-│   │
 │   └── test/
-│       └── java/
-│           └── br/com/fiap/oficina/
-│               ├── unit/
-│               ├── integration/
-│               └── architecture/
-│
 ├── .env.example
 ├── .gitignore
 ├── compose.yml
@@ -85,333 +64,108 @@ oficina-api/
 ├── mvnw
 ├── mvnw.cmd
 ├── pom.xml
-└── README.md
+├── README.md
+└── .mvn/
 ```
-
-## Padrões Utilizados
-
-- Domain-Driven Design (DDD)
-- Clean Architecture
-- Repository Pattern
-- Dependency Injection
-- JWT Authentication
-
----
-
-# Tecnologias Utilizadas
-
-A aplicação foi desenvolvida em Java utilizando o ecossistema Spring para construção da API REST, implementação da segurança, persistência dos dados e organização das regras da aplicação. O PostgreSQL foi adotado como banco de dados relacional, enquanto o Flyway é responsável pelo versionamento e pela evolução do schema. O projeto também utiliza Docker para padronizar o ambiente de execução e ferramentas de testes e cobertura para apoiar a qualidade do código.
-
-## Linguagem e framework
-- Java 21: linguagem principal utilizada no desenvolvimento da aplicação.
-- Spring Boot 4: responsável pela configuração, inicialização e execução da aplicação.
-- Spring Framework 7: base do ecossistema Spring utilizado pelo Spring Boot 4.
-- Maven: gerenciamento de dependências, compilação, testes e empacotamento do projeto.
-## API e validação
-- Spring Web MVC: criação dos controllers e endpoints REST.
-- Jakarta Validation: validação dos dados recebidos pela API.
-- Jackson: serialização e desserialização de objetos JSON.
-- Springdoc OpenAPI: geração da especificação OpenAPI e disponibilização do Swagger UI.
-## Persistência
-- Spring Data JPA: abstração da camada de acesso aos dados.
-- Hibernate: implementação de persistência e mapeamento objeto-relacional.
-- PostgreSQL: banco de dados relacional utilizado pela aplicação.
-- Flyway: criação, versionamento e evolução controlada do schema do banco de dados.
-- HikariCP: gerenciamento do pool de conexões com o banco.
-## Segurança
-- Spring Security: autenticação e autorização dos acessos à API.
-- OAuth2 Resource Server: validação das requisições autenticadas com token.
-- JWT: geração e utilização de tokens para autenticação stateless.
-- BCrypt: geração segura do hash das senhas.
-## Testes e qualidade
-- JUnit 5: execução dos testes automatizados.
-- Mockito: criação de objetos simulados nos testes unitários.
-- Spring Security Test: suporte aos testes de autenticação e autorização.
-- JaCoCo: geração do relatório de cobertura dos testes.
-## Infraestrutura
-- Docker: construção e execução da imagem da aplicação.
-- Docker Compose: inicialização coordenada da API e do PostgreSQL.
-- Maven Wrapper: execução padronizada do Maven sem exigir uma instalação global.
-
----
-
-# Estrutura do Projeto
-
-    src/
-    │
-    ├── Api
-    ├── Application
-    ├── Domain
-    ├── Infrastructure
-    └── Tests
-
----
-
-# Requisitos
 
 ## Pré-requisitos
 
-- Git instalado para o download do código fonte, caso não tenha feito o download do repositório ainda
-- Java 17 ou 21 instalado (de preferencia 21) e pré configurado  
-- Apache Maven 3.6.3 instalado 
-- Banco de Dados Relacional PostgreSQL
+- Java 21
+- Maven Wrapper
+- Docker opcional
+- PostgreSQL local ou H2 para testes/local
 
----
+## Configuração de ambiente
 
-# Configuração do Ambiente
-
-## Clonar Repositório
-
-Se o repositório ainda não foi clonado, com o git instalado execute o comando abaixo para download de projeto.
+Crie o arquivo `.env` com base no exemplo:
 
 ```bash
-git clone https://github.com/cauefsantos/tech-challenge-fiap.git && cd tech-challenge-fiap
+cp .env.example .env
 ```
----
 
-# Executando o Projeto
+Variáveis esperadas:
 
-Com as variaveis de ambiente configuradas, para os próximos passos abrir cmd na pasta ou projeto 
+- `JWT_SECRET`
+- `ADMIN_USERNAME`
+- `ADMIN_PASSWORD`
+- `DB_URL`
+- `DB_USERNAME`
+- `DB_PASSWORD`
+- `SERVER_PORT`
 
-## Buildar o projeto
+Importante: não versionar segredos reais.
 
-Compila o código fonte e builda em pacote .jar
+## Execução local
 
 ```bash
-mvn clean package
+./mvnw test
+./mvnw spring-boot:run
 ```
 
-## Executar Aplicação
+Aplicação disponível em:
+
+- http://localhost:8080
+- http://localhost:8080/swagger-ui.html
+
+## Execução com Docker
 
 ```bash
-mvn spring-boot:run
+docker compose up --build
 ```
 
----
+## Banco de dados
 
-# Executando com Docker
+- PostgreSQL: ambiente próximo ao de produção.
+- H2: ambiente de desenvolvimento e testes locais.
 
-## Construir Imagens
+## Documentação de negócios e planejamento
 
-```bash
-docker compose build
-```
+Documentos relevantes:
 
-## Subir Ambiente
+- `.dev/plans/00-plano-fase1-original-extraido.md`
+- `.dev/plans/01-analise-miro-fase01.md`
+- `.dev/plans/02-plano-fase1-revisado.md`
+- `docs/decisoes-fase1.md`
 
-```bash
-docker compose up -d
-```
+### Decisões adotadas no MVP
 
-## Derrubar Ambiente
+- aprovação do orçamento autenticada pelo sistema;
+- estoque validado e consumido na aprovação;
+- `CANCELADA` ao rejeitar o orçamento;
+- itens de serviço e material somente em diagnóstico;
+- diagnóstico como atributo da ordem de serviço;
+- material mantido como `Material`.
 
-```bash
-docker compose down
-```
+## Autenticação
 
----
+A API usa JWT. O fluxo principal envolve login do usuário, geração do token e envio do header `Authorization` nas requisições autenticadas.
 
-# Banco de Dados
+## Endpoints principais
 
-## Justificativa
+- `POST /api/v1/clientes`
+- `GET /api/v1/clientes`
+- `POST /api/v1/veiculos`
+- `POST /api/v1/ordens-servico`
+- `GET /api/v1/ordens-servico/{id}`
+- `POST /api/v1/ordens-servico/{id}/diagnostico`
+- `POST /api/v1/ordens-servico/{id}/orcamentos`
+- `POST /api/v1/ordens-servico/{id}/orcamentos/{orcamentoId}/aprovar`
+- `POST /api/v1/ordens-servico/{id}/orcamentos/{orcamentoId}/rejeitar`
+- `GET /api/v1/public/ordens-servico/{numero}?documento=...`
+- `GET /api/v1/ordens-servico/metricas/tempo-medio-execucao`
 
-Descrever os motivos da escolha do banco utilizado.
+## Fluxo principal da Ordem de Serviço
 
-## Entidades Principais
+1. Cliente cadastrado
+2. Veículo cadastrado
+3. OS criada
+4. Diagnóstico registrado
+5. Itens adicionados
+6. Orçamento gerado e disponibilizado
+7. Orçamento aprovado ou rejeitado
+8. Execução da OS
+9. Finalização e entrega
 
-- Cliente
-- Veículo
-- Ordem de Serviço
-- Serviço
-- Peça
-- Insumo
+## Observação final
 
----
-
-# Autenticação
-
-A API utiliza autenticação JWT.
-
-## Fluxo
-
-1. Usuário realiza login.
-2. API gera Token JWT.
-3. Token é enviado nas chamadas autenticadas.
-
-Exemplo:
-
-```http
-Authorization: Bearer {token}
-```
-
----
-
-# Endpoints Principais
-
-| Método | Endpoint | Descrição |
-|----------|----------|----------|
-| POST | /clientes | Criar cliente |
-| GET | /clientes | Listar clientes |
-| POST | /veiculos | Criar veículo |
-| POST | /ordens-servico | Criar ordem de serviço |
-| GET | /ordens-servico | Consultar ordens de serviço |
-
----
-
-# Swagger
-
-Após iniciar a aplicação:
-
-```text
-http://localhost:5000/swagger
-```
-
-ou
-
-```text
-https://localhost:5001/swagger
-```
-
----
-
-# Fluxos de Negócio
-
-## Fluxo Principal da Ordem de Serviço
-
-    Cliente Identificado
-            ↓
-    Veículo Cadastrado
-            ↓
-    Ordem de Serviço Criada
-            ↓
-    Diagnóstico Realizado
-            ↓
-    Serviços Adicionados
-            ↓
-    Peças Adicionadas
-            ↓
-    Orçamento Calculado
-            ↓
-    Orçamento Aprovado
-            ↓
-    Execução dos Serviços
-            ↓
-    Ordem de Serviço Finalizada
-            ↓
-    Veículo Entregue
-
----
-
-# Testes
-
-## Executar Todos os Testes
-
-```bash
-dotnet test
-```
-
-## Cobertura
-
-```bash
-dotnet test --collect:"XPlat Code Coverage"
-```
-
----
-
-# Cobertura de Testes
-
-Cobertura mínima esperada:
-
-```text
-80% ou superior
-```
-
-Inserir relatório ou imagem gerada pela ferramenta utilizada.
-
----
-
-# Documentação DDD
-
-Link da documentação:
-
-```text
-https://link-da-documentacao
-```
-
-Conteúdo:
-
-- Linguagem Ubíqua
-- Event Storming
-- Bounded Contexts
-- Entidades
-- Value Objects
-- Aggregate Root
-- Regras de Negócio
-- Diagrama de Estados
-
----
-
-# Análise de Vulnerabilidades
-
-Ferramenta utilizada:
-
-```text
-OWASP Dependency Check
-```
-
-ou
-
-```text
-Snyk
-```
-
-Resultado:
-
-```text
-Nenhuma vulnerabilidade crítica encontrada.
-```
-
-Inserir evidências e relatórios quando disponíveis.
-
----
-
-# CI/CD
-
-Caso o projeto utilize pipeline:
-
-- Build Automatizado
-- Execução de Testes
-- Validação de Qualidade
-- Publicação Automatizada
-
-Exemplo:
-
-- GitHub Actions
-- Azure DevOps
-- GitLab CI/CD
-
----
-
-# Vídeo de Apresentação
-
-Link da demonstração:
-
-```text
-https://youtube.com/...
-```
-
----
-
-# Referências
-
-- Tech Challenge Fase 1
-- Documentação Oficial .NET
-- Documentação ASP.NET Core
-- Documentação Entity Framework Core
-- Documentação Swagger/OpenAPI
-
----
-
-# Considerações Finais
-
-Este projeto foi desenvolvido como parte da Fase 1 do Tech Challenge utilizando conceitos de Arquitetura de Software, Domain-Driven Design, APIs REST, autenticação JWT, testes automatizados e boas práticas de desenvolvimento moderno.
+O repositório segue o roadmap definido em `.dev/plans` e já implementa a base funcional da Fase 1 com o fluxo principal da OS coberto por testes, endpoints e regras de negócio relevantes.
