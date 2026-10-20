@@ -30,3 +30,10 @@ logging:
   level:
     org.flywaydb: DEBUG
     org.hibernate.SQL: DEBUG
+app:
+  security:
+    jwt-secret: ${JWT_SECRET:SGVsbG9Xb3JsZDEyMzQ1Njc4OTBBQkNERUY}
+    token-validity: ${JWT_TOKEN_VALIDITY:PT2H}
+  admin:
+    username: ${ADMIN_USERNAME:admin}
+    password: ${ADMIN_PASSWORD:admin}
