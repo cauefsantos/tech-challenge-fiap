@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: oficina-api
+  profiles:
+    default: dev
+server:
+  port: ${SERVER_PORT:8080}
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
