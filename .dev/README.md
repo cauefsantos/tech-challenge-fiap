@@ -1077,3 +1077,4 @@ Encerrar ambiente:
 ```bash
 docker compose down
 ```
+

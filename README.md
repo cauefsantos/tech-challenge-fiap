@@ -41,6 +41,29 @@ A aplicação segue estrutura monolítica em camadas:
 - Springdoc OpenAPI / Swagger UI
 - Maven Wrapper
 
+## Segurança
+
+A segurança da aplicação é tratada por meio da autenticação baseada em JWT para acesso aos endpoints administrativos, garantindo que apenas usuários autenticados possam executar operações protegidas.
+
+Além disso, são adotadas as seguintes práticas:
+
+- Autenticação e autorização via JWT.
+- Armazenamento seguro de senhas utilizando BCrypt.
+- Validação de CPF/CNPJ e placa de veículo.
+- Uso de JPA para acesso ao banco de dados, evitando consultas SQL concatenadas.
+- Externalização de configurações sensíveis por meio de variáveis de ambiente.
+- Testes automatizados para validação dos fluxos críticos da aplicação.
+
+### Análise de Vulnerabilidades
+
+Foram realizadas análises de segurança utilizando ferramentas automatizadas para identificação de vulnerabilidades conhecidas em dependências e componentes da aplicação:
+
+- GitHub Dependabot
+- OWASP Dependency Check
+- Trivy (análise da imagem Docker)
+
+Os relatórios gerados e as evidências das análises encontram-se disponíveis na documentação do projeto e/ou nos artefatos do pipeline de integração contínua.
+
 ## Estrutura do projeto
 
 ```text

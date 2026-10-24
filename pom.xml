@@ -148,6 +148,18 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>12.1.8</version>
+                <configuration>
+                    <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
+                    <formats>
+                        <format>HTML</format>
+                        <format>JSON</format>
+                    </formats>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
