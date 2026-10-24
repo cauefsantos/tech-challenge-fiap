@@ -43,7 +43,7 @@ A aplicação segue estrutura monolítica em camadas:
 
 ## Segurança
 
-A segurança da aplicação é tratada por meio da autenticação baseada em JWT para acesso aos endpoints administrativos, garantindo que apenas usuários autenticados possam executar operações protegidas.
+A autenticação usa usuários persistidos e senhas BCrypt. O perfil de acesso é carregado no JWT como `role` (`ADMIN`, `FUNCIONARIO` ou `CLIENTE`); endpoints não públicos usam regras explícitas por perfil.
 
 Além disso, são adotadas as seguintes práticas:
 
@@ -106,15 +106,48 @@ Crie o arquivo `.env` com base no exemplo:
 cp .env.example .env
 ```
 
+Carregue as variáveis do `.env` no terminal antes de iniciar a aplicação. Os scripts ficam na raiz do repositório e configuram somente o processo/terminal atual:
+
+```powershell
+# PowerShell: dot-source para manter as variáveis nesta sessão
+. .\set-env.ps1
+.\mvnw.cmd spring-boot:run
+```
+
+Se a política local bloquear scripts, habilite a execução somente na sessão atual antes de carregar:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+. .\set-env.ps1
+```
+
+```bat
+rem Prompt de Comando: use CALL e execute a aplicação na mesma janela
+call set-env.bat
+mvnw.cmd spring-boot:run
+```
+
+```bash
+# Bash: carregue o script no shell atual
+source ./set-env.sh
+./mvnw spring-boot:run
+```
+
+Os scripts não imprimem os valores carregados. Mantenha `.env` fora do controle de versão; ele já está listado no `.gitignore`.
+
 Variáveis esperadas:
 
-- `JWT_SECRET`
-- `ADMIN_USERNAME`
-- `ADMIN_PASSWORD`
+- `JWT_SECRET` (Base64 que decodifique para pelo menos 32 bytes; gere um valor exclusivo, por exemplo com `openssl rand -base64 32`)
+- `ADMIN_USERNAME` e `ADMIN_PASSWORD` (credenciais explícitas para bootstrap; senha com pelo menos 12 caracteres)
 - `DB_URL`
 - `DB_USERNAME`
 - `DB_PASSWORD`
 - `SERVER_PORT`
+- `SPRING_PROFILES_ACTIVE`
+- `JWT_TOKEN_VALIDITY`
+- `DB_POOL_MIN_IDLE`, `DB_POOL_MAX_SIZE`, `DB_CONNECTION_TIMEOUT_MS`, `DB_VALIDATION_TIMEOUT_MS`, `DB_IDLE_TIMEOUT_MS` e `DB_MAX_LIFETIME_MS` (pool PostgreSQL)
+- `FLYWAY_CONNECT_RETRIES`
+- `OPENAPI_ENABLED` e `SWAGGER_UI_ENABLED`
 
 Importante: não versionar segredos reais.
 
@@ -161,7 +194,29 @@ Documentos relevantes:
 
 ## Autenticação
 
-A API usa JWT. O fluxo principal envolve login do usuário, geração do token e envio do header `Authorization` nas requisições autenticadas.
+A API usa JWT emitido por `POST /api/v1/auth/login`. O administrador inicial é criado uma única vez no banco, apenas se o username não existir; reinícios nunca redefinem sua senha. A aplicação falha ao iniciar sem segredo JWT e credenciais de bootstrap explícitos. Não há usuários ou segredos padrão.
+
+### Perfis e usuários
+
+| Perfil | Acesso |
+|---|---|
+| `ADMIN` | Gestão de usuários e todos os endpoints autenticados de clientes, veículos, serviços, materiais e ordens de serviço. |
+| `FUNCIONARIO` | Endpoints operacionais de clientes, veículos, serviços, materiais e ordens de serviço; não pode gerir usuários. |
+| `CLIENTE` | Sem endpoints autenticados de recursos nesta fase. Consulta pública existente de OS continua disponível por número/documento; consulta autenticada de OS por cliente está fora do escopo. |
+
+`POST`, `GET`, `PUT` e `DELETE /api/v1/usuarios` (incluindo busca por id) são exclusivos de `ADMIN`. O `DELETE /api/v1/usuarios/{id}` desativa a conta e a atualização administrativa pode reativá-la. A criação recebe senha em texto apenas na requisição; respostas nunca contêm senha ou hash. Uma conta `CLIENTE` exige `clienteId` existente; os demais perfis não aceitam vínculo. O username é normalizado para minúsculas e único sem distinção de caixa.
+
+Exemplo de criação administrativa:
+
+```json
+{
+  "username": "funcionario.exemplo",
+  "password": "uma-senha-forte-de-12-caracteres",
+  "papel": "FUNCIONARIO"
+}
+```
+
+Uma edição geral altera apenas papel, vínculo e ativação; redefinição de senha não faz parte desta API.
 
 ## Endpoints principais
 

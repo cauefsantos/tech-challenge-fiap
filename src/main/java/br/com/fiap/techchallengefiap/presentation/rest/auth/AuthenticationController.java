@@ -30,7 +30,14 @@ public class AuthenticationController {
         Instant now = Instant.now();
         Instant expires = now.plus(properties.tokenValidity());
         String scope = auth.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.joining(" "));
-        var claims = JwtClaimsSet.builder().issuer("oficina-api").issuedAt(now).expiresAt(expires).subject(auth.getName()).claim("scope", scope).build();
+        String role = auth.getAuthorities().stream()
+                .map(authority -> authority.getAuthority())
+                .filter(authority -> authority.startsWith("ROLE_"))
+                .map(authority -> authority.substring("ROLE_".length()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Usuario autenticado sem papel."));
+        var claims = JwtClaimsSet.builder().issuer("oficina-api").issuedAt(now).expiresAt(expires)
+                .subject(auth.getName()).claim("role", role).claim("scope", scope).build();
         var header = JwsHeader.with(org.springframework.security.oauth2.jose.jws.MacAlgorithm.HS256).build();
         String token = encoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
         return new TokenResponse(token, "Bearer", properties.tokenValidity().toSeconds());
