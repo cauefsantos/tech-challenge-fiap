@@ -3,7 +3,7 @@ WORKDIR /workspace
 COPY . .
 RUN mvn -q -DskipTests package
 
-FROM eclipse-temurin:21-jre-jammy
+FROM eclipse-temurin:25-jre-jammy
 WORKDIR /app
 COPY --from=build /workspace/target/*.jar /app/app.jar
 EXPOSE 8080
