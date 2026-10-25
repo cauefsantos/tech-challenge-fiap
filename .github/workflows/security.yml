@@ -40,7 +40,7 @@ jobs:
             -DnvdApiKey=${{ secrets.NVD_API_KEY }}
 
       - name: Upload OWASP Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dependency-check-report
           path: reports
@@ -57,7 +57,7 @@ jobs:
           output: trivy-report.txt
 
       - name: Upload Trivy Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: trivy-report
           path: trivy-report.txt
