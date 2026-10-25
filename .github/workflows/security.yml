@@ -34,10 +34,21 @@ jobs:
       - name: Build Application
         run: mvn clean verify
 
-      - name: OWASP Dependency Check
+      - name: Check Secret Length
         run: |
-          mvn dependency-check:check \
-            -DnvdApiKey=${{ secrets.NVD_API_KEY }}
+          if [ -z "$NVD_API_KEY" ]; then
+            echo "NVD_API_KEY is EMPTY"
+            exit 1
+          else
+            echo "Length: ${#NVD_API_KEY}"
+            echo "NVD_API_KEY exists"
+          fi
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+      - name: OWASP Dependency Check
+        run: mvn dependency-check:check
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
 
       - name: Upload OWASP Report
         uses: actions/upload-artifact@v7
