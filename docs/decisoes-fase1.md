@@ -13,6 +13,7 @@ Este documento consolida as decisões assumidas a partir dos planos em `.dev/pla
 - O material é mantido como nome de domínio; o equivalente a "Peça/Insumo" é documentado como `Material`.
 - O início da execução é disparado automaticamente após a aprovação do orçamento.
 - A finalização exige ao menos um item de serviço.
+- Cliente e veículo são identificados pela API por CPF/CNPJ e placa, respectivamente. A abertura da OS recebe `documentoCliente` e `placa`, e as respostas exibem esses dados no lugar de ids. Os ids numéricos continuam apenas como chave interna do banco, para que a correção de um documento ou a conversão de uma placa para o padrão Mercosul não afete o histórico das ordens de serviço.
 
 ## Checklist de integração com os planos
 

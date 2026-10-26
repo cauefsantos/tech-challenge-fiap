@@ -2,13 +2,13 @@
 
 ## Cliente
 
-Pessoa física ou jurídica responsável pelo veículo.
+Pessoa física ou jurídica responsável pelo veículo. É identificado pelo seu documento: CPF (pessoa física) ou CNPJ (pessoa jurídica).
 
 ---
 
 ## Veículo
 
-Veículo atendido pela oficina e associado a um cliente.
+Veículo atendido pela oficina e associado a um cliente. É identificado pela sua placa.
 
 ---
 

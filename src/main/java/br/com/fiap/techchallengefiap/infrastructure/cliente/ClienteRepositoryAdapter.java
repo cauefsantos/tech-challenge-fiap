@@ -26,6 +26,11 @@ public class ClienteRepositoryAdapter implements ClienteRepository {
     }
 
     @Override
+    public Optional<Cliente> buscarPorDocumento(String documento) {
+        return jpa.findFirstByDocumentoOrderByAtivoDescIdDesc(documento).map(this::toDomain);
+    }
+
+    @Override
     public List<Cliente> listar() {
         return jpa.findAll().stream().map(this::toDomain).toList();
     }

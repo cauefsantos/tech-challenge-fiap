@@ -1,5 +1,6 @@
 package br.com.fiap.techchallengefiap.application.usuario;
 
+import br.com.fiap.techchallengefiap.domain.cliente.model.Cliente;
 import br.com.fiap.techchallengefiap.domain.cliente.repository.ClienteRepository;
 import br.com.fiap.techchallengefiap.domain.shared.ConflictException;
 import br.com.fiap.techchallengefiap.domain.shared.ResourceNotFoundException;
@@ -27,9 +28,9 @@ public class GerenciarUsuarioUseCase {
     }
 
     @Transactional
-    public Usuario criar(String username, String password, Papel papel, Long clienteId) {
+    public Usuario criar(String username, String password, Papel papel, String documentoCliente) {
         String normalized = Usuario.normalizarUsername(username);
-        validarCliente(papel, clienteId);
+        Long clienteId = resolverCliente(papel, documentoCliente);
         if (password == null || password.isBlank()) throw new IllegalArgumentException("A senha e obrigatoria.");
         if (password.getBytes(StandardCharsets.UTF_8).length > 72) {
             throw new IllegalArgumentException("A senha deve ter no maximo 72 bytes UTF-8.");
@@ -53,9 +54,9 @@ public class GerenciarUsuarioUseCase {
     }
 
     @Transactional
-    public Usuario atualizar(Long id, Papel papel, Long clienteId, boolean enabled) {
+    public Usuario atualizar(Long id, Papel papel, String documentoCliente, boolean enabled) {
         Usuario atual = buscar(id);
-        validarCliente(papel, clienteId);
+        Long clienteId = resolverCliente(papel, documentoCliente);
         if (atual.isEnabled() && atual.getPapel() == Papel.ADMIN
                 && (!enabled || papel != Papel.ADMIN)
                 && usuarios.contarAtivosPorPapel(Papel.ADMIN) <= 1) {
@@ -76,17 +77,30 @@ public class GerenciarUsuarioUseCase {
         return usuarios.salvar(usuario);
     }
 
-    private void validarCliente(Papel papel, Long clienteId) {
+    /** CPF/CNPJ do cliente vinculado ao usuario, ou null para usuarios que nao sao CLIENTE. */
+    @Transactional(readOnly = true)
+    public String documentoDoCliente(Usuario usuario) {
+        if (usuario.getClienteId() == null) return null;
+        return clientes.buscarPorId(usuario.getClienteId())
+                .map(Cliente::getDocumento)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente vinculado ao usuario nao encontrado."));
+    }
+
+    /** Valida o vinculo exigido pelo papel e devolve o id interno do cliente informado por CPF/CNPJ. */
+    private Long resolverCliente(Papel papel, String documentoCliente) {
         if (papel == null) throw new IllegalArgumentException("O papel e obrigatorio.");
+        boolean informado = documentoCliente != null && !documentoCliente.isBlank();
         if (papel == Papel.CLIENTE) {
-            if (clienteId == null) {
+            if (!informado) {
                 throw new IllegalArgumentException("Usuarios CLIENTE devem estar vinculados a um cliente.");
             }
-            if (clientes.buscarPorId(clienteId).isEmpty()) {
-                throw new ResourceNotFoundException("Cliente informado nao encontrado.");
-            }
-        } else if (clienteId != null) {
+            return clientes.buscarPorDocumento(Cliente.normalizarDocumento(documentoCliente))
+                    .map(Cliente::getId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Cliente informado nao encontrado."));
+        }
+        if (informado) {
             throw new IllegalArgumentException("Somente usuarios CLIENTE podem estar vinculados a um cliente.");
         }
+        return null;
     }
 }

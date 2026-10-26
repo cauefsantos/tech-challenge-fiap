@@ -204,7 +204,7 @@ A API usa JWT emitido por `POST /api/v1/auth/login`. O administrador inicial é 
 | `FUNCIONARIO` | Endpoints operacionais de clientes, veículos, serviços, materiais e ordens de serviço; não pode gerir usuários. |
 | `CLIENTE` | Sem endpoints autenticados de recursos nesta fase. Consulta pública existente de OS continua disponível por número/documento; consulta autenticada de OS por cliente está fora do escopo. |
 
-`POST`, `GET`, `PUT` e `DELETE /api/v1/usuarios` (incluindo busca por id) são exclusivos de `ADMIN`. O `DELETE /api/v1/usuarios/{id}` desativa a conta e a atualização administrativa pode reativá-la. A criação recebe senha em texto apenas na requisição; respostas nunca contêm senha ou hash. Uma conta `CLIENTE` exige `clienteId` existente; os demais perfis não aceitam vínculo. O username é normalizado para minúsculas e único sem distinção de caixa.
+`POST`, `GET`, `PUT` e `DELETE /api/v1/usuarios` (incluindo busca por id) são exclusivos de `ADMIN`. O `DELETE /api/v1/usuarios/{id}` desativa a conta e a atualização administrativa pode reativá-la. A criação recebe senha em texto apenas na requisição; respostas nunca contêm senha ou hash. Uma conta `CLIENTE` exige o campo `documentoCliente` com o CPF/CNPJ de um cliente cadastrado; os demais perfis não aceitam vínculo. O username é normalizado para minúsculas e único sem distinção de caixa.
 
 Exemplo de criação administrativa:
 
@@ -218,11 +218,47 @@ Exemplo de criação administrativa:
 
 Uma edição geral altera apenas papel, vínculo e ativação; redefinição de senha não faz parte desta API.
 
+## Identificação de clientes e veículos
+
+Na API, o **cliente é identificado pelo CPF/CNPJ** e o **veículo pela placa**. Os ids numéricos existem apenas internamente no banco e não aparecem nas requisições nem nas respostas.
+
+- Nos caminhos, informe o CPF/CNPJ **somente com números** (`/api/v1/clientes/52998224725`). No corpo das requisições, pontuação é aceita (`529.982.247-25`).
+- A placa aceita o padrão antigo ou Mercosul, com ou sem hífen, em maiúsculas ou minúsculas (`ABC1D23`, `abc-1d23`).
+- Quando há cadastros desativados com o mesmo documento ou placa, as rotas retornam o cadastro ativo.
+
+Abertura de OS:
+
+```json
+POST /api/v1/ordens-servico
+{
+  "documentoCliente": "529.982.247-25",
+  "placa": "ABC1D23"
+}
+```
+
+Cadastro de veículo:
+
+```json
+POST /api/v1/veiculos
+{
+  "documentoCliente": "52998224725",
+  "placa": "ABC1D23",
+  "marca": "Fiat",
+  "modelo": "Uno",
+  "ano": 2020
+}
+```
+
+A resposta da OS traz `id`, `numero` (usado na consulta pública), `documentoCliente`, `placa`, `status`, `orcamentoAprovado`, `valorTotal` e `criadaEm`.
+
 ## Endpoints principais
 
 - `POST /api/v1/clientes`
 - `GET /api/v1/clientes`
+- `GET`, `PUT`, `DELETE /api/v1/clientes/{documento}` e `PATCH /api/v1/clientes/{documento}/ativacao`
 - `POST /api/v1/veiculos`
+- `GET /api/v1/veiculos`
+- `GET`, `PUT`, `DELETE /api/v1/veiculos/{placa}` e `PATCH /api/v1/veiculos/{placa}/ativacao`
 - `POST /api/v1/ordens-servico`
 - `GET /api/v1/ordens-servico/{id}`
 - `POST /api/v1/ordens-servico/{id}/diagnostico`

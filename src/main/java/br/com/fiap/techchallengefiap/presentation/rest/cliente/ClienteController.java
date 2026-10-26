@@ -21,12 +21,12 @@ public class ClienteController {
     @PostMapping
     public ResponseEntity<ClienteResponse> criar(@Valid @RequestBody ClienteRequest request) {
         var cliente = useCase.criar(request.tipoPessoa(), request.documento(), request.nome(), request.email(), request.telefone());
-        return ResponseEntity.created(URI.create("/api/v1/clientes/" + cliente.getId())).body(ClienteResponse.from(cliente));
+        return ResponseEntity.created(URI.create("/api/v1/clientes/" + cliente.getDocumento())).body(ClienteResponse.from(cliente));
     }
 
-    @GetMapping("/{id}")
-    public ClienteResponse buscar(@PathVariable Long id) {
-        return ClienteResponse.from(useCase.buscar(id));
+    @GetMapping("/{documento}")
+    public ClienteResponse buscar(@PathVariable String documento) {
+        return ClienteResponse.from(useCase.buscar(documento));
     }
 
     @GetMapping
@@ -34,20 +34,20 @@ public class ClienteController {
         return useCase.listar().stream().map(ClienteResponse::from).toList();
     }
 
-    @PutMapping("/{id}")
-    public ClienteResponse atualizar(@PathVariable Long id, @Valid @RequestBody ClienteRequest request) {
-        return ClienteResponse.from(useCase.atualizar(id, request.tipoPessoa(), request.documento(), request.nome(),
-                request.email(), request.telefone()));
+    @PutMapping("/{documento}")
+    public ClienteResponse atualizar(@PathVariable String documento, @Valid @RequestBody ClienteRequest request) {
+        return ClienteResponse.from(useCase.atualizar(documento, request.tipoPessoa(), request.documento(),
+                request.nome(), request.email(), request.telefone()));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> desativar(@PathVariable Long id) {
-        useCase.alterarAtivo(id, false);
+    @DeleteMapping("/{documento}")
+    public ResponseEntity<Void> desativar(@PathVariable String documento) {
+        useCase.alterarAtivo(documento, false);
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{id}/ativacao")
-    public ClienteResponse alterarAtivo(@PathVariable Long id, @Valid @RequestBody AtivoRequest request) {
-        return ClienteResponse.from(useCase.alterarAtivo(id, request.ativo()));
+    @PatchMapping("/{documento}/ativacao")
+    public ClienteResponse alterarAtivo(@PathVariable String documento, @Valid @RequestBody AtivoRequest request) {
+        return ClienteResponse.from(useCase.alterarAtivo(documento, request.ativo()));
     }
 }

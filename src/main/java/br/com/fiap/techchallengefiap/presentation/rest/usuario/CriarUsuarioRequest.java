@@ -9,5 +9,5 @@ public record CriarUsuarioRequest(
         @NotBlank @Size(max = 100) String username,
         @NotBlank @Size(min = 12, max = 72) String password,
         @NotNull Papel papel,
-        Long clienteId
+        String documentoCliente
 ) {}

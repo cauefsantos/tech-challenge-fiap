@@ -57,10 +57,10 @@ class GerenciarEntidadesUseCaseTest {
     @Test
     void impedeCriacaoDeVeiculoParaClienteInexistente() {
         GerenciarVeiculoUseCase gerenciarVeiculo = new GerenciarVeiculoUseCase(veiculoRepository, clienteRepository);
-        when(clienteRepository.buscarPorId(12L)).thenReturn(Optional.empty());
+        when(clienteRepository.buscarPorDocumento("52998224725")).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class,
-                () -> gerenciarVeiculo.criar(12L, "ABC1D23", "Marca", "Modelo", 2022));
+                () -> gerenciarVeiculo.criar("529.982.247-25", "ABC1D23", "Marca", "Modelo", 2022));
 
         verify(veiculoRepository, never()).salvar(any(Veiculo.class));
     }
@@ -68,10 +68,10 @@ class GerenciarEntidadesUseCaseTest {
     @Test
     void exigeQueClienteDaOrdemEstejaVinculadoAoVeiculo() {
         GerenciarVeiculoUseCase gerenciarVeiculo = new GerenciarVeiculoUseCase(veiculoRepository, clienteRepository);
-        when(clienteRepository.buscarPorId(12L))
+        when(clienteRepository.buscarPorDocumento("52998224725"))
                 .thenReturn(Optional.of(new Cliente(12L, TipoPessoa.FISICA, "52998224725", "Cliente",
                         null, null, java.time.OffsetDateTime.now(), true)));
-        when(veiculoRepository.buscarPorId(21L))
+        when(veiculoRepository.buscarPorPlaca("ABC1D23"))
                 .thenReturn(Optional.of(new Veiculo(21L, 13L, "ABC1D23", "Marca", "Modelo", 2022,
                         java.time.OffsetDateTime.now(), true)));
 
@@ -79,7 +79,7 @@ class GerenciarEntidadesUseCaseTest {
             var useCase = new br.com.fiap.techchallengefiap.application.ordemservico.CriarOrdemServicoUseCase(
                     mock(br.com.fiap.techchallengefiap.domain.ordemservico.repository.OrdemServicoRepository.class),
                     clienteRepository, veiculoRepository);
-            useCase.executar(new br.com.fiap.techchallengefiap.application.ordemservico.CriarOrdemServicoCommand(12L, 21L));
+            useCase.executar(new br.com.fiap.techchallengefiap.application.ordemservico.CriarOrdemServicoCommand("52998224725", "ABC1D23"));
         });
     }
 }

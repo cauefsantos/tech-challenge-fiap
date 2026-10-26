@@ -41,7 +41,7 @@ public class Cliente {
         ativo = true;
     }
 
-    private static String normalizarDocumento(String valor) {
+    public static String normalizarDocumento(String valor) {
         if (valor == null) throw new DomainException("O documento e obrigatorio.");
         String documento = valor.trim();
         if (!documento.matches("[0-9.\\-/\\s]+")) throw new DomainException("O documento deve conter apenas digitos e formatacao.");
