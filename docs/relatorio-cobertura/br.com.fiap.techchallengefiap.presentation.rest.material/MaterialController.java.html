@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaterialController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tech-challenge-fiap</a> &gt; <a href="index.source.html" class="el_package">br.com.fiap.techchallengefiap.presentation.rest.material</a> &gt; <span class="el_source">MaterialController.java</span></div><h1>MaterialController.java</h1><pre class="source lang-java linenums">package br.com.fiap.techchallengefiap.presentation.rest.material;
+
+import br.com.fiap.techchallengefiap.application.material.GerenciarMaterialUseCase;
+import br.com.fiap.techchallengefiap.presentation.rest.shared.AtivoRequest;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/api/v1/materiais&quot;)
+public class MaterialController {
+    private final GerenciarMaterialUseCase useCase;
+
+<span class="fc" id="L17">    public MaterialController(GerenciarMaterialUseCase useCase) {</span>
+<span class="fc" id="L18">        this.useCase = useCase;</span>
+<span class="fc" id="L19">    }</span>
+
+    @PostMapping
+    public ResponseEntity&lt;MaterialResponse&gt; criar(@Valid @RequestBody MaterialRequest request) {
+<span class="nc" id="L23">        var material = useCase.criar(request.codigo(), request.tipo(), request.nome(), request.descricao(),</span>
+<span class="nc" id="L24">                request.valorUnitario(), request.unidadeMedida(), request.quantidadeEstoque(), request.estoqueMinimo());</span>
+<span class="nc" id="L25">        return ResponseEntity.created(URI.create(&quot;/api/v1/materiais/&quot; + material.getId())).body(MaterialResponse.from(material));</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    public MaterialResponse buscar(@PathVariable Long id) {
+<span class="nc" id="L30">        return MaterialResponse.from(useCase.buscar(id));</span>
+    }
+
+    @GetMapping
+    public List&lt;MaterialResponse&gt; listar() {
+<span class="nc" id="L35">        return useCase.listar().stream().map(MaterialResponse::from).toList();</span>
+    }
+
+    @PutMapping(&quot;/{id}&quot;)
+    public MaterialResponse atualizar(@PathVariable Long id, @Valid @RequestBody MaterialRequest request) {
+<span class="nc" id="L40">        return MaterialResponse.from(useCase.atualizar(id, request.codigo(), request.tipo(), request.nome(),</span>
+<span class="nc" id="L41">                request.descricao(), request.valorUnitario(), request.unidadeMedida(),</span>
+<span class="nc" id="L42">                request.quantidadeEstoque(), request.estoqueMinimo()));</span>
+    }
+
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Void&gt; desativar(@PathVariable Long id) {
+<span class="nc" id="L47">        useCase.alterarAtivo(id, false);</span>
+<span class="nc" id="L48">        return ResponseEntity.noContent().build();</span>
+    }
+
+    @PatchMapping(&quot;/{id}/ativacao&quot;)
+    public MaterialResponse alterarAtivo(@PathVariable Long id, @Valid @RequestBody AtivoRequest request) {
+<span class="nc" id="L53">        return MaterialResponse.from(useCase.alterarAtivo(id, request.ativo()));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HistoricoStatus.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tech-challenge-fiap</a> &gt; <a href="index.source.html" class="el_package">br.com.fiap.techchallengefiap.domain.ordemservico.model</a> &gt; <span class="el_source">HistoricoStatus.java</span></div><h1>HistoricoStatus.java</h1><pre class="source lang-java linenums">package br.com.fiap.techchallengefiap.domain.ordemservico.model;
+
+import br.com.fiap.techchallengefiap.domain.shared.DomainException;
+
+import java.time.OffsetDateTime;
+import java.util.Objects;
+
+public class HistoricoStatus {
+    private final Long id;
+    private final Long ordemServicoId;
+    private final StatusOrdemServico statusAnterior;
+    private final StatusOrdemServico statusNovo;
+    private final OffsetDateTime dataAlteracao;
+    private final String observacao;
+
+    public HistoricoStatus(Long ordemServicoId, StatusOrdemServico statusAnterior,
+                           StatusOrdemServico statusNovo, String observacao) {
+<span class="fc" id="L18">        this(null, ordemServicoId, statusAnterior, statusNovo, OffsetDateTime.now(), observacao);</span>
+<span class="fc" id="L19">    }</span>
+
+    public HistoricoStatus(Long id, Long ordemServicoId, StatusOrdemServico statusAnterior,
+<span class="fc" id="L22">                           StatusOrdemServico statusNovo, OffsetDateTime dataAlteracao, String observacao) {</span>
+<span class="fc bfc" id="L23" title="All 2 branches covered.">        if (statusNovo == null) throw new DomainException(&quot;O novo status e obrigatorio.&quot;);</span>
+<span class="fc" id="L24">        this.id = id;</span>
+<span class="fc" id="L25">        this.ordemServicoId = ordemServicoId;</span>
+<span class="fc" id="L26">        this.statusAnterior = statusAnterior;</span>
+<span class="fc" id="L27">        this.statusNovo = statusNovo;</span>
+<span class="fc" id="L28">        this.dataAlteracao = Objects.requireNonNull(dataAlteracao);</span>
+<span class="pc bpc" id="L29" title="1 of 4 branches missed.">        this.observacao = observacao == null || observacao.isBlank() ? null : observacao.trim();</span>
+<span class="fc" id="L30">    }</span>
+
+<span class="fc" id="L32">    public void setId(Long id) { }</span>
+<span class="fc" id="L33">    public Long getId() { return id; }</span>
+<span class="fc" id="L34">    public Long getOrdemServicoId() { return ordemServicoId; }</span>
+<span class="fc" id="L35">    public StatusOrdemServico getStatusAnterior() { return statusAnterior; }</span>
+<span class="fc" id="L36">    public StatusOrdemServico getStatusNovo() { return statusNovo; }</span>
+<span class="fc" id="L37">    public OffsetDateTime getDataAlteracao() { return dataAlteracao; }</span>
+<span class="fc" id="L38">    public String getObservacao() { return observacao; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

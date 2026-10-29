@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrdemServico.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tech-challenge-fiap</a> &gt; <a href="index.source.html" class="el_package">br.com.fiap.techchallengefiap.domain.ordemservico.model</a> &gt; <span class="el_source">OrdemServico.java</span></div><h1>OrdemServico.java</h1><pre class="source lang-java linenums">package br.com.fiap.techchallengefiap.domain.ordemservico.model;
+
+import br.com.fiap.techchallengefiap.domain.shared.DomainException;
+import br.com.fiap.techchallengefiap.domain.orcamento.model.Orcamento;
+import br.com.fiap.techchallengefiap.domain.orcamento.model.StatusOrcamento;
+
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+
+public class OrdemServico {
+    private Long id;
+    private final String numero;
+    private final Long clienteId;
+    private final Long veiculoId;
+    private StatusOrdemServico status;
+    private boolean orcamentoAprovado;
+    private BigDecimal valorTotal;
+    private final OffsetDateTime criadaEm;
+    private String descricaoProblema;
+    private String diagnostico;
+    private OffsetDateTime dataInicioExecucao;
+    private OffsetDateTime dataFinalizacao;
+    private OffsetDateTime dataEntrega;
+    private String observacoes;
+<span class="fc" id="L29">    private final List&lt;ItemServico&gt; itensServico = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L30">    private final List&lt;ItemMaterial&gt; itensMaterial = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L31">    private final List&lt;Orcamento&gt; orcamentos = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L32">    private final List&lt;HistoricoStatus&gt; historicoStatus = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L34">    public OrdemServico(Long clienteId, Long veiculoId) {</span>
+<span class="pc bpc" id="L35" title="2 of 8 branches missed.">        if (clienteId == null || clienteId &lt;= 0 || veiculoId == null || veiculoId &lt;= 0) {</span>
+<span class="fc" id="L36">            throw new DomainException(&quot;Cliente e veiculo sao obrigatorios.&quot;);</span>
+        }
+<span class="fc" id="L38">        this.numero = UUID.randomUUID().toString().substring(0, 8).toUpperCase();</span>
+<span class="fc" id="L39">        this.clienteId = clienteId;</span>
+<span class="fc" id="L40">        this.veiculoId = veiculoId;</span>
+<span class="fc" id="L41">        this.status = StatusOrdemServico.RECEBIDA;</span>
+<span class="fc" id="L42">        this.valorTotal = BigDecimal.ZERO;</span>
+<span class="fc" id="L43">        this.criadaEm = OffsetDateTime.now();</span>
+<span class="fc" id="L44">    }</span>
+
+    public OrdemServico(Long id, Long clienteId, Long veiculoId, StatusOrdemServico status, boolean aprovado, BigDecimal valorTotal, OffsetDateTime criadaEm) {
+<span class="nc bnc" id="L47" title="All 2 branches missed.">        this(id, id == null ? UUID.randomUUID().toString().substring(0, 8).toUpperCase() : id.toString(),</span>
+                clienteId, veiculoId, status, aprovado, valorTotal, criadaEm, null, null, null, null, null, null);
+<span class="nc" id="L49">    }</span>
+
+    public OrdemServico(Long id, String numero, Long clienteId, Long veiculoId, StatusOrdemServico status,
+                        boolean aprovado, BigDecimal valorTotal, OffsetDateTime criadaEm,
+                        String descricaoProblema, String diagnostico, OffsetDateTime dataInicioExecucao,
+<span class="fc" id="L54">                        OffsetDateTime dataFinalizacao, OffsetDateTime dataEntrega, String observacoes) {</span>
+<span class="fc" id="L55">        this.id = id;</span>
+<span class="fc" id="L56">        this.numero = numero;</span>
+<span class="fc" id="L57">        this.clienteId = clienteId;</span>
+<span class="fc" id="L58">        this.veiculoId = veiculoId;</span>
+<span class="fc" id="L59">        this.status = status;</span>
+<span class="fc" id="L60">        this.orcamentoAprovado = aprovado;</span>
+<span class="fc" id="L61">        this.valorTotal = valorTotal;</span>
+<span class="fc" id="L62">        this.criadaEm = criadaEm;</span>
+<span class="fc" id="L63">        this.descricaoProblema = descricaoProblema;</span>
+<span class="fc" id="L64">        this.diagnostico = diagnostico;</span>
+<span class="fc" id="L65">        this.dataInicioExecucao = dataInicioExecucao;</span>
+<span class="fc" id="L66">        this.dataFinalizacao = dataFinalizacao;</span>
+<span class="fc" id="L67">        this.dataEntrega = dataEntrega;</span>
+<span class="fc" id="L68">        this.observacoes = observacoes;</span>
+<span class="fc" id="L69">    }</span>
+
+    public void definirDescricaoProblema(String descricao) {
+<span class="fc" id="L72">        verificarEdicao();</span>
+<span class="pc bpc" id="L73" title="1 of 4 branches missed.">        if (descricao == null || descricao.isBlank()) throw new DomainException(&quot;A descricao do problema e obrigatoria.&quot;);</span>
+<span class="fc" id="L74">        descricaoProblema = descricao.trim();</span>
+<span class="fc" id="L75">    }</span>
+
+    public void registrarDiagnostico(String descricao) {
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        if (status != StatusOrdemServico.EM_DIAGNOSTICO) throw new DomainException(&quot;A OS deve estar em diagnostico.&quot;);</span>
+<span class="pc bpc" id="L79" title="1 of 4 branches missed.">        if (descricao == null || descricao.isBlank()) throw new DomainException(&quot;O diagnostico e obrigatorio.&quot;);</span>
+<span class="fc" id="L80">        diagnostico = descricao.trim();</span>
+<span class="fc" id="L81">    }</span>
+
+    public void concluirDiagnostico() {
+<span class="fc bfc" id="L84" title="All 2 branches covered.">        if (status != StatusOrdemServico.EM_DIAGNOSTICO) throw new DomainException(&quot;A OS deve estar em diagnostico para concluir o diagnostico.&quot;);</span>
+<span class="pc bpc" id="L85" title="2 of 4 branches missed.">        if (diagnostico == null || diagnostico.isBlank()) throw new DomainException(&quot;O diagnostico deve ser preenchido antes da conclusao.&quot;);</span>
+<span class="fc" id="L86">    }</span>
+
+    public void adicionarItemServico(ItemServico item) {
+<span class="fc" id="L89">        verificarEdicao();</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        if (status != StatusOrdemServico.EM_DIAGNOSTICO) throw new DomainException(&quot;Itens de servico so podem ser adicionados em diagnostico.&quot;);</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        if (item == null) throw new DomainException(&quot;O item de servico e obrigatorio.&quot;);</span>
+<span class="fc" id="L92">        validarVinculo(item.getOrdemServicoId());</span>
+<span class="fc" id="L93">        itensServico.add(item);</span>
+<span class="fc" id="L94">        recalcularValorTotal();</span>
+<span class="fc" id="L95">    }</span>
+
+    public void adicionarItemMaterial(ItemMaterial item) {
+<span class="fc" id="L98">        verificarEdicao();</span>
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">        if (status != StatusOrdemServico.EM_DIAGNOSTICO) throw new DomainException(&quot;Itens de material so podem ser adicionados em diagnostico.&quot;);</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        if (item == null) throw new DomainException(&quot;O item de material e obrigatorio.&quot;);</span>
+<span class="fc" id="L101">        validarVinculo(item.getOrdemServicoId());</span>
+<span class="fc" id="L102">        itensMaterial.add(item);</span>
+<span class="fc" id="L103">        recalcularValorTotal();</span>
+<span class="fc" id="L104">    }</span>
+
+    public void removerItemServico(Long itemId) {
+<span class="fc" id="L107">        verificarEdicao();</span>
+<span class="pc bpc" id="L108" title="1 of 6 branches missed.">        if (!itensServico.removeIf(item -&gt; item.getId() != null &amp;&amp; item.getId().equals(itemId))) {</span>
+<span class="fc" id="L109">            throw new DomainException(&quot;Item de servico nao encontrado.&quot;);</span>
+        }
+<span class="fc" id="L111">        recalcularValorTotal();</span>
+<span class="fc" id="L112">    }</span>
+
+    public void removerItemMaterial(Long itemId) {
+<span class="fc" id="L115">        verificarEdicao();</span>
+<span class="pc bpc" id="L116" title="1 of 6 branches missed.">        if (!itensMaterial.removeIf(item -&gt; item.getId() != null &amp;&amp; item.getId().equals(itemId))) {</span>
+<span class="fc" id="L117">            throw new DomainException(&quot;Item de material nao encontrado.&quot;);</span>
+        }
+<span class="fc" id="L119">        recalcularValorTotal();</span>
+<span class="fc" id="L120">    }</span>
+
+    public Orcamento gerarOrcamento() {
+<span class="fc" id="L123">        verificarEdicao();</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        if (status != StatusOrdemServico.EM_DIAGNOSTICO) throw new DomainException(&quot;A OS deve estar em diagnostico para gerar orcamento.&quot;);</span>
+<span class="fc" id="L125">        long versao = orcamentos.stream().mapToLong(Orcamento::getVersao).max().orElse(0) + 1;</span>
+<span class="fc" id="L126">        Orcamento orcamento = new Orcamento(id, (int) versao, itensServico, itensMaterial);</span>
+<span class="fc" id="L127">        orcamentos.add(orcamento);</span>
+<span class="fc" id="L128">        return orcamento;</span>
+    }
+
+    public void disponibilizarOrcamento(Orcamento orcamento) {
+<span class="fc" id="L132">        verificarEdicao();</span>
+<span class="pc bpc" id="L133" title="1 of 4 branches missed.">        if (orcamento == null || !orcamentos.contains(orcamento)) throw new DomainException(&quot;O orcamento nao pertence a esta OS.&quot;);</span>
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">        if (status != StatusOrdemServico.EM_DIAGNOSTICO) throw new DomainException(&quot;A OS deve estar em diagnostico.&quot;);</span>
+<span class="fc" id="L135">        orcamento.disponibilizar();</span>
+<span class="fc" id="L136">        aguardarAprovacao(orcamento.getValorTotal());</span>
+<span class="fc" id="L137">    }</span>
+
+    public void aprovarOrcamento(Long orcamentoId, String observacao) {
+<span class="fc" id="L140">        Orcamento orcamento = orcamentos.stream()</span>
+<span class="pc bpc" id="L141" title="1 of 4 branches missed.">                .filter(item -&gt; item.getId() != null &amp;&amp; item.getId().equals(orcamentoId))</span>
+<span class="fc" id="L142">                .findFirst().orElseThrow(() -&gt; new DomainException(&quot;Orcamento nao encontrado nesta OS.&quot;));</span>
+<span class="fc" id="L143">        aprovarOrcamento(orcamento, observacao);</span>
+<span class="fc" id="L144">    }</span>
+
+    public void aprovarOrcamento(Orcamento orcamento, String observacao) {
+<span class="fc bfc" id="L147" title="All 2 branches covered.">        if (status != StatusOrdemServico.AGUARDANDO_APROVACAO) throw new DomainException(&quot;A OS deve estar aguardando aprovacao.&quot;);</span>
+<span class="pc bpc" id="L148" title="2 of 4 branches missed.">        if (orcamento == null || !orcamentos.contains(orcamento)) throw new DomainException(&quot;O orcamento nao pertence a esta OS.&quot;);</span>
+<span class="pc bpc" id="L149" title="2 of 4 branches missed.">        if (orcamentos.stream().anyMatch(item -&gt; item.getStatus() == StatusOrcamento.APROVADO)) {</span>
+<span class="nc" id="L150">            throw new DomainException(&quot;Ja existe um orcamento aprovado para esta OS.&quot;);</span>
+        }
+<span class="fc" id="L152">        orcamento.aprovar(observacao);</span>
+<span class="fc" id="L153">        aprovarOrcamento();</span>
+<span class="fc" id="L154">    }</span>
+
+    public void rejeitarOrcamento(Long orcamentoId, String observacao) {
+<span class="fc" id="L157">        Orcamento orcamento = orcamentos.stream()</span>
+<span class="pc bpc" id="L158" title="2 of 4 branches missed.">                .filter(item -&gt; item.getId() != null &amp;&amp; item.getId().equals(orcamentoId))</span>
+<span class="fc" id="L159">                .findFirst().orElseThrow(() -&gt; new DomainException(&quot;Orcamento nao encontrado nesta OS.&quot;));</span>
+<span class="fc" id="L160">        rejeitarOrcamento(orcamento, observacao);</span>
+<span class="fc" id="L161">    }</span>
+
+    public void rejeitarOrcamento(Orcamento orcamento, String observacao) {
+<span class="fc bfc" id="L164" title="All 2 branches covered.">        if (status != StatusOrdemServico.AGUARDANDO_APROVACAO) {</span>
+<span class="fc" id="L165">            throw new DomainException(&quot;A OS deve estar aguardando aprovacao para rejeitar o orcamento.&quot;);</span>
+        }
+<span class="pc bpc" id="L167" title="2 of 4 branches missed.">        if (orcamento == null || !orcamentos.contains(orcamento)) {</span>
+<span class="nc" id="L168">            throw new DomainException(&quot;O orcamento nao pertence a esta OS.&quot;);</span>
+        }
+<span class="fc" id="L170">        orcamento.rejeitar(observacao);</span>
+<span class="fc" id="L171">        transicionar(StatusOrdemServico.AGUARDANDO_APROVACAO, StatusOrdemServico.CANCELADA);</span>
+<span class="fc" id="L172">    }</span>
+
+    public void enviarParaDiagnostico() {
+<span class="fc" id="L175">        transicionar(StatusOrdemServico.RECEBIDA, StatusOrdemServico.EM_DIAGNOSTICO);</span>
+<span class="fc" id="L176">    }</span>
+
+    public void aguardarAprovacao(BigDecimal valor) {
+<span class="fc bfc" id="L179" title="All 2 branches covered.">        if (status != StatusOrdemServico.EM_DIAGNOSTICO) throw new DomainException(&quot;A OS deve estar em diagnostico.&quot;);</span>
+<span class="fc bfc" id="L180" title="All 4 branches covered.">        if (valor == null || valor.signum() &lt;= 0) throw new DomainException(&quot;O orcamento deve ser positivo.&quot;);</span>
+<span class="fc" id="L181">        BigDecimal valorDosItens = itensServico.stream().map(ItemServico::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add)</span>
+<span class="fc" id="L182">                .add(itensMaterial.stream().map(ItemMaterial::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add));</span>
+<span class="pc bpc" id="L183" title="1 of 6 branches missed.">        if ((!itensServico.isEmpty() || !itensMaterial.isEmpty()) &amp;&amp; valor.compareTo(valorDosItens) != 0) {</span>
+<span class="fc" id="L184">            throw new DomainException(&quot;O valor do orcamento deve corresponder aos itens da OS.&quot;);</span>
+        }
+<span class="fc" id="L186">        valorTotal = valor;</span>
+<span class="fc" id="L187">        transicionar(StatusOrdemServico.EM_DIAGNOSTICO, StatusOrdemServico.AGUARDANDO_APROVACAO);</span>
+<span class="fc" id="L188">    }</span>
+
+    public void aprovarOrcamento() {
+<span class="fc bfc" id="L191" title="All 2 branches covered.">        if (status != StatusOrdemServico.AGUARDANDO_APROVACAO) {</span>
+<span class="fc" id="L192">            throw new DomainException(&quot;A OS deve estar aguardando aprovacao.&quot;);</span>
+        }
+<span class="fc" id="L194">        orcamentoAprovado = true;</span>
+<span class="fc" id="L195">        iniciarExecucao();</span>
+<span class="fc" id="L196">    }</span>
+
+    public void iniciarExecucao() {
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">        if (!orcamentoAprovado) throw new DomainException(&quot;O orcamento precisa estar aprovado.&quot;);</span>
+<span class="fc" id="L200">        transicionar(StatusOrdemServico.AGUARDANDO_APROVACAO, StatusOrdemServico.EM_EXECUCAO);</span>
+<span class="fc" id="L201">        dataInicioExecucao = OffsetDateTime.now();</span>
+<span class="fc" id="L202">    }</span>
+
+    public void finalizar() {
+<span class="fc bfc" id="L205" title="All 2 branches covered.">        if (!orcamentoAprovado) throw new DomainException(&quot;O orcamento precisa estar aprovado.&quot;);</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">        if (itensServico.isEmpty()) throw new DomainException(&quot;A OS deve ter pelo menos um item de servico para finalizar.&quot;);</span>
+<span class="fc" id="L207">        transicionar(StatusOrdemServico.EM_EXECUCAO, StatusOrdemServico.FINALIZADA);</span>
+<span class="fc" id="L208">        dataFinalizacao = OffsetDateTime.now();</span>
+<span class="fc" id="L209">    }</span>
+
+    public void entregar() {
+<span class="fc" id="L212">        transicionar(StatusOrdemServico.FINALIZADA, StatusOrdemServico.ENTREGUE);</span>
+<span class="fc" id="L213">        dataEntrega = OffsetDateTime.now();</span>
+<span class="fc" id="L214">    }</span>
+
+    private void transicionar(StatusOrdemServico esperado, StatusOrdemServico novo) {
+<span class="fc bfc" id="L217" title="All 2 branches covered.">        if (status != esperado) throw new DomainException(&quot;Transicao de status invalida: &quot; + status + &quot; -&gt; &quot; + novo);</span>
+<span class="fc" id="L218">        StatusOrdemServico anterior = status;</span>
+<span class="fc" id="L219">        status = novo;</span>
+<span class="fc" id="L220">        historicoStatus.add(new HistoricoStatus(id, anterior, novo, null));</span>
+<span class="fc" id="L221">    }</span>
+
+    private void verificarEdicao() {
+<span class="fc bfc" id="L224" title="All 4 branches covered.">        if (status == StatusOrdemServico.ENTREGUE || status == StatusOrdemServico.CANCELADA) {</span>
+<span class="fc" id="L225">            throw new DomainException(&quot;A OS nao pode ser alterada depois de entregue ou cancelada.&quot;);</span>
+        }
+<span class="fc bfc" id="L227" title="All 2 branches covered.">        if (orcamentoAprovado) throw new DomainException(&quot;Os itens nao podem ser alterados depois da aprovacao do orcamento.&quot;);</span>
+<span class="fc" id="L228">    }</span>
+
+    private void validarVinculo(Long itemOrdemServicoId) {
+<span class="pc bpc" id="L231" title="1 of 4 branches missed.">        if (itemOrdemServicoId != null &amp;&amp; !itemOrdemServicoId.equals(id)) {</span>
+<span class="fc" id="L232">            throw new DomainException(&quot;O item pertence a outra ordem de servico.&quot;);</span>
+        }
+<span class="fc" id="L234">    }</span>
+
+    private void recalcularValorTotal() {
+<span class="fc" id="L237">        valorTotal = itensServico.stream().map(ItemServico::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add)</span>
+<span class="fc" id="L238">                .add(itensMaterial.stream().map(ItemMaterial::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add));</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">        for (Orcamento orcamento : orcamentos) {</span>
+<span class="pc bpc" id="L240" title="1 of 2 branches missed.">            if (orcamento.getStatus() == StatusOrcamento.PENDENTE</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">                    || orcamento.getStatus() == StatusOrcamento.DISPONIBILIZADO) {</span>
+<span class="fc" id="L242">                orcamento.atualizarValores(itensServico, itensMaterial);</span>
+            }
+<span class="fc" id="L244">        }</span>
+<span class="fc" id="L245">    }</span>
+
+    public void definirObservacoes(String observacoes) {
+<span class="fc" id="L248">        verificarEdicao();</span>
+<span class="pc bpc" id="L249" title="1 of 4 branches missed.">        this.observacoes = observacoes == null || observacoes.isBlank() ? null : observacoes.trim();</span>
+<span class="fc" id="L250">    }</span>
+
+    public void setId(Long id) {
+<span class="fc" id="L253">        this.id = id;</span>
+<span class="fc" id="L254">    }</span>
+
+    public void carregarItensPersistidos(List&lt;ItemServico&gt; itens) {
+<span class="fc" id="L257">        itensServico.clear();</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">        itensServico.addAll(itens == null ? List.of() : itens);</span>
+<span class="fc" id="L259">    }</span>
+
+    public void carregarMateriaisPersistidos(List&lt;ItemMaterial&gt; itens) {
+<span class="fc" id="L262">        itensMaterial.clear();</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">        itensMaterial.addAll(itens == null ? List.of() : itens);</span>
+<span class="fc" id="L264">    }</span>
+
+    public void carregarOrcamentosPersistidos(List&lt;Orcamento&gt; itens) {
+<span class="fc" id="L267">        orcamentos.clear();</span>
+<span class="fc bfc" id="L268" title="All 2 branches covered.">        orcamentos.addAll(itens == null ? List.of() : itens);</span>
+<span class="fc" id="L269">    }</span>
+
+    public void carregarHistoricoPersistido(List&lt;HistoricoStatus&gt; itens) {
+<span class="fc" id="L272">        historicoStatus.clear();</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">        historicoStatus.addAll(itens == null ? List.of() : itens);</span>
+<span class="fc" id="L274">    }</span>
+
+    public Long getId() {
+<span class="fc" id="L277">        return id;</span>
+    }
+
+<span class="fc" id="L280">    public String getNumero() { return numero; }</span>
+    public Long getClienteId() {
+<span class="fc" id="L282">        return clienteId;</span>
+    }
+
+    public Long getVeiculoId() {
+<span class="fc" id="L286">        return veiculoId;</span>
+    }
+
+    public StatusOrdemServico getStatus() {
+<span class="fc" id="L290">        return status;</span>
+    }
+
+    public boolean isOrcamentoAprovado() {
+<span class="fc" id="L294">        return orcamentoAprovado;</span>
+    }
+
+    public BigDecimal getValorTotal() {
+<span class="fc" id="L298">        return valorTotal;</span>
+    }
+
+    public OffsetDateTime getCriadaEm() {
+<span class="fc" id="L302">        return criadaEm;</span>
+    }
+
+<span class="fc" id="L305">    public String getDescricaoProblema() { return descricaoProblema; }</span>
+<span class="fc" id="L306">    public String getDiagnostico() { return diagnostico; }</span>
+<span class="fc" id="L307">    public OffsetDateTime getDataInicioExecucao() { return dataInicioExecucao; }</span>
+<span class="fc" id="L308">    public OffsetDateTime getDataFinalizacao() { return dataFinalizacao; }</span>
+<span class="fc" id="L309">    public OffsetDateTime getDataEntrega() { return dataEntrega; }</span>
+<span class="fc" id="L310">    public String getObservacoes() { return observacoes; }</span>
+<span class="fc" id="L311">    public List&lt;ItemServico&gt; getItensServico() { return Collections.unmodifiableList(itensServico); }</span>
+<span class="fc" id="L312">    public List&lt;ItemMaterial&gt; getItensMaterial() { return Collections.unmodifiableList(itensMaterial); }</span>
+<span class="fc" id="L313">    public List&lt;Orcamento&gt; getOrcamentos() { return Collections.unmodifiableList(orcamentos); }</span>
+<span class="fc" id="L314">    public List&lt;HistoricoStatus&gt; getHistoricoStatus() { return Collections.unmodifiableList(historicoStatus); }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

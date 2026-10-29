@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrdemServicoController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tech-challenge-fiap</a> &gt; <a href="index.source.html" class="el_package">br.com.fiap.techchallengefiap.presentation.rest.ordemservico</a> &gt; <span class="el_source">OrdemServicoController.java</span></div><h1>OrdemServicoController.java</h1><pre class="source lang-java linenums">package br.com.fiap.techchallengefiap.presentation.rest.ordemservico;
+
+import br.com.fiap.techchallengefiap.application.ordemservico.*;
+import br.com.fiap.techchallengefiap.domain.ordemservico.model.OrdemServico;
+import jakarta.validation.Valid;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+
+@RestController
+@RequestMapping(&quot;/api/v1/ordens-servico&quot;)
+public class OrdemServicoController {
+    private final CriarOrdemServicoUseCase criar;
+    private final BuscarOrdemServicoUseCase buscar;
+    private final OrdemServicoFluxoUseCase fluxo;
+    private final IdentificarOrdemServicoUseCase identificar;
+
+    public OrdemServicoController(CriarOrdemServicoUseCase criar, BuscarOrdemServicoUseCase buscar,
+<span class="fc" id="L20">                                 OrdemServicoFluxoUseCase fluxo, IdentificarOrdemServicoUseCase identificar) {</span>
+<span class="fc" id="L21">        this.criar = criar;</span>
+<span class="fc" id="L22">        this.buscar = buscar;</span>
+<span class="fc" id="L23">        this.fluxo = fluxo;</span>
+<span class="fc" id="L24">        this.identificar = identificar;</span>
+<span class="fc" id="L25">    }</span>
+
+    @PostMapping
+    public ResponseEntity&lt;OrdemServicoResponse&gt; criar(@Valid @RequestBody CriarOrdemServicoRequest request) {
+<span class="fc" id="L29">        var os = criar.executar(new CriarOrdemServicoCommand(request.documentoCliente(), request.placa()));</span>
+<span class="fc" id="L30">        return ResponseEntity.created(URI.create(&quot;/api/v1/ordens-servico/&quot; + os.getId())).body(resposta(os));</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    public OrdemServicoResponse buscar(@PathVariable Long id) {
+<span class="fc" id="L35">        return resposta(buscar.executar(id));</span>
+    }
+
+    @PostMapping(&quot;/{id}/diagnostico/inicio&quot;)
+    public OrdemServicoResponse enviarParaDiagnostico(@PathVariable Long id) {
+<span class="fc" id="L40">        return resposta(fluxo.enviarParaDiagnostico(id));</span>
+    }
+
+    @PostMapping(&quot;/{id}/diagnostico&quot;)
+    public OrdemServicoResponse registrarDiagnostico(@PathVariable Long id, @Valid @RequestBody DiagnosticoRequest request) {
+<span class="nc" id="L45">        return resposta(fluxo.registrarDiagnostico(id, request.diagnostico()));</span>
+    }
+
+    @PostMapping(&quot;/{id}/diagnostico/conclusao&quot;)
+    public OrdemServicoResponse concluirDiagnostico(@PathVariable Long id) {
+<span class="nc" id="L50">        return resposta(fluxo.concluirDiagnostico(id));</span>
+    }
+
+    @PostMapping(&quot;/{id}/itens-servico&quot;)
+    public OrdemServicoResponse adicionarItemServico(@PathVariable Long id, @Valid @RequestBody ItemServicoRequest request) {
+<span class="nc" id="L55">        return resposta(fluxo.adicionarItemServico(id, request.servicoId(), request.quantidade()));</span>
+    }
+
+    @DeleteMapping(&quot;/{id}/itens-servico/{itemId}&quot;)
+    public OrdemServicoResponse removerItemServico(@PathVariable Long id, @PathVariable Long itemId) {
+<span class="nc" id="L60">        return resposta(fluxo.removerItemServico(id, itemId));</span>
+    }
+
+    @PostMapping(&quot;/{id}/itens-material&quot;)
+    public OrdemServicoResponse adicionarItemMaterial(@PathVariable Long id, @Valid @RequestBody ItemMaterialRequest request) {
+<span class="nc" id="L65">        return resposta(fluxo.adicionarItemMaterial(id, request.materialId(), request.quantidade()));</span>
+    }
+
+    @DeleteMapping(&quot;/{id}/itens-material/{itemId}&quot;)
+    public OrdemServicoResponse removerItemMaterial(@PathVariable Long id, @PathVariable Long itemId) {
+<span class="nc" id="L70">        return resposta(fluxo.removerItemMaterial(id, itemId));</span>
+    }
+
+    @GetMapping
+    public java.util.List&lt;OrdemServicoResponse&gt; listar() {
+<span class="nc" id="L75">        return fluxo.listar().stream().map(this::resposta).toList();</span>
+    }
+
+    @PostMapping(&quot;/{id}/orcamentos&quot;)
+    public OrcamentoResponse gerarOrcamento(@PathVariable Long id) {
+<span class="nc" id="L80">        return OrcamentoResponse.from(fluxo.gerarOrcamento(id));</span>
+    }
+
+    @PostMapping(&quot;/{id}/orcamentos/{orcamentoId}/disponibilizar&quot;)
+    public OrdemServicoResponse disponibilizarOrcamento(@PathVariable Long id, @PathVariable Long orcamentoId) {
+<span class="nc" id="L85">        return resposta(fluxo.disponibilizarOrcamento(id, orcamentoId));</span>
+    }
+
+    @PostMapping(&quot;/{id}/orcamentos/{orcamentoId}/aprovar&quot;)
+    public OrdemServicoResponse aprovarOrcamento(@PathVariable Long id, @PathVariable Long orcamentoId,
+                                                @RequestBody(required = false) AprovacaoOrcamentoRequest request) {
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        var texto = request == null ? null : request.observacao();</span>
+<span class="nc" id="L92">        return resposta(fluxo.aprovarOrcamento(id, orcamentoId, texto));</span>
+    }
+
+    @PostMapping(&quot;/{id}/orcamentos/{orcamentoId}/rejeitar&quot;)
+    public OrdemServicoResponse rejeitarOrcamento(@PathVariable Long id, @PathVariable Long orcamentoId,
+                                                @RequestBody(required = false) AprovacaoOrcamentoRequest request) {
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        var texto = request == null ? null : request.observacao();</span>
+<span class="nc" id="L99">        return resposta(fluxo.rejeitarOrcamento(id, orcamentoId, texto));</span>
+    }
+
+    @PostMapping(&quot;/{id}/finalizacao&quot;)
+    public OrdemServicoResponse finalizar(@PathVariable Long id) {
+<span class="nc" id="L104">        return resposta(fluxo.finalizar(id));</span>
+    }
+
+    @PostMapping(&quot;/{id}/entrega&quot;)
+    public OrdemServicoResponse entregar(@PathVariable Long id) {
+<span class="nc" id="L109">        return resposta(fluxo.entregar(id));</span>
+    }
+
+    private OrdemServicoResponse resposta(OrdemServico os) {
+<span class="fc" id="L113">        return OrdemServicoResponse.from(os, identificar.executar(os));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

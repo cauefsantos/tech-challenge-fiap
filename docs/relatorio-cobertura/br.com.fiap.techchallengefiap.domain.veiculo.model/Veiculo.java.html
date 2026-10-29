@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Veiculo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tech-challenge-fiap</a> &gt; <a href="index.source.html" class="el_package">br.com.fiap.techchallengefiap.domain.veiculo.model</a> &gt; <span class="el_source">Veiculo.java</span></div><h1>Veiculo.java</h1><pre class="source lang-java linenums">package br.com.fiap.techchallengefiap.domain.veiculo.model;
+
+import br.com.fiap.techchallengefiap.domain.shared.DomainException;
+
+import java.time.OffsetDateTime;
+import java.util.Objects;
+
+public class Veiculo {
+    private Long id;
+    private final Long clienteId;
+    private final String placa;
+    private final String marca;
+    private final String modelo;
+    private final Integer ano;
+    private final OffsetDateTime dataCadastro;
+    private boolean ativo;
+
+    public Veiculo(Long clienteId, String placa, String marca, String modelo, Integer ano) {
+<span class="fc" id="L19">        this(null, clienteId, placa, marca, modelo, ano, OffsetDateTime.now(), true);</span>
+<span class="fc" id="L20">    }</span>
+
+    public Veiculo(Long id, Long clienteId, String placa, String marca, String modelo, Integer ano,
+<span class="fc" id="L23">                   OffsetDateTime dataCadastro, boolean ativo) {</span>
+<span class="fc bfc" id="L24" title="All 4 branches covered.">        if (clienteId == null || clienteId &lt;= 0) throw new DomainException(&quot;O cliente do veiculo e obrigatorio.&quot;);</span>
+<span class="fc" id="L25">        String placaNormalizada = normalizarPlaca(placa);</span>
+<span class="fc bfc" id="L26" title="All 2 branches covered.">        if (!placaNormalizada.matches(&quot;[A-Z]{3}[0-9][A-Z0-9][0-9]{2}&quot;)) {</span>
+<span class="fc" id="L27">            throw new DomainException(&quot;A placa do veiculo nao e valida.&quot;);</span>
+        }
+<span class="fc" id="L29">        this.clienteId = clienteId;</span>
+<span class="fc" id="L30">        this.placa = placaNormalizada;</span>
+<span class="fc" id="L31">        this.marca = obrigatorio(marca, &quot;A marca e obrigatoria.&quot;);</span>
+<span class="fc" id="L32">        this.modelo = obrigatorio(modelo, &quot;O modelo e obrigatorio.&quot;);</span>
+<span class="pc bpc" id="L33" title="1 of 6 branches missed.">        if (ano == null || ano &lt; 1886 || ano &gt; OffsetDateTime.now().getYear() + 1) {</span>
+<span class="fc" id="L34">            throw new DomainException(&quot;O ano do veiculo nao e valido.&quot;);</span>
+        }
+<span class="fc" id="L36">        this.ano = ano;</span>
+<span class="fc" id="L37">        this.id = id;</span>
+<span class="fc" id="L38">        this.dataCadastro = Objects.requireNonNull(dataCadastro, &quot;A data de cadastro e obrigatoria.&quot;);</span>
+<span class="fc" id="L39">        this.ativo = ativo;</span>
+<span class="fc" id="L40">    }</span>
+
+<span class="fc" id="L42">    public void desativar() { ativo = false; }</span>
+<span class="fc" id="L43">    public void ativar() { ativo = true; }</span>
+
+    public static String normalizarPlaca(String placa) {
+<span class="fc bfc" id="L46" title="All 2 branches covered.">        if (placa == null) throw new DomainException(&quot;A placa e obrigatoria.&quot;);</span>
+<span class="fc" id="L47">        return placa.replace(&quot;-&quot;, &quot;&quot;).replace(&quot; &quot;, &quot;&quot;).toUpperCase();</span>
+    }
+
+    private static String obrigatorio(String texto, String mensagem) {
+<span class="fc bfc" id="L51" title="All 4 branches covered.">        if (texto == null || texto.isBlank()) throw new DomainException(mensagem);</span>
+<span class="fc" id="L52">        return texto.trim();</span>
+    }
+
+<span class="fc" id="L55">    public Long getId() { return id; }</span>
+<span class="fc" id="L56">    public Long getClienteId() { return clienteId; }</span>
+<span class="fc" id="L57">    public String getPlaca() { return placa; }</span>
+<span class="fc" id="L58">    public String getMarca() { return marca; }</span>
+<span class="fc" id="L59">    public String getModelo() { return modelo; }</span>
+<span class="fc" id="L60">    public Integer getAno() { return ano; }</span>
+<span class="fc" id="L61">    public OffsetDateTime getDataCadastro() { return dataCadastro; }</span>
+<span class="fc" id="L62">    public boolean isAtivo() { return ativo; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

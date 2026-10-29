@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GerenciarMaterialUseCase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tech-challenge-fiap</a> &gt; <a href="index.source.html" class="el_package">br.com.fiap.techchallengefiap.application.material</a> &gt; <span class="el_source">GerenciarMaterialUseCase.java</span></div><h1>GerenciarMaterialUseCase.java</h1><pre class="source lang-java linenums">package br.com.fiap.techchallengefiap.application.material;
+
+import br.com.fiap.techchallengefiap.domain.material.model.Material;
+import br.com.fiap.techchallengefiap.domain.material.model.TipoMaterial;
+import br.com.fiap.techchallengefiap.domain.material.repository.MaterialRepository;
+import br.com.fiap.techchallengefiap.domain.shared.ConflictException;
+import br.com.fiap.techchallengefiap.domain.shared.ResourceNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@Service
+public class GerenciarMaterialUseCase {
+    private final MaterialRepository repository;
+
+<span class="fc" id="L18">    public GerenciarMaterialUseCase(MaterialRepository repository) {</span>
+<span class="fc" id="L19">        this.repository = repository;</span>
+<span class="fc" id="L20">    }</span>
+
+    @Transactional
+    public Material criar(String codigo, TipoMaterial tipo, String nome, String descricao, BigDecimal valorUnitario,
+                         String unidadeMedida, BigDecimal quantidadeEstoque, BigDecimal estoqueMinimo) {
+<span class="fc" id="L25">        Material material = new Material(codigo, tipo, nome, descricao, valorUnitario, unidadeMedida,</span>
+                quantidadeEstoque, estoqueMinimo);
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        if (repository.existeCodigo(material.getCodigo())) throw new ConflictException(&quot;Ja existe um material com este codigo.&quot;);</span>
+<span class="fc" id="L28">        return repository.salvar(material);</span>
+    }
+
+    @Transactional(readOnly = true)
+    public Material buscar(Long id) {
+<span class="fc" id="L33">        return repository.buscarPorId(id).orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Material nao encontrado.&quot;));</span>
+    }
+
+    @Transactional(readOnly = true)
+    public List&lt;Material&gt; listar() {
+<span class="fc" id="L38">        return repository.listar();</span>
+    }
+
+    @Transactional
+    public Material atualizar(Long id, String codigo, TipoMaterial tipo, String nome, String descricao,
+                              BigDecimal valorUnitario, String unidadeMedida, BigDecimal quantidadeEstoque,
+                              BigDecimal estoqueMinimo) {
+<span class="fc" id="L45">        Material existente = buscar(id);</span>
+<span class="fc" id="L46">        Material atualizado = new Material(id, codigo, tipo, nome, descricao, valorUnitario, unidadeMedida,</span>
+<span class="fc" id="L47">                quantidadeEstoque, estoqueMinimo, existente.getDataCadastro(), existente.isAtivo());</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        if (repository.existeCodigoParaOutroMaterial(atualizado.getCodigo(), id)) {</span>
+<span class="fc" id="L49">            throw new ConflictException(&quot;Ja existe um material com este codigo.&quot;);</span>
+        }
+<span class="fc" id="L51">        return repository.salvar(atualizado);</span>
+    }
+
+    @Transactional
+    public Material alterarAtivo(Long id, boolean ativo) {
+<span class="fc" id="L56">        Material material = buscar(id);</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        if (ativo) material.ativar(); else material.desativar();</span>
+<span class="fc" id="L58">        return repository.salvar(material);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

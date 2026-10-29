@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrdemServicoRepositoryAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tech-challenge-fiap</a> &gt; <a href="index.source.html" class="el_package">br.com.fiap.techchallengefiap.infrastructure.ordemservico</a> &gt; <span class="el_source">OrdemServicoRepositoryAdapter.java</span></div><h1>OrdemServicoRepositoryAdapter.java</h1><pre class="source lang-java linenums">package br.com.fiap.techchallengefiap.infrastructure.ordemservico;
+
+import br.com.fiap.techchallengefiap.domain.material.model.TipoMaterial;
+import br.com.fiap.techchallengefiap.domain.orcamento.model.Orcamento;
+import br.com.fiap.techchallengefiap.domain.orcamento.model.StatusOrcamento;
+import br.com.fiap.techchallengefiap.domain.ordemservico.model.HistoricoStatus;
+import br.com.fiap.techchallengefiap.domain.ordemservico.model.ItemMaterial;
+import br.com.fiap.techchallengefiap.domain.ordemservico.model.ItemServico;
+import br.com.fiap.techchallengefiap.domain.ordemservico.model.OrdemServico;
+import br.com.fiap.techchallengefiap.domain.ordemservico.model.StatusOrdemServico;
+import br.com.fiap.techchallengefiap.domain.ordemservico.repository.OrdemServicoRepository;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
+import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public class OrdemServicoRepositoryAdapter implements OrdemServicoRepository {
+    private final OrdemServicoJpaRepository jpa;
+    private final JdbcTemplate jdbcTemplate;
+
+<span class="fc" id="L28">    public OrdemServicoRepositoryAdapter(OrdemServicoJpaRepository jpa, JdbcTemplate jdbcTemplate) {</span>
+<span class="fc" id="L29">        this.jpa = jpa;</span>
+<span class="fc" id="L30">        this.jdbcTemplate = jdbcTemplate;</span>
+<span class="fc" id="L31">    }</span>
+
+    public OrdemServico salvar(OrdemServico os) {
+<span class="fc" id="L34">        var entity = jpa.save(toEntity(os));</span>
+<span class="fc" id="L35">        os.setId(entity.id);</span>
+<span class="fc" id="L36">        limparRelacoes(entity.id);</span>
+<span class="fc" id="L37">        salvarItensServico(entity.id, os.getItensServico());</span>
+<span class="fc" id="L38">        salvarItensMaterial(entity.id, os.getItensMaterial());</span>
+<span class="fc" id="L39">        salvarOrcamentos(entity.id, os.getOrcamentos());</span>
+<span class="fc" id="L40">        salvarHistorico(entity.id, os.getHistoricoStatus());</span>
+<span class="pc" id="L41">        return buscarPorId(entity.id).orElseThrow(() -&gt; new IllegalStateException(&quot;Ordem de servico nao persistida corretamente.&quot;));</span>
+    }
+
+    public Optional&lt;OrdemServico&gt; buscarPorId(Long id) {
+<span class="fc" id="L45">        return jpa.findById(id).map(this::toDomain);</span>
+    }
+
+    public Optional&lt;OrdemServico&gt; buscarPorNumero(String numero) {
+<span class="pc bpc" id="L49" title="2 of 4 branches missed.">        if (numero == null || numero.isBlank()) return Optional.empty();</span>
+<span class="fc" id="L50">        return jpa.findAll().stream()</span>
+<span class="pc bpc" id="L51" title="2 of 4 branches missed.">                .filter(item -&gt; item.numero != null &amp;&amp; item.numero.equalsIgnoreCase(numero.trim()))</span>
+<span class="fc" id="L52">                .findFirst()</span>
+<span class="fc" id="L53">                .map(this::toDomain);</span>
+    }
+
+    public List&lt;OrdemServico&gt; listar() {
+<span class="nc" id="L57">        return jpa.findAll().stream().map(this::toDomain).toList();</span>
+    }
+
+    private void limparRelacoes(Long ordemServicoId) {
+<span class="fc" id="L61">        jdbcTemplate.update(&quot;DELETE FROM item_servico WHERE ordem_servico_id = ?&quot;, ordemServicoId);</span>
+<span class="fc" id="L62">        jdbcTemplate.update(&quot;DELETE FROM item_material WHERE ordem_servico_id = ?&quot;, ordemServicoId);</span>
+<span class="fc" id="L63">        jdbcTemplate.update(&quot;DELETE FROM orcamento WHERE ordem_servico_id = ?&quot;, ordemServicoId);</span>
+<span class="fc" id="L64">        jdbcTemplate.update(&quot;DELETE FROM historico_status WHERE ordem_servico_id = ?&quot;, ordemServicoId);</span>
+<span class="fc" id="L65">    }</span>
+
+    private void salvarItensServico(Long ordemServicoId, List&lt;ItemServico&gt; itens) {
+<span class="pc bpc" id="L68" title="1 of 4 branches missed.">        if (itens == null || itens.isEmpty()) return;</span>
+<span class="fc" id="L69">        String sql = &quot;INSERT INTO item_servico (ordem_servico_id, servico_id, descricao, quantidade, valor_unitario, subtotal, tempo_estimado_segundos) VALUES (?, ?, ?, ?, ?, ?, ?)&quot;;</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        for (ItemServico item : itens) {</span>
+<span class="fc" id="L71">            jdbcTemplate.update(sql,</span>
+                    ordemServicoId,
+<span class="fc" id="L73">                    item.getServicoId(),</span>
+<span class="fc" id="L74">                    item.getDescricao(),</span>
+<span class="fc" id="L75">                    item.getQuantidade(),</span>
+<span class="fc" id="L76">                    item.getValorUnitario(),</span>
+<span class="fc" id="L77">                    item.getSubtotal(),</span>
+<span class="fc" id="L78">                    item.getTempoEstimadoSegundos());</span>
+<span class="fc" id="L79">        }</span>
+<span class="fc" id="L80">    }</span>
+
+    private void salvarItensMaterial(Long ordemServicoId, List&lt;ItemMaterial&gt; itens) {
+<span class="pc bpc" id="L83" title="1 of 4 branches missed.">        if (itens == null || itens.isEmpty()) return;</span>
+<span class="fc" id="L84">        String sql = &quot;INSERT INTO item_material (ordem_servico_id, material_id, tipo, descricao, quantidade, valor_unitario, subtotal) VALUES (?, ?, ?, ?, ?, ?, ?)&quot;;</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        for (ItemMaterial item : itens) {</span>
+<span class="fc" id="L86">            jdbcTemplate.update(sql,</span>
+                    ordemServicoId,
+<span class="fc" id="L88">                    item.getMaterialId(),</span>
+<span class="fc" id="L89">                    item.getTipo().name(),</span>
+<span class="fc" id="L90">                    item.getDescricao(),</span>
+<span class="fc" id="L91">                    item.getQuantidade(),</span>
+<span class="fc" id="L92">                    item.getValorUnitario(),</span>
+<span class="fc" id="L93">                    item.getSubtotal());</span>
+<span class="fc" id="L94">        }</span>
+<span class="fc" id="L95">    }</span>
+
+    private void salvarOrcamentos(Long ordemServicoId, List&lt;Orcamento&gt; orcamentos) {
+<span class="pc bpc" id="L98" title="1 of 4 branches missed.">        if (orcamentos == null || orcamentos.isEmpty()) return;</span>
+<span class="fc" id="L99">        String sql = &quot;INSERT INTO orcamento (ordem_servico_id, versao, valor_servicos, valor_pecas, valor_insumos, valor_total, status, data_geracao, data_resposta, observacao_resposta) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)&quot;;</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        for (Orcamento orcamento : orcamentos) {</span>
+<span class="fc" id="L101">            jdbcTemplate.update(sql,</span>
+                    ordemServicoId,
+<span class="fc" id="L103">                    orcamento.getVersao(),</span>
+<span class="fc" id="L104">                    orcamento.getValorServicos(),</span>
+<span class="fc" id="L105">                    orcamento.getValorPecas(),</span>
+<span class="fc" id="L106">                    orcamento.getValorInsumos(),</span>
+<span class="fc" id="L107">                    orcamento.getValorTotal(),</span>
+<span class="fc" id="L108">                    orcamento.getStatus().name(),</span>
+<span class="fc" id="L109">                    orcamento.getDataGeracao(),</span>
+<span class="fc" id="L110">                    orcamento.getDataResposta(),</span>
+<span class="fc" id="L111">                    orcamento.getObservacaoResposta());</span>
+<span class="fc" id="L112">        }</span>
+<span class="fc" id="L113">    }</span>
+
+    private void salvarHistorico(Long ordemServicoId, List&lt;HistoricoStatus&gt; historicos) {
+<span class="pc bpc" id="L116" title="1 of 4 branches missed.">        if (historicos == null || historicos.isEmpty()) return;</span>
+<span class="fc" id="L117">        String sql = &quot;INSERT INTO historico_status (ordem_servico_id, status_anterior, status_novo, data_alteracao, observacao) VALUES (?, ?, ?, ?, ?)&quot;;</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        for (HistoricoStatus item : historicos) {</span>
+<span class="fc" id="L119">            jdbcTemplate.update(sql,</span>
+                    ordemServicoId,
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">                    item.getStatusAnterior() == null ? null : item.getStatusAnterior().name(),</span>
+<span class="fc" id="L122">                    item.getStatusNovo().name(),</span>
+<span class="fc" id="L123">                    item.getDataAlteracao(),</span>
+<span class="fc" id="L124">                    item.getObservacao());</span>
+<span class="fc" id="L125">        }</span>
+<span class="fc" id="L126">    }</span>
+
+    private OrdemServicoJpaEntity toEntity(OrdemServico os) {
+<span class="fc" id="L129">        var e = new OrdemServicoJpaEntity();</span>
+<span class="fc" id="L130">        e.id = os.getId();</span>
+<span class="fc" id="L131">        e.clienteId = os.getClienteId();</span>
+<span class="fc" id="L132">        e.veiculoId = os.getVeiculoId();</span>
+<span class="fc" id="L133">        e.numero = os.getNumero();</span>
+<span class="fc" id="L134">        e.status = os.getStatus();</span>
+<span class="fc" id="L135">        e.orcamentoAprovado = os.isOrcamentoAprovado();</span>
+<span class="fc" id="L136">        e.valorTotal = os.getValorTotal();</span>
+<span class="fc" id="L137">        e.criadaEm = os.getCriadaEm();</span>
+<span class="fc" id="L138">        e.descricaoProblema = os.getDescricaoProblema();</span>
+<span class="fc" id="L139">        e.diagnostico = os.getDiagnostico();</span>
+<span class="fc" id="L140">        e.dataInicioExecucao = os.getDataInicioExecucao();</span>
+<span class="fc" id="L141">        e.dataFinalizacao = os.getDataFinalizacao();</span>
+<span class="fc" id="L142">        e.dataEntrega = os.getDataEntrega();</span>
+<span class="fc" id="L143">        e.observacoes = os.getObservacoes();</span>
+<span class="fc" id="L144">        return e;</span>
+    }
+
+    private OrdemServico toDomain(OrdemServicoJpaEntity e) {
+<span class="fc" id="L148">        var os = new OrdemServico(e.id, e.numero, e.clienteId, e.veiculoId, e.status, e.orcamentoAprovado,</span>
+                e.valorTotal, e.criadaEm, e.descricaoProblema, e.diagnostico, e.dataInicioExecucao,
+                e.dataFinalizacao, e.dataEntrega, e.observacoes);
+<span class="fc" id="L151">        os.carregarItensPersistidos(buscarItensServico(e.id));</span>
+<span class="fc" id="L152">        os.carregarMateriaisPersistidos(buscarItensMaterial(e.id));</span>
+<span class="fc" id="L153">        os.carregarOrcamentosPersistidos(buscarOrcamentos(e.id));</span>
+<span class="fc" id="L154">        os.carregarHistoricoPersistido(buscarHistorico(e.id));</span>
+<span class="fc" id="L155">        return os;</span>
+    }
+
+    private List&lt;ItemServico&gt; buscarItensServico(Long ordemServicoId) {
+<span class="fc" id="L159">        return jdbcTemplate.query(</span>
+                &quot;SELECT id, ordem_servico_id, servico_id, descricao, quantidade, valor_unitario, subtotal, tempo_estimado_segundos FROM item_servico WHERE ordem_servico_id = ? ORDER BY id&quot;,
+<span class="fc" id="L161">                itemServicoRowMapper(),</span>
+                ordemServicoId);
+    }
+
+    private List&lt;ItemMaterial&gt; buscarItensMaterial(Long ordemServicoId) {
+<span class="fc" id="L166">        return jdbcTemplate.query(</span>
+                &quot;SELECT id, ordem_servico_id, material_id, tipo, descricao, quantidade, valor_unitario, subtotal FROM item_material WHERE ordem_servico_id = ? ORDER BY id&quot;,
+<span class="fc" id="L168">                itemMaterialRowMapper(),</span>
+                ordemServicoId);
+    }
+
+    private List&lt;Orcamento&gt; buscarOrcamentos(Long ordemServicoId) {
+<span class="fc" id="L173">        return jdbcTemplate.query(</span>
+                &quot;SELECT id, ordem_servico_id, versao, valor_servicos, valor_pecas, valor_insumos, valor_total, status, data_geracao, data_resposta, observacao_resposta FROM orcamento WHERE ordem_servico_id = ? ORDER BY versao&quot;,
+<span class="fc" id="L175">                orcamentoRowMapper(),</span>
+                ordemServicoId);
+    }
+
+    private List&lt;HistoricoStatus&gt; buscarHistorico(Long ordemServicoId) {
+<span class="fc" id="L180">        return jdbcTemplate.query(</span>
+                &quot;SELECT id, ordem_servico_id, status_anterior, status_novo, data_alteracao, observacao FROM historico_status WHERE ordem_servico_id = ? ORDER BY data_alteracao, id&quot;,
+<span class="fc" id="L182">                historicoStatusRowMapper(),</span>
+                ordemServicoId);
+    }
+
+    private RowMapper&lt;ItemServico&gt; itemServicoRowMapper() {
+<span class="fc" id="L187">        return (rs, rowNum) -&gt; new ItemServico(</span>
+<span class="fc" id="L188">                rs.getLong(&quot;id&quot;),</span>
+<span class="fc" id="L189">                rs.getLong(&quot;ordem_servico_id&quot;),</span>
+<span class="fc" id="L190">                rs.getLong(&quot;servico_id&quot;),</span>
+<span class="fc" id="L191">                rs.getString(&quot;descricao&quot;),</span>
+<span class="fc" id="L192">                rs.getBigDecimal(&quot;quantidade&quot;),</span>
+<span class="fc" id="L193">                rs.getBigDecimal(&quot;valor_unitario&quot;),</span>
+<span class="fc" id="L194">                rs.getBigDecimal(&quot;subtotal&quot;),</span>
+<span class="fc" id="L195">                rs.getLong(&quot;tempo_estimado_segundos&quot;));</span>
+    }
+
+    private RowMapper&lt;ItemMaterial&gt; itemMaterialRowMapper() {
+<span class="fc" id="L199">        return (rs, rowNum) -&gt; new ItemMaterial(</span>
+<span class="fc" id="L200">                rs.getLong(&quot;id&quot;),</span>
+<span class="fc" id="L201">                rs.getLong(&quot;ordem_servico_id&quot;),</span>
+<span class="fc" id="L202">                rs.getLong(&quot;material_id&quot;),</span>
+<span class="fc" id="L203">                TipoMaterial.valueOf(rs.getString(&quot;tipo&quot;)),</span>
+<span class="fc" id="L204">                rs.getString(&quot;descricao&quot;),</span>
+<span class="fc" id="L205">                rs.getBigDecimal(&quot;quantidade&quot;),</span>
+<span class="fc" id="L206">                rs.getBigDecimal(&quot;valor_unitario&quot;),</span>
+<span class="fc" id="L207">                rs.getBigDecimal(&quot;subtotal&quot;));</span>
+    }
+
+    private RowMapper&lt;Orcamento&gt; orcamentoRowMapper() {
+<span class="fc" id="L211">        return (rs, rowNum) -&gt; new Orcamento(</span>
+<span class="fc" id="L212">                rs.getLong(&quot;id&quot;),</span>
+<span class="fc" id="L213">                rs.getLong(&quot;ordem_servico_id&quot;),</span>
+<span class="fc" id="L214">                rs.getInt(&quot;versao&quot;),</span>
+<span class="fc" id="L215">                rs.getBigDecimal(&quot;valor_servicos&quot;),</span>
+<span class="fc" id="L216">                rs.getBigDecimal(&quot;valor_pecas&quot;),</span>
+<span class="fc" id="L217">                rs.getBigDecimal(&quot;valor_insumos&quot;),</span>
+<span class="fc" id="L218">                rs.getBigDecimal(&quot;valor_total&quot;),</span>
+<span class="fc" id="L219">                StatusOrcamento.valueOf(rs.getString(&quot;status&quot;)),</span>
+<span class="fc" id="L220">                rs.getObject(&quot;data_geracao&quot;, OffsetDateTime.class),</span>
+<span class="fc" id="L221">                rs.getObject(&quot;data_resposta&quot;, OffsetDateTime.class),</span>
+<span class="fc" id="L222">                rs.getString(&quot;observacao_resposta&quot;));</span>
+    }
+
+    private RowMapper&lt;HistoricoStatus&gt; historicoStatusRowMapper() {
+<span class="fc" id="L226">        return (rs, rowNum) -&gt; new HistoricoStatus(</span>
+<span class="fc" id="L227">                rs.getLong(&quot;id&quot;),</span>
+<span class="fc" id="L228">                rs.getLong(&quot;ordem_servico_id&quot;),</span>
+<span class="fc" id="L229">                converterStatusAnterior(rs.getString(&quot;status_anterior&quot;)),</span>
+<span class="fc" id="L230">                StatusOrdemServico.valueOf(rs.getString(&quot;status_novo&quot;)),</span>
+<span class="fc" id="L231">                rs.getObject(&quot;data_alteracao&quot;, OffsetDateTime.class),</span>
+<span class="fc" id="L232">                rs.getString(&quot;observacao&quot;));</span>
+    }
+
+    private StatusOrdemServico converterStatusAnterior(String valor) {
+<span class="pc bpc" id="L236" title="2 of 4 branches missed.">        if (valor == null || valor.isBlank()) return null;</span>
+<span class="fc" id="L237">        return StatusOrdemServico.valueOf(valor);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Material.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tech-challenge-fiap</a> &gt; <a href="index.source.html" class="el_package">br.com.fiap.techchallengefiap.domain.material.model</a> &gt; <span class="el_source">Material.java</span></div><h1>Material.java</h1><pre class="source lang-java linenums">package br.com.fiap.techchallengefiap.domain.material.model;
+
+import br.com.fiap.techchallengefiap.domain.shared.DomainException;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.OffsetDateTime;
+import java.util.Objects;
+
+public class Material {
+    private Long id;
+    private final String codigo;
+    private final TipoMaterial tipo;
+    private final String nome;
+    private final String descricao;
+    private final BigDecimal valorUnitario;
+    private final String unidadeMedida;
+    private BigDecimal quantidadeEstoque;
+    private final BigDecimal estoqueMinimo;
+    private final OffsetDateTime dataCadastro;
+    private boolean ativo;
+
+    public Material(String codigo, TipoMaterial tipo, String nome, String descricao, BigDecimal valorUnitario,
+                    String unidadeMedida, BigDecimal quantidadeEstoque, BigDecimal estoqueMinimo) {
+<span class="fc" id="L25">        this(null, codigo, tipo, nome, descricao, valorUnitario, unidadeMedida, quantidadeEstoque,</span>
+<span class="fc" id="L26">                estoqueMinimo, OffsetDateTime.now(), true);</span>
+<span class="fc" id="L27">    }</span>
+
+    public Material(Long id, String codigo, TipoMaterial tipo, String nome, String descricao,
+                    BigDecimal valorUnitario, String unidadeMedida, BigDecimal quantidadeEstoque,
+<span class="fc" id="L31">                    BigDecimal estoqueMinimo, OffsetDateTime dataCadastro, boolean ativo) {</span>
+<span class="fc" id="L32">        this.codigo = obrigatorio(codigo, &quot;O codigo do material e obrigatorio.&quot;);</span>
+<span class="fc" id="L33">        this.tipo = Objects.requireNonNull(tipo, &quot;O tipo do material e obrigatorio.&quot;);</span>
+<span class="fc" id="L34">        this.nome = obrigatorio(nome, &quot;O nome do material e obrigatorio.&quot;);</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        this.descricao = descricao == null ? null : descricao.trim();</span>
+<span class="fc" id="L36">        this.valorUnitario = naoNegativo(valorUnitario, &quot;O valor unitario nao pode ser negativo.&quot;)</span>
+<span class="fc" id="L37">                .setScale(2, RoundingMode.HALF_UP);</span>
+<span class="fc" id="L38">        this.unidadeMedida = obrigatorio(unidadeMedida, &quot;A unidade de medida e obrigatoria.&quot;);</span>
+<span class="fc" id="L39">        this.quantidadeEstoque = naoNegativo(quantidadeEstoque, &quot;A quantidade em estoque nao pode ser negativa.&quot;);</span>
+<span class="fc" id="L40">        this.estoqueMinimo = naoNegativo(estoqueMinimo, &quot;O estoque minimo nao pode ser negativo.&quot;);</span>
+<span class="fc" id="L41">        this.id = id;</span>
+<span class="fc" id="L42">        this.dataCadastro = Objects.requireNonNull(dataCadastro, &quot;A data de cadastro e obrigatoria.&quot;);</span>
+<span class="fc" id="L43">        this.ativo = ativo;</span>
+<span class="fc" id="L44">    }</span>
+
+    public void validarDisponibilidade(BigDecimal quantidade) {
+<span class="fc" id="L47">        BigDecimal solicitada = positiva(quantidade, &quot;A quantidade deve ser maior que zero.&quot;);</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        if (!ativo) throw new DomainException(&quot;Materiais inativos nao podem ser usados em novas ordens de servico.&quot;);</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        if (quantidadeEstoque.compareTo(solicitada) &lt; 0) throw new DomainException(&quot;Estoque insuficiente para o material.&quot;);</span>
+<span class="fc" id="L50">    }</span>
+
+    public void consumir(BigDecimal quantidade) {
+<span class="fc" id="L53">        validarDisponibilidade(quantidade);</span>
+<span class="fc" id="L54">        quantidadeEstoque = quantidadeEstoque.subtract(quantidade);</span>
+<span class="fc" id="L55">    }</span>
+
+<span class="fc" id="L57">    public void desativar() { ativo = false; }</span>
+<span class="fc" id="L58">    public void ativar() { ativo = true; }</span>
+
+    private static BigDecimal positiva(BigDecimal valor, String mensagem) {
+<span class="pc bpc" id="L61" title="1 of 4 branches missed.">        if (valor == null || valor.signum() &lt;= 0) throw new DomainException(mensagem);</span>
+<span class="fc" id="L62">        return valor;</span>
+    }
+
+    private static BigDecimal naoNegativo(BigDecimal valor, String mensagem) {
+<span class="pc bpc" id="L66" title="1 of 4 branches missed.">        if (valor == null || valor.signum() &lt; 0) throw new DomainException(mensagem);</span>
+<span class="fc" id="L67">        return valor;</span>
+    }
+
+    private static String obrigatorio(String texto, String mensagem) {
+<span class="pc bpc" id="L71" title="1 of 4 branches missed.">        if (texto == null || texto.isBlank()) throw new DomainException(mensagem);</span>
+<span class="fc" id="L72">        return texto.trim();</span>
+    }
+
+<span class="fc" id="L75">    public Long getId() { return id; }</span>
+<span class="fc" id="L76">    public String getCodigo() { return codigo; }</span>
+<span class="fc" id="L77">    public TipoMaterial getTipo() { return tipo; }</span>
+<span class="fc" id="L78">    public String getNome() { return nome; }</span>
+<span class="fc" id="L79">    public String getDescricao() { return descricao; }</span>
+<span class="fc" id="L80">    public BigDecimal getValorUnitario() { return valorUnitario; }</span>
+<span class="fc" id="L81">    public String getUnidadeMedida() { return unidadeMedida; }</span>
+<span class="fc" id="L82">    public BigDecimal getQuantidadeEstoque() { return quantidadeEstoque; }</span>
+<span class="fc" id="L83">    public BigDecimal getEstoqueMinimo() { return estoqueMinimo; }</span>
+<span class="fc" id="L84">    public OffsetDateTime getDataCadastro() { return dataCadastro; }</span>
+<span class="fc" id="L85">    public boolean isAtivo() { return ativo; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SecurityConfiguration.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tech-challenge-fiap</a> &gt; <a href="index.source.html" class="el_package">br.com.fiap.techchallengefiap.infrastructure.security</a> &gt; <span class="el_source">SecurityConfiguration.java</span></div><h1>SecurityConfiguration.java</h1><pre class="source lang-java linenums">package br.com.fiap.techchallengefiap.infrastructure.security;
+
+import com.nimbusds.jose.jwk.source.ImmutableSecret;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.util.Base64;
+import java.util.List;
+
+import br.com.fiap.techchallengefiap.domain.usuario.repository.UsuarioRepository;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.*;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.*;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.*;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+@EnableConfigurationProperties({SecurityProperties.class, AdminProperties.class})
+<span class="fc" id="L34">public class SecurityConfiguration {</span>
+    @Bean
+    PasswordEncoder passwordEncoder() {
+<span class="fc" id="L37">        return new BCryptPasswordEncoder();</span>
+    }
+
+    @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration c) throws Exception {
+<span class="fc" id="L42">        return c.getAuthenticationManager();</span>
+    }
+
+    @Bean
+    SecretKey jwtKey(SecurityProperties p) {
+<span class="fc" id="L47">        byte[] secret = Base64.getDecoder().decode(p.jwtSecret());</span>
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">        if (secret.length &lt; 32) {</span>
+<span class="nc" id="L49">            throw new IllegalStateException(&quot;JWT_SECRET deve codificar pelo menos 32 bytes.&quot;);</span>
+        }
+<span class="fc" id="L51">        return new SecretKeySpec(secret, &quot;HmacSHA256&quot;);</span>
+    }
+
+    @Bean
+    JwtDecoder jwtDecoder(SecretKey key, UsuarioRepository usuarios) {
+<span class="fc" id="L56">        var decoder = NimbusJwtDecoder.withSecretKey(key).macAlgorithm(MacAlgorithm.HS256).build();</span>
+<span class="fc" id="L57">        OAuth2TokenValidator&lt;Jwt&gt; accountValidator = jwt -&gt; {</span>
+<span class="fc" id="L58">            String role = jwt.getClaimAsString(&quot;role&quot;);</span>
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">            boolean valid = role != null &amp;&amp; usuarios.buscarPorUsername(jwt.getSubject())</span>
+<span class="pc bpc" id="L60" title="1 of 4 branches missed.">                    .filter(user -&gt; user.isEnabled() &amp;&amp; user.getPapel().name().equals(role))</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">                    .isPresent();</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">            return valid</span>
+<span class="fc" id="L63">                    ? OAuth2TokenValidatorResult.success()</span>
+<span class="fc" id="L64">                    : OAuth2TokenValidatorResult.failure(new OAuth2Error(OAuth2ErrorCodes.INVALID_TOKEN,</span>
+                    &quot;Conta ausente, desativada ou com papel alterado.&quot;, null));
+        };
+<span class="fc" id="L67">        decoder.setJwtValidator(new DelegatingOAuth2TokenValidator&lt;&gt;(</span>
+<span class="fc" id="L68">                JwtValidators.createDefault(), accountValidator));</span>
+<span class="fc" id="L69">        return decoder;</span>
+    }
+
+    @Bean
+    JwtEncoder jwtEncoder(SecretKey key) {
+<span class="fc" id="L74">        return new NimbusJwtEncoder(new ImmutableSecret&lt;&gt;(key));</span>
+    }
+
+    @Bean
+    JwtAuthenticationConverter jwtAuthenticationConverter() {
+<span class="fc" id="L79">        var converter = new JwtAuthenticationConverter();</span>
+<span class="fc" id="L80">        converter.setJwtGrantedAuthoritiesConverter(jwt -&gt; {</span>
+<span class="fc" id="L81">            String role = jwt.getClaimAsString(&quot;role&quot;);</span>
+<span class="pc bpc" id="L82" title="2 of 4 branches missed.">            if (role == null || role.isBlank()) return List.of();</span>
+<span class="fc" id="L83">            return List.of(new SimpleGrantedAuthority(&quot;ROLE_&quot; + role));</span>
+        });
+<span class="fc" id="L85">        return converter;</span>
+    }
+
+    @Bean
+    SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
+<span class="fc" id="L90">        return http.csrf(csrf -&gt; csrf.disable())</span>
+<span class="fc" id="L91">                .sessionManagement(s -&gt; s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))</span>
+<span class="fc" id="L92">                .authorizeHttpRequests(auth -&gt; auth</span>
+<span class="fc" id="L93">                        .requestMatchers(</span>
+                                &quot;/swagger-ui.html&quot;,
+                                &quot;/swagger-ui/**&quot;,
+                                &quot;/v3/api-docs&quot;,
+                                &quot;/v3/api-docs/**&quot;,
+                                &quot;/v3/api-docs.yaml&quot;
+<span class="fc" id="L99">                        ).permitAll()</span>
+<span class="fc" id="L100">                        .requestMatchers(&quot;/actuator/health&quot;).permitAll()</span>
+<span class="fc" id="L101">                        .requestMatchers(&quot;/actuator/**&quot;).hasRole(&quot;ADMIN&quot;)</span>
+<span class="fc" id="L102">                        .requestMatchers(HttpMethod.POST, &quot;/api/v1/auth/login&quot;).permitAll()</span>
+<span class="fc" id="L103">                        .requestMatchers(HttpMethod.GET, &quot;/api/v1/public/**&quot;).permitAll()</span>
+<span class="fc" id="L104">                        .requestMatchers(&quot;/api/v1/usuarios&quot;, &quot;/api/v1/usuarios/**&quot;).hasRole(&quot;ADMIN&quot;)</span>
+<span class="fc" id="L105">                        .requestMatchers(HttpMethod.GET,</span>
+                                &quot;/api/v1/clientes&quot;, &quot;/api/v1/clientes/**&quot;,
+                                &quot;/api/v1/veiculos&quot;, &quot;/api/v1/veiculos/**&quot;,
+                                &quot;/api/v1/servicos&quot;, &quot;/api/v1/servicos/**&quot;,
+                                &quot;/api/v1/materiais&quot;, &quot;/api/v1/materiais/**&quot;,
+                                &quot;/api/v1/ordens-servico&quot;, &quot;/api/v1/ordens-servico/**&quot;)
+<span class="fc" id="L111">                        .hasAnyRole(&quot;ADMIN&quot;, &quot;FUNCIONARIO&quot;)</span>
+<span class="fc" id="L112">                        .requestMatchers(&quot;/api/v1/clientes&quot;, &quot;/api/v1/clientes/**&quot;,</span>
+                                &quot;/api/v1/veiculos&quot;, &quot;/api/v1/veiculos/**&quot;,
+                                &quot;/api/v1/servicos&quot;, &quot;/api/v1/servicos/**&quot;,
+                                &quot;/api/v1/materiais&quot;, &quot;/api/v1/materiais/**&quot;)
+<span class="fc" id="L116">                        .hasRole(&quot;ADMIN&quot;)</span>
+<span class="fc" id="L117">                        .requestMatchers(HttpMethod.POST, &quot;/api/v1/ordens-servico&quot;)</span>
+<span class="fc" id="L118">                        .hasAnyRole(&quot;ADMIN&quot;, &quot;FUNCIONARIO&quot;)</span>
+<span class="fc" id="L119">                        .requestMatchers(HttpMethod.GET, &quot;/api/v1/ordens-servico/metricas/**&quot;)</span>
+<span class="fc" id="L120">                        .hasAnyRole(&quot;ADMIN&quot;, &quot;FUNCIONARIO&quot;)</span>
+<span class="fc" id="L121">                        .requestMatchers(HttpMethod.GET, &quot;/api/v1/ordens-servico/**&quot;)</span>
+<span class="fc" id="L122">                        .hasAnyRole(&quot;ADMIN&quot;, &quot;FUNCIONARIO&quot;)</span>
+<span class="fc" id="L123">                        .requestMatchers(HttpMethod.POST,</span>
+                                &quot;/api/v1/ordens-servico/*/diagnostico/**&quot;,
+                                &quot;/api/v1/ordens-servico/*/itens-servico&quot;,
+                                &quot;/api/v1/ordens-servico/*/itens-material&quot;,
+                                &quot;/api/v1/ordens-servico/*/orcamentos&quot;,
+                                &quot;/api/v1/ordens-servico/*/orcamentos/*/disponibilizar&quot;,
+                                &quot;/api/v1/ordens-servico/*/finalizacao&quot;,
+                                &quot;/api/v1/ordens-servico/*/entrega&quot;)
+<span class="fc" id="L131">                        .hasAnyRole(&quot;ADMIN&quot;, &quot;FUNCIONARIO&quot;)</span>
+<span class="fc" id="L132">                        .requestMatchers(HttpMethod.DELETE,</span>
+                                &quot;/api/v1/ordens-servico/*/itens-servico/*&quot;,
+                                &quot;/api/v1/ordens-servico/*/itens-material/*&quot;)
+<span class="fc" id="L135">                        .hasAnyRole(&quot;ADMIN&quot;, &quot;FUNCIONARIO&quot;)</span>
+<span class="fc" id="L136">                        .requestMatchers(&quot;/api/v1/ordens-servico/*/orcamentos/*/aprovar&quot;,</span>
+                                &quot;/api/v1/ordens-servico/*/orcamentos/*/rejeitar&quot;)
+<span class="fc" id="L138">                        .hasRole(&quot;ADMIN&quot;)</span>
+<span class="fc" id="L139">                        .anyRequest().denyAll()</span>
+                        )
+<span class="fc" id="L141">                .oauth2ResourceServer(oauth -&gt; oauth.jwt(jwt -&gt; jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)))</span>
+<span class="fc" id="L142">                .build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

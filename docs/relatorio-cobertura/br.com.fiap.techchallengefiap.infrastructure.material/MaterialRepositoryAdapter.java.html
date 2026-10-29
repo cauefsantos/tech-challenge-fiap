@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaterialRepositoryAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tech-challenge-fiap</a> &gt; <a href="index.source.html" class="el_package">br.com.fiap.techchallengefiap.infrastructure.material</a> &gt; <span class="el_source">MaterialRepositoryAdapter.java</span></div><h1>MaterialRepositoryAdapter.java</h1><pre class="source lang-java linenums">package br.com.fiap.techchallengefiap.infrastructure.material;
+
+import br.com.fiap.techchallengefiap.domain.material.model.Material;
+import br.com.fiap.techchallengefiap.domain.material.repository.MaterialRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public class MaterialRepositoryAdapter implements MaterialRepository {
+    private final MaterialJpaRepository jpa;
+
+<span class="fc" id="L14">    public MaterialRepositoryAdapter(MaterialJpaRepository jpa) {</span>
+<span class="fc" id="L15">        this.jpa = jpa;</span>
+<span class="fc" id="L16">    }</span>
+
+    @Override
+    public Material salvar(Material material) {
+<span class="fc" id="L20">        return toDomain(jpa.save(toEntity(material)));</span>
+    }
+
+    @Override
+    public Optional&lt;Material&gt; buscarPorId(Long id) {
+<span class="nc" id="L25">        return jpa.findById(id).map(this::toDomain);</span>
+    }
+
+    @Override
+    public List&lt;Material&gt; listar() {
+<span class="nc" id="L30">        return jpa.findAll().stream().map(this::toDomain).toList();</span>
+    }
+
+    @Override
+    public boolean existeCodigo(String codigo) {
+<span class="nc" id="L35">        return jpa.existsByCodigo(codigo);</span>
+    }
+
+    @Override
+    public boolean existeCodigoParaOutroMaterial(String codigo, Long id) {
+<span class="nc" id="L40">        return jpa.existsByCodigoAndIdNot(codigo, id);</span>
+    }
+
+    private MaterialJpaEntity toEntity(Material material) {
+<span class="fc" id="L44">        var entity = new MaterialJpaEntity();</span>
+<span class="fc" id="L45">        entity.id = material.getId();</span>
+<span class="fc" id="L46">        entity.codigo = material.getCodigo();</span>
+<span class="fc" id="L47">        entity.tipo = material.getTipo();</span>
+<span class="fc" id="L48">        entity.nome = material.getNome();</span>
+<span class="fc" id="L49">        entity.descricao = material.getDescricao();</span>
+<span class="fc" id="L50">        entity.valorUnitario = material.getValorUnitario();</span>
+<span class="fc" id="L51">        entity.unidadeMedida = material.getUnidadeMedida();</span>
+<span class="fc" id="L52">        entity.quantidadeEstoque = material.getQuantidadeEstoque();</span>
+<span class="fc" id="L53">        entity.estoqueMinimo = material.getEstoqueMinimo();</span>
+<span class="fc" id="L54">        entity.dataCadastro = material.getDataCadastro();</span>
+<span class="fc" id="L55">        entity.ativo = material.isAtivo();</span>
+<span class="fc" id="L56">        return entity;</span>
+    }
+
+    private Material toDomain(MaterialJpaEntity entity) {
+<span class="fc" id="L60">        return new Material(entity.id, entity.codigo, entity.tipo, entity.nome, entity.descricao,</span>
+                entity.valorUnitario, entity.unidadeMedida, entity.quantidadeEstoque, entity.estoqueMinimo,
+                entity.dataCadastro, entity.ativo);
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

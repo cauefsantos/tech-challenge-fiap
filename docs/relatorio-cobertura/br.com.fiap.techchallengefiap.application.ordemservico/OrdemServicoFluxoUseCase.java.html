@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrdemServicoFluxoUseCase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tech-challenge-fiap</a> &gt; <a href="index.source.html" class="el_package">br.com.fiap.techchallengefiap.application.ordemservico</a> &gt; <span class="el_source">OrdemServicoFluxoUseCase.java</span></div><h1>OrdemServicoFluxoUseCase.java</h1><pre class="source lang-java linenums">package br.com.fiap.techchallengefiap.application.ordemservico;
+
+import br.com.fiap.techchallengefiap.domain.material.model.Material;
+import br.com.fiap.techchallengefiap.domain.material.repository.MaterialRepository;
+import br.com.fiap.techchallengefiap.domain.orcamento.model.Orcamento;
+import br.com.fiap.techchallengefiap.domain.ordemservico.model.ItemMaterial;
+import br.com.fiap.techchallengefiap.domain.ordemservico.model.ItemServico;
+import br.com.fiap.techchallengefiap.domain.ordemservico.model.OrdemServico;
+import br.com.fiap.techchallengefiap.domain.ordemservico.repository.OrdemServicoRepository;
+import br.com.fiap.techchallengefiap.domain.servico.repository.ServicoRepository;
+import br.com.fiap.techchallengefiap.domain.shared.DomainException;
+import br.com.fiap.techchallengefiap.domain.shared.ResourceNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class OrdemServicoFluxoUseCase {
+    private final OrdemServicoRepository repository;
+    private final ServicoRepository servicoRepository;
+    private final MaterialRepository materialRepository;
+
+    public OrdemServicoFluxoUseCase(OrdemServicoRepository repository,
+                                   ServicoRepository servicoRepository,
+<span class="fc" id="L28">                                   MaterialRepository materialRepository) {</span>
+<span class="fc" id="L29">        this.repository = repository;</span>
+<span class="fc" id="L30">        this.servicoRepository = servicoRepository;</span>
+<span class="fc" id="L31">        this.materialRepository = materialRepository;</span>
+<span class="fc" id="L32">    }</span>
+
+    @Transactional
+    public OrdemServico enviarParaDiagnostico(Long id) {
+<span class="fc" id="L36">        var os = buscar(id);</span>
+<span class="fc" id="L37">        os.enviarParaDiagnostico();</span>
+<span class="fc" id="L38">        return repository.salvar(os);</span>
+    }
+
+    @Transactional
+    public OrdemServico registrarDiagnostico(Long id, String diagnostico) {
+<span class="fc" id="L43">        var os = buscar(id);</span>
+<span class="fc" id="L44">        os.registrarDiagnostico(diagnostico);</span>
+<span class="fc" id="L45">        return repository.salvar(os);</span>
+    }
+
+    @Transactional
+    public OrdemServico concluirDiagnostico(Long id) {
+<span class="fc" id="L50">        var os = buscar(id);</span>
+<span class="fc" id="L51">        os.concluirDiagnostico();</span>
+<span class="fc" id="L52">        return repository.salvar(os);</span>
+    }
+
+    @Transactional
+    public OrdemServico adicionarItemServico(Long ordemServicoId, Long servicoId, BigDecimal quantidade) {
+<span class="fc" id="L57">        var os = buscar(ordemServicoId);</span>
+<span class="fc" id="L58">        var servico = servicoRepository.buscarPorId(servicoId)</span>
+<span class="fc" id="L59">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Servico nao encontrado.&quot;));</span>
+<span class="fc" id="L60">        os.adicionarItemServico(new ItemServico(os.getId(), servico, quantidade));</span>
+<span class="fc" id="L61">        return repository.salvar(os);</span>
+    }
+
+    @Transactional
+    public OrdemServico removerItemServico(Long ordemServicoId, Long itemId) {
+<span class="fc" id="L66">        var os = buscar(ordemServicoId);</span>
+<span class="fc" id="L67">        os.removerItemServico(itemId);</span>
+<span class="fc" id="L68">        return repository.salvar(os);</span>
+    }
+
+    @Transactional
+    public OrdemServico adicionarItemMaterial(Long ordemServicoId, Long materialId, BigDecimal quantidade) {
+<span class="fc" id="L73">        var os = buscar(ordemServicoId);</span>
+<span class="fc" id="L74">        var material = materialRepository.buscarPorId(materialId)</span>
+<span class="fc" id="L75">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Material nao encontrado.&quot;));</span>
+<span class="fc" id="L76">        os.adicionarItemMaterial(new ItemMaterial(os.getId(), material, quantidade));</span>
+<span class="fc" id="L77">        return repository.salvar(os);</span>
+    }
+
+    @Transactional
+    public OrdemServico removerItemMaterial(Long ordemServicoId, Long itemId) {
+<span class="fc" id="L82">        var os = buscar(ordemServicoId);</span>
+<span class="fc" id="L83">        os.removerItemMaterial(itemId);</span>
+<span class="fc" id="L84">        return repository.salvar(os);</span>
+    }
+
+    @Transactional(readOnly = true)
+    public List&lt;OrdemServico&gt; listar() {
+<span class="fc" id="L89">        return repository.listar();</span>
+    }
+
+    @Transactional
+    public Orcamento gerarOrcamento(Long id) {
+<span class="fc" id="L94">        var os = buscar(id);</span>
+<span class="fc" id="L95">        var orcamento = os.gerarOrcamento();</span>
+<span class="fc" id="L96">        repository.salvar(os);</span>
+<span class="fc" id="L97">        return orcamento;</span>
+    }
+
+    @Transactional
+    public OrdemServico disponibilizarOrcamento(Long id, Long orcamentoId) {
+<span class="fc" id="L102">        var os = buscar(id);</span>
+<span class="fc" id="L103">        var orcamento = os.getOrcamentos().stream()</span>
+<span class="pc bpc" id="L104" title="2 of 4 branches missed.">                .filter(item -&gt; item.getId() != null &amp;&amp; item.getId().equals(orcamentoId))</span>
+<span class="fc" id="L105">                .findFirst()</span>
+<span class="fc" id="L106">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Orcamento nao encontrado nesta OS.&quot;));</span>
+<span class="fc" id="L107">        os.disponibilizarOrcamento(orcamento);</span>
+<span class="fc" id="L108">        return repository.salvar(os);</span>
+    }
+
+    @Transactional
+    public OrdemServico aprovarOrcamento(Long id, Long orcamentoId, String observacao) {
+<span class="fc" id="L113">        var os = buscar(id);</span>
+<span class="fc" id="L114">        var itensInsuficientes = new ArrayList&lt;String&gt;();</span>
+
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        for (var item : os.getItensMaterial()) {</span>
+<span class="fc" id="L117">            var material = materialRepository.buscarPorId(item.getMaterialId())</span>
+<span class="fc" id="L118">                    .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Material nao encontrado.&quot;));</span>
+            try {
+<span class="fc" id="L120">                material.validarDisponibilidade(item.getQuantidade());</span>
+<span class="fc" id="L121">            } catch (DomainException ex) {</span>
+<span class="fc" id="L122">                itensInsuficientes.add(material.getNome());</span>
+<span class="fc" id="L123">            }</span>
+<span class="fc" id="L124">        }</span>
+
+<span class="fc bfc" id="L126" title="All 2 branches covered.">        if (!itensInsuficientes.isEmpty()) {</span>
+<span class="fc" id="L127">            throw new DomainException(&quot;Estoque insuficiente para os materiais: &quot; + String.join(&quot;, &quot;, itensInsuficientes) + &quot;.&quot;);</span>
+        }
+
+<span class="fc" id="L130">        os.aprovarOrcamento(orcamentoId, observacao);</span>
+
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        for (var item : os.getItensMaterial()) {</span>
+<span class="fc" id="L133">            var material = materialRepository.buscarPorId(item.getMaterialId())</span>
+<span class="pc" id="L134">                    .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Material nao encontrado.&quot;));</span>
+<span class="fc" id="L135">            material.consumir(item.getQuantidade());</span>
+<span class="fc" id="L136">            materialRepository.salvar(material);</span>
+<span class="fc" id="L137">        }</span>
+
+<span class="fc" id="L139">        return repository.salvar(os);</span>
+    }
+
+    @Transactional
+    public OrdemServico rejeitarOrcamento(Long id, Long orcamentoId, String observacao) {
+<span class="fc" id="L144">        var os = buscar(id);</span>
+<span class="fc" id="L145">        os.rejeitarOrcamento(orcamentoId, observacao);</span>
+<span class="fc" id="L146">        return repository.salvar(os);</span>
+    }
+
+    @Transactional
+    public OrdemServico finalizar(Long id) {
+<span class="fc" id="L151">        var os = buscar(id);</span>
+<span class="fc" id="L152">        os.finalizar();</span>
+<span class="fc" id="L153">        return repository.salvar(os);</span>
+    }
+
+    @Transactional
+    public OrdemServico entregar(Long id) {
+<span class="fc" id="L158">        var os = buscar(id);</span>
+<span class="fc" id="L159">        os.entregar();</span>
+<span class="fc" id="L160">        return repository.salvar(os);</span>
+    }
+
+    private OrdemServico buscar(Long id) {
+<span class="fc" id="L164">        return repository.buscarPorId(id).orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Ordem de servico nao encontrada.&quot;));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

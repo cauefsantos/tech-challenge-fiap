@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GlobalExceptionHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tech-challenge-fiap</a> &gt; <a href="index.source.html" class="el_package">br.com.fiap.techchallengefiap.presentation.rest.exception</a> &gt; <span class="el_source">GlobalExceptionHandler.java</span></div><h1>GlobalExceptionHandler.java</h1><pre class="source lang-java linenums">package br.com.fiap.techchallengefiap.presentation.rest.exception;
+
+import br.com.fiap.techchallengefiap.domain.shared.DomainException;
+import br.com.fiap.techchallengefiap.domain.shared.ConflictException;
+import br.com.fiap.techchallengefiap.domain.shared.ResourceNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.*;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.OffsetDateTime;
+
+@RestControllerAdvice
+<span class="fc" id="L15">public class GlobalExceptionHandler {</span>
+    @ExceptionHandler({DomainException.class, IllegalArgumentException.class})
+    ResponseEntity&lt;ApiErrorResponse&gt; badRequest(RuntimeException ex, HttpServletRequest req) {
+<span class="fc" id="L18">        return build(HttpStatus.BAD_REQUEST, ex.getMessage(), req);</span>
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    ResponseEntity&lt;ApiErrorResponse&gt; notFound(ResourceNotFoundException ex, HttpServletRequest req) {
+<span class="fc" id="L23">        return build(HttpStatus.NOT_FOUND, ex.getMessage(), req);</span>
+    }
+
+    @ExceptionHandler({ConflictException.class, DataIntegrityViolationException.class})
+    ResponseEntity&lt;ApiErrorResponse&gt; conflict(RuntimeException ex, HttpServletRequest req) {
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        String message = ex instanceof ConflictException</span>
+<span class="fc" id="L29">                ? ex.getMessage()</span>
+<span class="fc" id="L30">                : &quot;A operacao viola uma restricao de integridade dos dados.&quot;;</span>
+<span class="fc" id="L31">        return build(HttpStatus.CONFLICT, message, req);</span>
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    ResponseEntity&lt;ApiErrorResponse&gt; validation(MethodArgumentNotValidException ex, HttpServletRequest req) {
+<span class="fc" id="L36">        return build(HttpStatus.BAD_REQUEST, &quot;Dados de entrada invalidos.&quot;, req);</span>
+    }
+
+    private ResponseEntity&lt;ApiErrorResponse&gt; build(HttpStatus status, String msg, HttpServletRequest req) {
+<span class="fc" id="L40">        return ResponseEntity.status(status).body(new ApiErrorResponse(status.value(), status.getReasonPhrase(), msg, req.getRequestURI(), OffsetDateTime.now()));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

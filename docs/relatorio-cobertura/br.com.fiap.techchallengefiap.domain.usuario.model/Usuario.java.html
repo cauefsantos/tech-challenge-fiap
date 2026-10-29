@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Usuario.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tech-challenge-fiap</a> &gt; <a href="index.source.html" class="el_package">br.com.fiap.techchallengefiap.domain.usuario.model</a> &gt; <span class="el_source">Usuario.java</span></div><h1>Usuario.java</h1><pre class="source lang-java linenums">package br.com.fiap.techchallengefiap.domain.usuario.model;
+
+import br.com.fiap.techchallengefiap.domain.shared.DomainException;
+
+import java.time.OffsetDateTime;
+import java.util.Locale;
+import java.util.Objects;
+
+public class Usuario {
+    private final Long id;
+    private final String username;
+    private final String passwordHash;
+    private Papel papel;
+    private boolean enabled;
+    private Long clienteId;
+    private final OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
+
+    public Usuario(Long id, String username, String passwordHash, Papel papel, boolean enabled,
+<span class="fc" id="L20">                   Long clienteId, OffsetDateTime createdAt, OffsetDateTime updatedAt) {</span>
+<span class="fc" id="L21">        this.id = id;</span>
+<span class="fc" id="L22">        this.username = normalizarUsername(username);</span>
+<span class="pc bpc" id="L23" title="2 of 4 branches missed.">        if (passwordHash == null || passwordHash.isBlank()) throw new DomainException(&quot;O hash da senha e obrigatorio.&quot;);</span>
+<span class="fc" id="L24">        this.passwordHash = passwordHash;</span>
+<span class="fc" id="L25">        this.papel = Objects.requireNonNull(papel, &quot;O papel e obrigatorio.&quot;);</span>
+<span class="fc" id="L26">        validarVinculo(papel, clienteId);</span>
+<span class="fc" id="L27">        this.enabled = enabled;</span>
+<span class="fc" id="L28">        this.clienteId = clienteId;</span>
+<span class="fc" id="L29">        this.createdAt = Objects.requireNonNull(createdAt, &quot;A data de criacao e obrigatoria.&quot;);</span>
+<span class="fc" id="L30">        this.updatedAt = Objects.requireNonNull(updatedAt, &quot;A data de atualizacao e obrigatoria.&quot;);</span>
+<span class="fc" id="L31">    }</span>
+
+    public static String normalizarUsername(String username) {
+<span class="pc bpc" id="L34" title="2 of 4 branches missed.">        if (username == null || username.isBlank()) throw new DomainException(&quot;O username e obrigatorio.&quot;);</span>
+<span class="fc" id="L35">        String normalized = username.trim().toLowerCase(Locale.ROOT);</span>
+<span class="pc bpc" id="L36" title="2 of 4 branches missed.">        if (normalized.length() &gt; 100 || !normalized.matches(&quot;[a-z0-9._@+-]+&quot;)) {</span>
+<span class="nc" id="L37">            throw new DomainException(&quot;O username deve ter ate 100 caracteres e conter apenas letras, numeros, '.', '_', '@', '+' ou '-'.&quot;);</span>
+        }
+<span class="fc" id="L39">        return normalized;</span>
+    }
+
+    public void atualizar(Papel papel, Long clienteId, boolean enabled) {
+<span class="fc" id="L43">        Objects.requireNonNull(papel, &quot;O papel e obrigatorio.&quot;);</span>
+<span class="fc" id="L44">        validarVinculo(papel, clienteId);</span>
+<span class="fc" id="L45">        this.papel = papel;</span>
+<span class="fc" id="L46">        this.clienteId = clienteId;</span>
+<span class="fc" id="L47">        this.enabled = enabled;</span>
+<span class="fc" id="L48">        this.updatedAt = OffsetDateTime.now();</span>
+<span class="fc" id="L49">    }</span>
+
+    public void desativar() {
+<span class="fc" id="L52">        this.enabled = false;</span>
+<span class="fc" id="L53">        this.updatedAt = OffsetDateTime.now();</span>
+<span class="fc" id="L54">    }</span>
+
+    private static void validarVinculo(Papel papel, Long clienteId) {
+<span class="fc bfc" id="L57" title="All 4 branches covered.">        if (papel == Papel.CLIENTE &amp;&amp; clienteId == null) {</span>
+<span class="fc" id="L58">            throw new DomainException(&quot;Usuarios CLIENTE devem estar vinculados a um cliente.&quot;);</span>
+        }
+<span class="fc bfc" id="L60" title="All 4 branches covered.">        if (papel != Papel.CLIENTE &amp;&amp; clienteId != null) {</span>
+<span class="fc" id="L61">            throw new DomainException(&quot;Somente usuarios CLIENTE podem estar vinculados a um cliente.&quot;);</span>
+        }
+<span class="fc" id="L63">    }</span>
+
+<span class="fc" id="L65">    public Long getId() { return id; }</span>
+<span class="fc" id="L66">    public String getUsername() { return username; }</span>
+<span class="fc" id="L67">    public String getPasswordHash() { return passwordHash; }</span>
+<span class="fc" id="L68">    public Papel getPapel() { return papel; }</span>
+<span class="fc" id="L69">    public boolean isEnabled() { return enabled; }</span>
+<span class="fc" id="L70">    public Long getClienteId() { return clienteId; }</span>
+<span class="fc" id="L71">    public OffsetDateTime getCreatedAt() { return createdAt; }</span>
+<span class="fc" id="L72">    public OffsetDateTime getUpdatedAt() { return updatedAt; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>
