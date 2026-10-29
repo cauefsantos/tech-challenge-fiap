@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AdminBootstrap.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tech-challenge-fiap</a> &gt; <a href="index.source.html" class="el_package">br.com.fiap.techchallengefiap.infrastructure.security</a> &gt; <span class="el_source">AdminBootstrap.java</span></div><h1>AdminBootstrap.java</h1><pre class="source lang-java linenums">package br.com.fiap.techchallengefiap.infrastructure.security;
+
+import br.com.fiap.techchallengefiap.domain.usuario.model.Papel;
+import br.com.fiap.techchallengefiap.domain.usuario.model.Usuario;
+import br.com.fiap.techchallengefiap.domain.usuario.repository.UsuarioRepository;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+
+import java.time.OffsetDateTime;
+import java.nio.charset.StandardCharsets;
+
+@Component
+public class AdminBootstrap implements ApplicationRunner {
+    private final AdminProperties properties;
+    private final UsuarioRepository usuarios;
+    private final PasswordEncoder passwordEncoder;
+
+<span class="fc" id="L21">    public AdminBootstrap(AdminProperties properties, UsuarioRepository usuarios, PasswordEncoder passwordEncoder) {</span>
+<span class="fc" id="L22">        this.properties = properties;</span>
+<span class="fc" id="L23">        this.usuarios = usuarios;</span>
+<span class="fc" id="L24">        this.passwordEncoder = passwordEncoder;</span>
+<span class="fc" id="L25">    }</span>
+
+    @Override
+    public void run(ApplicationArguments args) {
+<span class="pc bpc" id="L29" title="1 of 2 branches missed.">        if (properties.password().getBytes(StandardCharsets.UTF_8).length &gt; 72) {</span>
+<span class="nc" id="L30">            throw new IllegalStateException(&quot;ADMIN_PASSWORD deve ter no maximo 72 bytes UTF-8.&quot;);</span>
+        }
+<span class="fc" id="L32">        String username = Usuario.normalizarUsername(properties.username());</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        if (usuarios.buscarPorUsername(username).isPresent()) return;</span>
+<span class="fc" id="L34">        OffsetDateTime now = OffsetDateTime.now();</span>
+        try {
+<span class="fc" id="L36">            usuarios.salvar(new Usuario(null, username, passwordEncoder.encode(properties.password()), Papel.ADMIN,</span>
+                    true, null, now, now));
+<span class="nc" id="L38">        } catch (DataIntegrityViolationException conflict) {</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">            if (usuarios.buscarPorUsername(username).isEmpty()) throw conflict;</span>
+<span class="fc" id="L40">        }</span>
+<span class="fc" id="L41">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

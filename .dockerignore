@@ -1,0 +1,14 @@
+.env
+.env.*
+.git
+.idea
+.vscode
+.dev
+docs
+target
+*.log
+README.md
+compose.yml
+set-env.bat
+set-env.ps1
+set-env.sh

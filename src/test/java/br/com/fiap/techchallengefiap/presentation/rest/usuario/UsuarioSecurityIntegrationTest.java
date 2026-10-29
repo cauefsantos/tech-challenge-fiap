@@ -65,14 +65,14 @@ class UsuarioSecurityIntegrationTest {
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"username":"funcionario-vinculado","password":"employee-test-password-1234","papel":"FUNCIONARIO","clienteId":999999}
+                                {"username":"funcionario-vinculado","password":"employee-test-password-1234","papel":"FUNCIONARIO","documentoCliente":"39053344705"}
                                 """))
                 .andExpect(status().isBadRequest());
         mvc.perform(post("/api/v1/usuarios")
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"username":"cliente-inexistente","password":"customer-test-password-1234","papel":"CLIENTE","clienteId":999999}
+                                {"username":"cliente-inexistente","password":"customer-test-password-1234","papel":"CLIENTE","documentoCliente":"98765432100"}
                                 """))
                 .andExpect(status().isNotFound());
 
@@ -128,16 +128,17 @@ class UsuarioSecurityIntegrationTest {
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"username":"%s","password":"customer-test-password-1234","papel":"CLIENTE","clienteId":%d}
-                                """.formatted(clienteUsername, cliente.getId())))
+                                {"username":"%s","password":"customer-test-password-1234","papel":"CLIENTE","documentoCliente":"111.444.777-35"}
+                                """.formatted(clienteUsername)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.clienteId").value(cliente.getId()));
+                .andExpect(jsonPath("$.documentoCliente").value(cliente.getDocumento()))
+                .andExpect(jsonPath("$.clienteId").doesNotExist());
         mvc.perform(post("/api/v1/usuarios")
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"username":"cliente-duplicado","password":"customer-test-password-1234","papel":"CLIENTE","clienteId":%d}
-                                """.formatted(cliente.getId())))
+                                {"username":"cliente-duplicado","password":"customer-test-password-1234","papel":"CLIENTE","documentoCliente":"%s"}
+                                """.formatted(cliente.getDocumento())))
                 .andExpect(status().isConflict());
         String clienteToken = login(clienteUsername, "customer-test-password-1234");
         mvc.perform(get("/api/v1/clientes")

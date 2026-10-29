@@ -1,6 +1,7 @@
 package br.com.fiap.techchallengefiap.presentation.rest.veiculo;
 
 import br.com.fiap.techchallengefiap.application.veiculo.GerenciarVeiculoUseCase;
+import br.com.fiap.techchallengefiap.domain.veiculo.model.Veiculo;
 import br.com.fiap.techchallengefiap.presentation.rest.shared.AtivoRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -20,34 +21,38 @@ public class VeiculoController {
 
     @PostMapping
     public ResponseEntity<VeiculoResponse> criar(@Valid @RequestBody VeiculoRequest request) {
-        var veiculo = useCase.criar(request.clienteId(), request.placa(), request.marca(), request.modelo(), request.ano());
-        return ResponseEntity.created(URI.create("/api/v1/veiculos/" + veiculo.getId())).body(VeiculoResponse.from(veiculo));
+        var veiculo = useCase.criar(request.documentoCliente(), request.placa(), request.marca(), request.modelo(), request.ano());
+        return ResponseEntity.created(URI.create("/api/v1/veiculos/" + veiculo.getPlaca())).body(resposta(veiculo));
     }
 
-    @GetMapping("/{id}")
-    public VeiculoResponse buscar(@PathVariable Long id) {
-        return VeiculoResponse.from(useCase.buscar(id));
+    @GetMapping("/{placa}")
+    public VeiculoResponse buscar(@PathVariable String placa) {
+        return resposta(useCase.buscar(placa));
     }
 
     @GetMapping
     public List<VeiculoResponse> listar() {
-        return useCase.listar().stream().map(VeiculoResponse::from).toList();
+        return useCase.listar().stream().map(this::resposta).toList();
     }
 
-    @PutMapping("/{id}")
-    public VeiculoResponse atualizar(@PathVariable Long id, @Valid @RequestBody VeiculoRequest request) {
-        return VeiculoResponse.from(useCase.atualizar(id, request.clienteId(), request.placa(), request.marca(),
+    @PutMapping("/{placa}")
+    public VeiculoResponse atualizar(@PathVariable String placa, @Valid @RequestBody VeiculoRequest request) {
+        return resposta(useCase.atualizar(placa, request.documentoCliente(), request.placa(), request.marca(),
                 request.modelo(), request.ano()));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> desativar(@PathVariable Long id) {
-        useCase.alterarAtivo(id, false);
+    @DeleteMapping("/{placa}")
+    public ResponseEntity<Void> desativar(@PathVariable String placa) {
+        useCase.alterarAtivo(placa, false);
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{id}/ativacao")
-    public VeiculoResponse alterarAtivo(@PathVariable Long id, @Valid @RequestBody AtivoRequest request) {
-        return VeiculoResponse.from(useCase.alterarAtivo(id, request.ativo()));
+    @PatchMapping("/{placa}/ativacao")
+    public VeiculoResponse alterarAtivo(@PathVariable String placa, @Valid @RequestBody AtivoRequest request) {
+        return resposta(useCase.alterarAtivo(placa, request.ativo()));
+    }
+
+    private VeiculoResponse resposta(Veiculo veiculo) {
+        return VeiculoResponse.from(veiculo, useCase.documentoDoCliente(veiculo));
     }
 }

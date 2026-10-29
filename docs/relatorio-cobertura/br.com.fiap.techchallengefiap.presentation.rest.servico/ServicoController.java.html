@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ServicoController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tech-challenge-fiap</a> &gt; <a href="index.source.html" class="el_package">br.com.fiap.techchallengefiap.presentation.rest.servico</a> &gt; <span class="el_source">ServicoController.java</span></div><h1>ServicoController.java</h1><pre class="source lang-java linenums">package br.com.fiap.techchallengefiap.presentation.rest.servico;
+
+import br.com.fiap.techchallengefiap.application.servico.GerenciarServicoUseCase;
+import br.com.fiap.techchallengefiap.presentation.rest.shared.AtivoRequest;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/api/v1/servicos&quot;)
+public class ServicoController {
+    private final GerenciarServicoUseCase useCase;
+
+<span class="fc" id="L17">    public ServicoController(GerenciarServicoUseCase useCase) {</span>
+<span class="fc" id="L18">        this.useCase = useCase;</span>
+<span class="fc" id="L19">    }</span>
+
+    @PostMapping
+    public ResponseEntity&lt;ServicoResponse&gt; criar(@Valid @RequestBody ServicoRequest request) {
+<span class="nc" id="L23">        var servico = useCase.criar(request.codigo(), request.nome(), request.descricao(), request.valorBase(),</span>
+<span class="nc" id="L24">                request.tempoEstimadoSegundos());</span>
+<span class="nc" id="L25">        return ResponseEntity.created(URI.create(&quot;/api/v1/servicos/&quot; + servico.getId())).body(ServicoResponse.from(servico));</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    public ServicoResponse buscar(@PathVariable Long id) {
+<span class="nc" id="L30">        return ServicoResponse.from(useCase.buscar(id));</span>
+    }
+
+    @GetMapping
+    public List&lt;ServicoResponse&gt; listar() {
+<span class="fc" id="L35">        return useCase.listar().stream().map(ServicoResponse::from).toList();</span>
+    }
+
+    @PutMapping(&quot;/{id}&quot;)
+    public ServicoResponse atualizar(@PathVariable Long id, @Valid @RequestBody ServicoRequest request) {
+<span class="nc" id="L40">        return ServicoResponse.from(useCase.atualizar(id, request.codigo(), request.nome(), request.descricao(),</span>
+<span class="nc" id="L41">                request.valorBase(), request.tempoEstimadoSegundos()));</span>
+    }
+
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Void&gt; desativar(@PathVariable Long id) {
+<span class="nc" id="L46">        useCase.alterarAtivo(id, false);</span>
+<span class="nc" id="L47">        return ResponseEntity.noContent().build();</span>
+    }
+
+    @PatchMapping(&quot;/{id}/ativacao&quot;)
+    public ServicoResponse alterarAtivo(@PathVariable Long id, @Valid @RequestBody AtivoRequest request) {
+<span class="nc" id="L52">        return ServicoResponse.from(useCase.alterarAtivo(id, request.ativo()));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

@@ -1,5 +1,6 @@
 package br.com.fiap.techchallengefiap.application.veiculo;
 
+import br.com.fiap.techchallengefiap.domain.cliente.model.Cliente;
 import br.com.fiap.techchallengefiap.domain.cliente.repository.ClienteRepository;
 import br.com.fiap.techchallengefiap.domain.shared.ConflictException;
 import br.com.fiap.techchallengefiap.domain.shared.DomainException;
@@ -22,9 +23,9 @@ public class GerenciarVeiculoUseCase {
     }
 
     @Transactional
-    public Veiculo criar(Long clienteId, String placa, String marca, String modelo, Integer ano) {
-        validarClienteAtivo(clienteId);
-        Veiculo veiculo = new Veiculo(clienteId, placa, marca, modelo, ano);
+    public Veiculo criar(String documentoCliente, String placa, String marca, String modelo, Integer ano) {
+        Cliente cliente = buscarClienteAtivo(documentoCliente);
+        Veiculo veiculo = new Veiculo(cliente.getId(), placa, marca, modelo, ano);
         if (repository.existePlacaAtiva(veiculo.getPlaca())) {
             throw new ConflictException("Ja existe um veiculo ativo com esta placa.");
         }
@@ -32,8 +33,9 @@ public class GerenciarVeiculoUseCase {
     }
 
     @Transactional(readOnly = true)
-    public Veiculo buscar(Long id) {
-        return repository.buscarPorId(id).orElseThrow(() -> new ResourceNotFoundException("Veiculo nao encontrado."));
+    public Veiculo buscar(String placa) {
+        return repository.buscarPorPlaca(Veiculo.normalizarPlaca(placa))
+                .orElseThrow(() -> new ResourceNotFoundException("Veiculo nao encontrado."));
     }
 
     @Transactional(readOnly = true)
@@ -42,10 +44,12 @@ public class GerenciarVeiculoUseCase {
     }
 
     @Transactional
-    public Veiculo atualizar(Long id, Long clienteId, String placa, String marca, String modelo, Integer ano) {
-        Veiculo existente = buscar(id);
-        validarClienteAtivo(clienteId);
-        Veiculo atualizado = new Veiculo(id, clienteId, placa, marca, modelo, ano,
+    public Veiculo atualizar(String placaAtual, String documentoCliente, String placa, String marca, String modelo,
+                             Integer ano) {
+        Veiculo existente = buscar(placaAtual);
+        Long id = existente.getId();
+        Cliente cliente = buscarClienteAtivo(documentoCliente);
+        Veiculo atualizado = new Veiculo(id, cliente.getId(), placa, marca, modelo, ano,
                 existente.getDataCadastro(), existente.isAtivo());
         if (atualizado.isAtivo() && repository.existePlacaAtivaParaOutroVeiculo(atualizado.getPlaca(), id)) {
             throw new ConflictException("Ja existe um veiculo ativo com esta placa.");
@@ -54,11 +58,11 @@ public class GerenciarVeiculoUseCase {
     }
 
     @Transactional
-    public Veiculo alterarAtivo(Long id, boolean ativo) {
-        Veiculo veiculo = buscar(id);
+    public Veiculo alterarAtivo(String placa, boolean ativo) {
+        Veiculo veiculo = buscar(placa);
         if (ativo) {
             validarClienteAtivo(veiculo.getClienteId());
-            if (repository.existePlacaAtivaParaOutroVeiculo(veiculo.getPlaca(), id)) {
+            if (repository.existePlacaAtivaParaOutroVeiculo(veiculo.getPlaca(), veiculo.getId())) {
                 throw new ConflictException("Ja existe um veiculo ativo com esta placa.");
             }
             veiculo.ativar();
@@ -66,6 +70,20 @@ public class GerenciarVeiculoUseCase {
             veiculo.desativar();
         }
         return repository.salvar(veiculo);
+    }
+
+    @Transactional(readOnly = true)
+    public String documentoDoCliente(Veiculo veiculo) {
+        return clienteRepository.buscarPorId(veiculo.getClienteId())
+                .map(Cliente::getDocumento)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente do veiculo nao encontrado."));
+    }
+
+    private Cliente buscarClienteAtivo(String documentoCliente) {
+        var cliente = clienteRepository.buscarPorDocumento(Cliente.normalizarDocumento(documentoCliente))
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente do veiculo nao encontrado."));
+        if (!cliente.isAtivo()) throw new DomainException("O veiculo deve estar vinculado a um cliente ativo.");
+        return cliente;
     }
 
     private void validarClienteAtivo(Long clienteId) {

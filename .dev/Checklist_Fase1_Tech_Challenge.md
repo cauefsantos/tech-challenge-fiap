@@ -1,5 +1,7 @@
 # Checklist de Entregáveis - Fase 1 Tech Challenge
 
+> Critério de marcação: `[x]` indica item comprovável no código, README ou documentação versionada deste projeto. Itens que dependem de entrega externa, identificação do grupo, configuração do GitHub ou evidência não versionada permanecem desmarcados.
+
 ## 1. PDF Final de Entrega
 - [ ] Entregar **um único arquivo PDF**.
 - [ ] Incluir todos os links necessários para avaliação.
@@ -21,26 +23,26 @@
 - [ ] Branch, tag ou commit identificando a versão entregue.
 - [ ] Branch e hash do commit informados no PDF.
 - [ ] Código compatível com vídeo e documentação.
-- [ ] Sem credenciais, senhas ou informações sensíveis.
+- [x] Sem credenciais, senhas ou informações sensíveis versionadas (`.env` ignorado; `.env.example` contém placeholders).
 - [ ] README.md completo.
-- [ ] Instruções para execução local.
-- [ ] Testes automatizados com cobertura mínima de 80%.
-- [ ] Swagger/OpenAPI disponível.
-- [ ] Relatório ou resultado da análise de vulnerabilidades.
+- [x] Instruções para execução local.
+- [x] Testes automatizados com cobertura mínima de 80% nos pacotes `domain.*` e `application.*` (resultado registrado no README).
+- [ ] Swagger/OpenAPI disponível e habilitado para avaliação.
+- [x] Relatório ou resultado da análise de vulnerabilidades (`docs/dependency-check-report.html`).
 - [ ] Main protegida e fluxo via Pull Request.
 
 ## 4. README.md
-- [ ] Objetivo do projeto.
-- [ ] Descrição resumida da solução.
-- [ ] Arquitetura utilizada.
-- [ ] Tecnologias utilizadas.
-- [ ] Pré-requisitos.
-- [ ] Instruções de execução.
-- [ ] Instruções de execução dos testes.
-- [ ] Instruções para acesso ao Swagger.
-- [ ] Justificativa da escolha do banco de dados.
-- [ ] Usuários/credenciais de demonstração ou autenticação.
-- [ ] Estrutura dos diretórios principais.
+- [x] Objetivo do projeto.
+- [x] Descrição resumida da solução.
+- [x] Arquitetura utilizada.
+- [x] Tecnologias utilizadas.
+- [x] Pré-requisitos.
+- [x] Instruções de execução.
+- [x] Instruções de execução dos testes.
+- [x] Instruções para acesso ao Swagger (URL documentada; habilitação depende da configuração do perfil).
+- [x] Justificativa da escolha do banco de dados (PostgreSQL para execução próxima à produção e H2 para desenvolvimento/testes).
+- [x] Usuários/credenciais de demonstração ou autenticação (documenta o fluxo JWT e configuração explícita de credenciais, sem credenciais padrão).
+- [x] Estrutura dos diretórios principais.
 - [ ] Link da documentação DDD.
 - [ ] Link do vídeo.
 
@@ -77,74 +79,74 @@
 - [ ] Link direto no PDF.
 - [ ] Documento acessível sem solicitar permissão.
 - [ ] Exportação armazenada no repositório.
-- [ ] Event Storming da criação da OS.
-- [ ] Event Storming do acompanhamento da OS.
-- [ ] Event Storming da gestão de peças e insumos.
-- [ ] Eventos de domínio.
+- [x] Event Storming da criação da OS (`docs/Documentacao_DDD_Fase1.md`).
+- [x] Event Storming do acompanhamento da OS (`docs/Documentacao_DDD_Fase1.md`).
+- [x] Event Storming da gestão de peças e insumos (`docs/Documentacao_DDD_Fase1.md`).
+- [x] Eventos de domínio (`docs/Documentacao_DDD_Fase1.md`).
 - [ ] Comandos.
-- [ ] Políticas/Regras de negócio.
+- [x] Políticas/Regras de negócio (`docs/Documentacao_DDD_Fase1.md` e `docs/decisoes-fase1.md`).
 - [ ] Atores.
-- [ ] Agregados.
-- [ ] Entidades.
-- [ ] Objetos de Valor.
-- [ ] Bounded Contexts (quando aplicável).
+- [x] Agregados (`OrdemServico` identificado como Aggregate Root).
+- [x] Entidades (`docs/Documentacao_DDD_Fase1.md`).
+- [x] Objetos de Valor (CPF, CNPJ, placa e dinheiro identificados na documentação DDD).
+- [x] Bounded Contexts (documentados em `docs/Documentacao_DDD_Fase1.md`).
 - [ ] Diagramas da disciplina.
-- [ ] Linguagem Ubíqua.
-- [ ] Glossário do domínio.
+- [x] Linguagem Ubíqua (`docs/ddd/linguagem-ubiqua.md`).
+- [x] Glossário do domínio (`docs/Documentacao_DDD_Fase1.md` e `docs/ddd/linguagem-ubiqua.md`).
 - [ ] Relação entre documentação e implementação.
 
 ## 7. Funcionalidades Obrigatórias
 
 ### Criação da Ordem de Serviço
-- [ ] Identificação do cliente por CPF/CNPJ.
-- [ ] Cadastro de veículo (placa, marca, modelo e ano).
-- [ ] Inclusão de serviços.
-- [ ] Inclusão de peças e insumos.
-- [ ] Geração automática do orçamento.
-- [ ] Disponibilização/envio do orçamento.
-- [ ] Aprovação ou rejeição do orçamento.
+- [x] Identificação do cliente por CPF/CNPJ.
+- [x] Cadastro de veículo (placa, marca, modelo e ano).
+- [x] Inclusão de serviços.
+- [x] Inclusão de peças e insumos.
+- [x] Geração automática do orçamento.
+- [x] Disponibilização do orçamento pela API.
+- [x] Aprovação ou rejeição do orçamento.
 
 ### Acompanhamento da Ordem de Serviço
-- [ ] Status Recebida.
-- [ ] Status Em diagnóstico.
-- [ ] Status Aguardando aprovação.
-- [ ] Status Em execução.
-- [ ] Status Finalizada.
-- [ ] Status Entregue.
-- [ ] Controle de transições de status.
-- [ ] Regras de transição implementadas.
-- [ ] Consulta do andamento via API.
+- [x] Status Recebida.
+- [x] Status Em diagnóstico.
+- [x] Status Aguardando aprovação.
+- [x] Status Em execução.
+- [x] Status Finalizada.
+- [x] Status Entregue.
+- [x] Controle de transições de status.
+- [x] Regras de transição implementadas.
+- [x] Consulta do andamento via API.
 
 ### Gestão Administrativa
-- [ ] CRUD de clientes.
-- [ ] CRUD de veículos.
-- [ ] CRUD de serviços.
-- [ ] CRUD de peças e insumos.
-- [ ] Controle de estoque.
-- [ ] Listagem de Ordens de Serviço.
-- [ ] Detalhamento de Ordens de Serviço.
-- [ ] Tempo médio de execução dos serviços.
+- [x] CRUD de clientes.
+- [x] CRUD de veículos.
+- [x] CRUD de serviços.
+- [x] CRUD de peças e insumos.
+- [x] Controle de estoque.
+- [x] Listagem de Ordens de Serviço.
+- [x] Detalhamento de Ordens de Serviço.
+- [x] Tempo médio de execução dos serviços.
 
 ## 8. Requisitos Técnicos Obrigatórios
-- [ ] Back-end monolítico.
-- [ ] Arquitetura em camadas.
-- [ ] Banco de dados com justificativa documentada.
-- [ ] APIs RESTful.
-- [ ] Swagger/OpenAPI.
-- [ ] Autenticação JWT.
-- [ ] Validação de CPF/CNPJ.
-- [ ] Validação de placa de veículo.
-- [ ] Testes unitários.
-- [ ] Testes de integração.
-- [ ] Cobertura mínima de 80% nos domínios críticos.
-- [ ] Instruções para execução local.
+- [x] Back-end monolítico.
+- [x] Arquitetura em camadas.
+- [x] Banco de dados com justificativa documentada.
+- [x] APIs RESTful.
+- [x] Swagger/OpenAPI integrado (em produção fica desabilitado por padrão e depende de configuração para habilitar).
+- [x] Autenticação JWT.
+- [x] Validação de CPF/CNPJ.
+- [x] Validação de placa de veículo.
+- [x] Testes unitários.
+- [x] Testes de integração.
+- [x] Cobertura mínima de 80% nos domínios críticos (95,91% em `domain.*` e 97,16% em `application.*` na execução registrada).
+- [x] Instruções para execução local.
 - [ ] Tratamento adequado de transações.
 
 ## 9. Evidências Recomendadas
-- [ ] Screenshot ou relatório de cobertura de testes.
-- [ ] Relatório de análise de vulnerabilidades.
-- [ ] Swagger funcionando.
-- [ ] Dockerfile.
-- [ ] docker-compose.yml.
+- [x] Screenshot ou relatório de cobertura de testes (`docs/relatorio-cobertura/index.html`; resumo e execução em `docs/relatorio-cobertura/README.md`).
+- [x] Relatório de análise de vulnerabilidades (`docs/dependency-check-report.html`).
+- [ ] Swagger funcionando e validado por evidência.
+- [x] Dockerfile.
+- [x] Docker Compose (`compose.yml`).
 - [ ] Evidência de autenticação JWT.
 - [ ] Evidência de consulta de status da OS.

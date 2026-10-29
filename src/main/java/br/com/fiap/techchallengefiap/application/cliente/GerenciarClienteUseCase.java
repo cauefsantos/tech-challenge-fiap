@@ -28,8 +28,9 @@ public class GerenciarClienteUseCase {
     }
 
     @Transactional(readOnly = true)
-    public Cliente buscar(Long id) {
-        return repository.buscarPorId(id).orElseThrow(() -> new ResourceNotFoundException("Cliente nao encontrado."));
+    public Cliente buscar(String documento) {
+        return repository.buscarPorDocumento(Cliente.normalizarDocumento(documento))
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente nao encontrado."));
     }
 
     @Transactional(readOnly = true)
@@ -38,8 +39,10 @@ public class GerenciarClienteUseCase {
     }
 
     @Transactional
-    public Cliente atualizar(Long id, TipoPessoa tipoPessoa, String documento, String nome, String email, String telefone) {
-        Cliente existente = buscar(id);
+    public Cliente atualizar(String documentoAtual, TipoPessoa tipoPessoa, String documento, String nome,
+                             String email, String telefone) {
+        Cliente existente = buscar(documentoAtual);
+        Long id = existente.getId();
         Cliente atualizado = new Cliente(id, tipoPessoa, documento, nome, email, telefone,
                 existente.getDataCadastro(), existente.isAtivo());
         if (atualizado.isAtivo() && repository.existeDocumentoAtivoParaOutroCliente(atualizado.getDocumento(), id)) {
@@ -49,9 +52,9 @@ public class GerenciarClienteUseCase {
     }
 
     @Transactional
-    public Cliente alterarAtivo(Long id, boolean ativo) {
-        Cliente cliente = buscar(id);
-        if (ativo && repository.existeDocumentoAtivoParaOutroCliente(cliente.getDocumento(), id)) {
+    public Cliente alterarAtivo(String documento, boolean ativo) {
+        Cliente cliente = buscar(documento);
+        if (ativo && repository.existeDocumentoAtivoParaOutroCliente(cliente.getDocumento(), cliente.getId())) {
             throw new ConflictException("Ja existe um cliente ativo com este documento.");
         }
         if (ativo) cliente.ativar(); else cliente.desativar();

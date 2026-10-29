@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GerenciarVeiculoUseCase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tech-challenge-fiap</a> &gt; <a href="index.source.html" class="el_package">br.com.fiap.techchallengefiap.application.veiculo</a> &gt; <span class="el_source">GerenciarVeiculoUseCase.java</span></div><h1>GerenciarVeiculoUseCase.java</h1><pre class="source lang-java linenums">package br.com.fiap.techchallengefiap.application.veiculo;
+
+import br.com.fiap.techchallengefiap.domain.cliente.model.Cliente;
+import br.com.fiap.techchallengefiap.domain.cliente.repository.ClienteRepository;
+import br.com.fiap.techchallengefiap.domain.shared.ConflictException;
+import br.com.fiap.techchallengefiap.domain.shared.DomainException;
+import br.com.fiap.techchallengefiap.domain.shared.ResourceNotFoundException;
+import br.com.fiap.techchallengefiap.domain.veiculo.model.Veiculo;
+import br.com.fiap.techchallengefiap.domain.veiculo.repository.VeiculoRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+public class GerenciarVeiculoUseCase {
+    private final VeiculoRepository repository;
+    private final ClienteRepository clienteRepository;
+
+<span class="fc" id="L20">    public GerenciarVeiculoUseCase(VeiculoRepository repository, ClienteRepository clienteRepository) {</span>
+<span class="fc" id="L21">        this.repository = repository;</span>
+<span class="fc" id="L22">        this.clienteRepository = clienteRepository;</span>
+<span class="fc" id="L23">    }</span>
+
+    @Transactional
+    public Veiculo criar(String documentoCliente, String placa, String marca, String modelo, Integer ano) {
+<span class="fc" id="L27">        Cliente cliente = buscarClienteAtivo(documentoCliente);</span>
+<span class="fc" id="L28">        Veiculo veiculo = new Veiculo(cliente.getId(), placa, marca, modelo, ano);</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        if (repository.existePlacaAtiva(veiculo.getPlaca())) {</span>
+<span class="fc" id="L30">            throw new ConflictException(&quot;Ja existe um veiculo ativo com esta placa.&quot;);</span>
+        }
+<span class="fc" id="L32">        return repository.salvar(veiculo);</span>
+    }
+
+    @Transactional(readOnly = true)
+    public Veiculo buscar(String placa) {
+<span class="fc" id="L37">        return repository.buscarPorPlaca(Veiculo.normalizarPlaca(placa))</span>
+<span class="fc" id="L38">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Veiculo nao encontrado.&quot;));</span>
+    }
+
+    @Transactional(readOnly = true)
+    public List&lt;Veiculo&gt; listar() {
+<span class="fc" id="L43">        return repository.listar();</span>
+    }
+
+    @Transactional
+    public Veiculo atualizar(String placaAtual, String documentoCliente, String placa, String marca, String modelo,
+                             Integer ano) {
+<span class="fc" id="L49">        Veiculo existente = buscar(placaAtual);</span>
+<span class="fc" id="L50">        Long id = existente.getId();</span>
+<span class="fc" id="L51">        Cliente cliente = buscarClienteAtivo(documentoCliente);</span>
+<span class="fc" id="L52">        Veiculo atualizado = new Veiculo(id, cliente.getId(), placa, marca, modelo, ano,</span>
+<span class="fc" id="L53">                existente.getDataCadastro(), existente.isAtivo());</span>
+<span class="pc bpc" id="L54" title="1 of 4 branches missed.">        if (atualizado.isAtivo() &amp;&amp; repository.existePlacaAtivaParaOutroVeiculo(atualizado.getPlaca(), id)) {</span>
+<span class="fc" id="L55">            throw new ConflictException(&quot;Ja existe um veiculo ativo com esta placa.&quot;);</span>
+        }
+<span class="fc" id="L57">        return repository.salvar(atualizado);</span>
+    }
+
+    @Transactional
+    public Veiculo alterarAtivo(String placa, boolean ativo) {
+<span class="fc" id="L62">        Veiculo veiculo = buscar(placa);</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        if (ativo) {</span>
+<span class="fc" id="L64">            validarClienteAtivo(veiculo.getClienteId());</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">            if (repository.existePlacaAtivaParaOutroVeiculo(veiculo.getPlaca(), veiculo.getId())) {</span>
+<span class="fc" id="L66">                throw new ConflictException(&quot;Ja existe um veiculo ativo com esta placa.&quot;);</span>
+            }
+<span class="nc" id="L68">            veiculo.ativar();</span>
+        } else {
+<span class="fc" id="L70">            veiculo.desativar();</span>
+        }
+<span class="fc" id="L72">        return repository.salvar(veiculo);</span>
+    }
+
+    @Transactional(readOnly = true)
+    public String documentoDoCliente(Veiculo veiculo) {
+<span class="fc" id="L77">        return clienteRepository.buscarPorId(veiculo.getClienteId())</span>
+<span class="fc" id="L78">                .map(Cliente::getDocumento)</span>
+<span class="fc" id="L79">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Cliente do veiculo nao encontrado.&quot;));</span>
+    }
+
+    private Cliente buscarClienteAtivo(String documentoCliente) {
+<span class="fc" id="L83">        var cliente = clienteRepository.buscarPorDocumento(Cliente.normalizarDocumento(documentoCliente))</span>
+<span class="fc" id="L84">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Cliente do veiculo nao encontrado.&quot;));</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        if (!cliente.isAtivo()) throw new DomainException(&quot;O veiculo deve estar vinculado a um cliente ativo.&quot;);</span>
+<span class="fc" id="L86">        return cliente;</span>
+    }
+
+    private void validarClienteAtivo(Long clienteId) {
+<span class="fc" id="L90">        var cliente = clienteRepository.buscarPorId(clienteId)</span>
+<span class="pc" id="L91">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Cliente do veiculo nao encontrado.&quot;));</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        if (!cliente.isAtivo()) throw new DomainException(&quot;O veiculo deve estar vinculado a um cliente ativo.&quot;);</span>
+<span class="fc" id="L93">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

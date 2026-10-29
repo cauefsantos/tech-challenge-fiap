@@ -1,6 +1,7 @@
 package br.com.fiap.techchallengefiap.presentation.rest.usuario;
 
 import br.com.fiap.techchallengefiap.application.usuario.GerenciarUsuarioUseCase;
+import br.com.fiap.techchallengefiap.domain.usuario.model.Usuario;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +19,9 @@ public class UsuarioController {
 
     @PostMapping
     public ResponseEntity<UsuarioResponse> criar(@Valid @RequestBody CriarUsuarioRequest request) {
-        var usuario = useCase.criar(request.username(), request.password(), request.papel(), request.clienteId());
+        var usuario = useCase.criar(request.username(), request.password(), request.papel(), request.documentoCliente());
         return ResponseEntity.created(URI.create("/api/v1/usuarios/" + usuario.getId()))
-                .body(UsuarioResponse.from(usuario));
+                .body(resposta(usuario));
     }
 
     @GetMapping
@@ -28,23 +29,27 @@ public class UsuarioController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         var usuarios = useCase.listar(page, size);
-        return new PaginaUsuarioResponse(usuarios.content().stream().map(UsuarioResponse::from).toList(),
+        return new PaginaUsuarioResponse(usuarios.content().stream().map(this::resposta).toList(),
                 usuarios.page(), usuarios.size(), usuarios.totalElements(), usuarios.totalPages());
     }
 
     @GetMapping("/{id}")
     public UsuarioResponse buscar(@PathVariable Long id) {
-        return UsuarioResponse.from(useCase.buscar(id));
+        return resposta(useCase.buscar(id));
     }
 
     @PutMapping("/{id}")
     public UsuarioResponse atualizar(@PathVariable Long id, @Valid @RequestBody AtualizarUsuarioRequest request) {
-        return UsuarioResponse.from(useCase.atualizar(id, request.papel(), request.clienteId(), request.enabled()));
+        return resposta(useCase.atualizar(id, request.papel(), request.documentoCliente(), request.enabled()));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> desativar(@PathVariable Long id) {
         useCase.desativar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private UsuarioResponse resposta(Usuario usuario) {
+        return UsuarioResponse.from(usuario, useCase.documentoDoCliente(usuario));
     }
 }

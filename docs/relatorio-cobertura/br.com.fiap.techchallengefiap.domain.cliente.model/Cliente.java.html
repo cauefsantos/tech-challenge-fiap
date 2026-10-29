@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Cliente.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tech-challenge-fiap</a> &gt; <a href="index.source.html" class="el_package">br.com.fiap.techchallengefiap.domain.cliente.model</a> &gt; <span class="el_source">Cliente.java</span></div><h1>Cliente.java</h1><pre class="source lang-java linenums">package br.com.fiap.techchallengefiap.domain.cliente.model;
+
+import br.com.fiap.techchallengefiap.domain.shared.DomainException;
+
+import java.time.OffsetDateTime;
+import java.util.Objects;
+
+public class Cliente {
+    private Long id;
+    private final TipoPessoa tipoPessoa;
+    private final String documento;
+    private final String nome;
+    private final String email;
+    private final String telefone;
+    private final OffsetDateTime dataCadastro;
+    private boolean ativo;
+
+    public Cliente(TipoPessoa tipoPessoa, String documento, String nome, String email, String telefone) {
+<span class="fc" id="L19">        this(null, tipoPessoa, documento, nome, email, telefone, OffsetDateTime.now(), true);</span>
+<span class="fc" id="L20">    }</span>
+
+    public Cliente(Long id, TipoPessoa tipoPessoa, String documento, String nome, String email,
+<span class="fc" id="L23">                   String telefone, OffsetDateTime dataCadastro, boolean ativo) {</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">        if (tipoPessoa == null) throw new DomainException(&quot;O tipo de pessoa e obrigatorio.&quot;);</span>
+<span class="fc" id="L25">        this.tipoPessoa = tipoPessoa;</span>
+<span class="fc" id="L26">        this.documento = normalizarDocumento(documento);</span>
+<span class="fc" id="L27">        validarDocumento(tipoPessoa, this.documento);</span>
+<span class="fc" id="L28">        this.nome = textoObrigatorio(nome, &quot;O nome e obrigatorio.&quot;);</span>
+<span class="fc" id="L29">        this.email = validarEmail(email);</span>
+<span class="pc bpc" id="L30" title="1 of 4 branches missed.">        this.telefone = telefone == null || telefone.isBlank() ? null : telefone.trim();</span>
+<span class="fc" id="L31">        this.id = id;</span>
+<span class="fc" id="L32">        this.dataCadastro = Objects.requireNonNull(dataCadastro, &quot;A data de cadastro e obrigatoria.&quot;);</span>
+<span class="fc" id="L33">        this.ativo = ativo;</span>
+<span class="fc" id="L34">    }</span>
+
+    public void desativar() {
+<span class="fc" id="L37">        ativo = false;</span>
+<span class="fc" id="L38">    }</span>
+
+    public void ativar() {
+<span class="fc" id="L41">        ativo = true;</span>
+<span class="fc" id="L42">    }</span>
+
+    public static String normalizarDocumento(String valor) {
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">        if (valor == null) throw new DomainException(&quot;O documento e obrigatorio.&quot;);</span>
+<span class="fc" id="L46">        String documento = valor.trim();</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (!documento.matches(&quot;[0-9.\\-/\\s]+&quot;)) throw new DomainException(&quot;O documento deve conter apenas digitos e formatacao.&quot;);</span>
+<span class="fc" id="L48">        return documento.replaceAll(&quot;\\D&quot;, &quot;&quot;);</span>
+    }
+
+    private static void validarDocumento(TipoPessoa tipo, String documento) {
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        boolean valido = tipo == TipoPessoa.FISICA ? validarCpf(documento) : validarCnpj(documento);</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        if (!valido) throw new DomainException(&quot;O documento nao e valido para o tipo de pessoa.&quot;);</span>
+<span class="fc" id="L54">    }</span>
+
+    private static boolean validarCpf(String cpf) {
+<span class="pc bpc" id="L57" title="1 of 4 branches missed.">        if (!cpf.matches(&quot;\\d{11}&quot;) || cpf.chars().distinct().count() == 1) return false;</span>
+<span class="fc" id="L58">        int soma = 0;</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        for (int i = 0; i &lt; 9; i++) soma += (cpf.charAt(i) - '0') * (10 - i);</span>
+<span class="fc" id="L60">        int digito = (soma * 10) % 11;</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        if (digito == 10) digito = 0;</span>
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">        if (digito != cpf.charAt(9) - '0') return false;</span>
+<span class="fc" id="L63">        soma = 0;</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        for (int i = 0; i &lt; 10; i++) soma += (cpf.charAt(i) - '0') * (11 - i);</span>
+<span class="fc" id="L65">        digito = (soma * 10) % 11;</span>
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">        if (digito == 10) digito = 0;</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        return digito == cpf.charAt(10) - '0';</span>
+    }
+
+    private static boolean validarCnpj(String cnpj) {
+<span class="fc bfc" id="L71" title="All 4 branches covered.">        if (!cnpj.matches(&quot;\\d{14}&quot;) || cnpj.chars().distinct().count() == 1) return false;</span>
+<span class="fc" id="L72">        int[] pesosPrimeiro = {5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};</span>
+<span class="fc" id="L73">        int[] pesosSegundo = {6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};</span>
+<span class="fc" id="L74">        int primeiro = calcularDigito(cnpj, pesosPrimeiro);</span>
+<span class="fc" id="L75">        int segundo = calcularDigito(cnpj, pesosSegundo);</span>
+<span class="pc bpc" id="L76" title="1 of 4 branches missed.">        return primeiro == cnpj.charAt(12) - '0' &amp;&amp; segundo == cnpj.charAt(13) - '0';</span>
+    }
+
+    private static int calcularDigito(String documento, int[] pesos) {
+<span class="fc" id="L80">        int soma = 0;</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        for (int i = 0; i &lt; pesos.length; i++) soma += (documento.charAt(i) - '0') * pesos[i];</span>
+<span class="fc" id="L82">        int resto = soma % 11;</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">        return resto &lt; 2 ? 0 : 11 - resto;</span>
+    }
+
+    private static String validarEmail(String email) {
+<span class="fc bfc" id="L87" title="All 4 branches covered.">        if (email == null || email.isBlank()) return null;</span>
+<span class="fc" id="L88">        String valor = email.trim();</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        if (!valor.matches(&quot;^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$&quot;)) {</span>
+<span class="fc" id="L90">            throw new DomainException(&quot;O email nao e valido.&quot;);</span>
+        }
+<span class="fc" id="L92">        return valor;</span>
+    }
+
+    private static String textoObrigatorio(String texto, String mensagem) {
+<span class="pc bpc" id="L96" title="1 of 4 branches missed.">        if (texto == null || texto.isBlank()) throw new DomainException(mensagem);</span>
+<span class="fc" id="L97">        return texto.trim();</span>
+    }
+
+<span class="fc" id="L100">    public Long getId() { return id; }</span>
+<span class="fc" id="L101">    public TipoPessoa getTipoPessoa() { return tipoPessoa; }</span>
+<span class="fc" id="L102">    public String getDocumento() { return documento; }</span>
+<span class="fc" id="L103">    public String getNome() { return nome; }</span>
+<span class="fc" id="L104">    public String getEmail() { return email; }</span>
+<span class="fc" id="L105">    public String getTelefone() { return telefone; }</span>
+<span class="fc" id="L106">    public OffsetDateTime getDataCadastro() { return dataCadastro; }</span>
+<span class="fc" id="L107">    public boolean isAtivo() { return ativo; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

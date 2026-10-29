@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ServicoRepositoryAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tech-challenge-fiap</a> &gt; <a href="index.source.html" class="el_package">br.com.fiap.techchallengefiap.infrastructure.servico</a> &gt; <span class="el_source">ServicoRepositoryAdapter.java</span></div><h1>ServicoRepositoryAdapter.java</h1><pre class="source lang-java linenums">package br.com.fiap.techchallengefiap.infrastructure.servico;
+
+import br.com.fiap.techchallengefiap.domain.servico.model.Servico;
+import br.com.fiap.techchallengefiap.domain.servico.repository.ServicoRepository;
+import org.springframework.stereotype.Repository;
+
+import java.time.Duration;
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public class ServicoRepositoryAdapter implements ServicoRepository {
+    private final ServicoJpaRepository jpa;
+
+<span class="fc" id="L15">    public ServicoRepositoryAdapter(ServicoJpaRepository jpa) {</span>
+<span class="fc" id="L16">        this.jpa = jpa;</span>
+<span class="fc" id="L17">    }</span>
+
+    @Override
+    public Servico salvar(Servico servico) {
+<span class="fc" id="L21">        return toDomain(jpa.save(toEntity(servico)));</span>
+    }
+
+    @Override
+    public Optional&lt;Servico&gt; buscarPorId(Long id) {
+<span class="nc" id="L26">        return jpa.findById(id).map(this::toDomain);</span>
+    }
+
+    @Override
+    public List&lt;Servico&gt; listar() {
+<span class="fc" id="L31">        return jpa.findAll().stream().map(this::toDomain).toList();</span>
+    }
+
+    @Override
+    public boolean existeCodigo(String codigo) {
+<span class="nc" id="L36">        return jpa.existsByCodigo(codigo);</span>
+    }
+
+    @Override
+    public boolean existeCodigoParaOutroServico(String codigo, Long id) {
+<span class="nc" id="L41">        return jpa.existsByCodigoAndIdNot(codigo, id);</span>
+    }
+
+    private ServicoJpaEntity toEntity(Servico servico) {
+<span class="fc" id="L45">        var entity = new ServicoJpaEntity();</span>
+<span class="fc" id="L46">        entity.id = servico.getId();</span>
+<span class="fc" id="L47">        entity.codigo = servico.getCodigo();</span>
+<span class="fc" id="L48">        entity.nome = servico.getNome();</span>
+<span class="fc" id="L49">        entity.descricao = servico.getDescricao();</span>
+<span class="fc" id="L50">        entity.valorBase = servico.getValorBase();</span>
+<span class="fc" id="L51">        entity.tempoEstimadoSegundos = servico.getTempoEstimado().toSeconds();</span>
+<span class="fc" id="L52">        entity.dataCadastro = servico.getDataCadastro();</span>
+<span class="fc" id="L53">        entity.ativo = servico.isAtivo();</span>
+<span class="fc" id="L54">        return entity;</span>
+    }
+
+    private Servico toDomain(ServicoJpaEntity entity) {
+<span class="fc" id="L58">        return new Servico(entity.id, entity.codigo, entity.nome, entity.descricao, entity.valorBase,</span>
+<span class="fc" id="L59">                Duration.ofSeconds(entity.tempoEstimadoSegundos), entity.dataCadastro, entity.ativo);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

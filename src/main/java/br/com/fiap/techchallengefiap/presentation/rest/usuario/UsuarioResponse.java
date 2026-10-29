@@ -10,12 +10,12 @@ public record UsuarioResponse(
         String username,
         Papel papel,
         boolean enabled,
-        Long clienteId,
+        String documentoCliente,
         OffsetDateTime createdAt,
         OffsetDateTime updatedAt
 ) {
-    public static UsuarioResponse from(Usuario usuario) {
+    public static UsuarioResponse from(Usuario usuario, String documentoCliente) {
         return new UsuarioResponse(usuario.getId(), usuario.getUsername(), usuario.getPapel(), usuario.isEnabled(),
-                usuario.getClienteId(), usuario.getCreatedAt(), usuario.getUpdatedAt());
+                documentoCliente, usuario.getCreatedAt(), usuario.getUpdatedAt());
     }
 }

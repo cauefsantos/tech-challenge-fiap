@@ -4,10 +4,10 @@ import br.com.fiap.techchallengefiap.domain.cliente.model.Cliente;
 
 import java.time.OffsetDateTime;
 
-public record ClienteResponse(Long id, String tipoPessoa, String documento, String nome, String email,
+public record ClienteResponse(String documento, String tipoPessoa, String nome, String email,
                               String telefone, OffsetDateTime dataCadastro, boolean ativo) {
     public static ClienteResponse from(Cliente cliente) {
-        return new ClienteResponse(cliente.getId(), cliente.getTipoPessoa().name(), cliente.getDocumento(),
+        return new ClienteResponse(cliente.getDocumento(), cliente.getTipoPessoa().name(),
                 cliente.getNome(), cliente.getEmail(), cliente.getTelefone(), cliente.getDataCadastro(), cliente.isAtivo());
     }
 }

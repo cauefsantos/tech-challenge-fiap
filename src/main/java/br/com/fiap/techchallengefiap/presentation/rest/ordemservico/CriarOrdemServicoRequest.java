@@ -1,6 +1,6 @@
 package br.com.fiap.techchallengefiap.presentation.rest.ordemservico;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
-public record CriarOrdemServicoRequest(@NotNull Long clienteId, @NotNull Long veiculoId) {
+public record CriarOrdemServicoRequest(@NotBlank String documentoCliente, @NotBlank String placa) {
 }

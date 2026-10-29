@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ItemServico.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tech-challenge-fiap</a> &gt; <a href="index.source.html" class="el_package">br.com.fiap.techchallengefiap.domain.ordemservico.model</a> &gt; <span class="el_source">ItemServico.java</span></div><h1>ItemServico.java</h1><pre class="source lang-java linenums">package br.com.fiap.techchallengefiap.domain.ordemservico.model;
+
+import br.com.fiap.techchallengefiap.domain.servico.model.Servico;
+import br.com.fiap.techchallengefiap.domain.shared.DomainException;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
+public class ItemServico {
+    private Long id;
+    private final Long ordemServicoId;
+    private final Long servicoId;
+    private final String descricao;
+    private final BigDecimal quantidade;
+    private final BigDecimal valorUnitario;
+    private final BigDecimal subtotal;
+    private final long tempoEstimadoSegundos;
+
+<span class="fc" id="L19">    public ItemServico(Long ordemServicoId, Servico servico, BigDecimal quantidade) {</span>
+<span class="fc bfc" id="L20" title="All 4 branches covered.">        if (servico == null || servico.getId() == null) throw new DomainException(&quot;O servico deve existir.&quot;);</span>
+<span class="fc bfc" id="L21" title="All 2 branches covered.">        if (!servico.isAtivo()) throw new DomainException(&quot;Servicos inativos nao podem ser adicionados a novas ordens.&quot;);</span>
+<span class="fc bfc" id="L22" title="All 4 branches covered.">        if (quantidade == null || quantidade.signum() &lt;= 0) throw new DomainException(&quot;A quantidade deve ser maior que zero.&quot;);</span>
+<span class="fc" id="L23">        this.ordemServicoId = ordemServicoId;</span>
+<span class="fc" id="L24">        this.servicoId = servico.getId();</span>
+<span class="fc" id="L25">        this.descricao = servico.getNome();</span>
+<span class="fc" id="L26">        this.quantidade = quantidade;</span>
+<span class="fc" id="L27">        this.valorUnitario = servico.getValorBase();</span>
+<span class="fc" id="L28">        this.subtotal = quantidade.multiply(valorUnitario).setScale(2, RoundingMode.HALF_UP);</span>
+<span class="fc" id="L29">        this.tempoEstimadoSegundos = servico.getTempoEstimado().toSeconds();</span>
+<span class="fc" id="L30">    }</span>
+
+    public ItemServico(Long id, Long ordemServicoId, Long servicoId, String descricao, BigDecimal quantidade,
+<span class="fc" id="L33">                       BigDecimal valorUnitario, BigDecimal subtotal, long tempoEstimadoSegundos) {</span>
+<span class="pc bpc" id="L34" title="1 of 4 branches missed.">        if (servicoId == null || servicoId &lt;= 0) throw new DomainException(&quot;O servico deve ser informado.&quot;);</span>
+<span class="pc bpc" id="L35" title="2 of 4 branches missed.">        if (quantidade == null || quantidade.signum() &lt;= 0) throw new DomainException(&quot;A quantidade deve ser maior que zero.&quot;);</span>
+<span class="pc bpc" id="L36" title="1 of 4 branches missed.">        if (valorUnitario == null || valorUnitario.signum() &lt; 0) throw new DomainException(&quot;O valor unitario nao pode ser negativo.&quot;);</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        if (tempoEstimadoSegundos &lt;= 0) throw new DomainException(&quot;O tempo estimado deve ser positivo.&quot;);</span>
+<span class="fc" id="L38">        this.id = id;</span>
+<span class="fc" id="L39">        this.ordemServicoId = ordemServicoId;</span>
+<span class="fc" id="L40">        this.servicoId = servicoId;</span>
+<span class="fc" id="L41">        this.descricao = descricao;</span>
+<span class="fc" id="L42">        this.quantidade = quantidade;</span>
+<span class="fc" id="L43">        this.valorUnitario = valorUnitario;</span>
+<span class="fc" id="L44">        this.subtotal = quantidade.multiply(valorUnitario).setScale(2, RoundingMode.HALF_UP);</span>
+<span class="pc bpc" id="L45" title="1 of 4 branches missed.">        if (subtotal != null &amp;&amp; subtotal.compareTo(this.subtotal) != 0) throw new DomainException(&quot;O subtotal nao corresponde a quantidade e ao valor unitario.&quot;);</span>
+<span class="fc" id="L46">        this.tempoEstimadoSegundos = tempoEstimadoSegundos;</span>
+<span class="fc" id="L47">    }</span>
+
+<span class="nc" id="L49">    public void setId(Long id) { this.id = id; }</span>
+<span class="fc" id="L50">    public Long getId() { return id; }</span>
+<span class="fc" id="L51">    public Long getOrdemServicoId() { return ordemServicoId; }</span>
+<span class="fc" id="L52">    public Long getServicoId() { return servicoId; }</span>
+<span class="fc" id="L53">    public String getDescricao() { return descricao; }</span>
+<span class="fc" id="L54">    public BigDecimal getQuantidade() { return quantidade; }</span>
+<span class="fc" id="L55">    public BigDecimal getValorUnitario() { return valorUnitario; }</span>
+<span class="fc" id="L56">    public BigDecimal getSubtotal() { return subtotal; }</span>
+<span class="fc" id="L57">    public long getTempoEstimadoSegundos() { return tempoEstimadoSegundos; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

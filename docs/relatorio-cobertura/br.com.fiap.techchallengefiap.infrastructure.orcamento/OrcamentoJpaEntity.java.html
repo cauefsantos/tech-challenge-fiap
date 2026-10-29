@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OrcamentoJpaEntity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tech-challenge-fiap</a> &gt; <a href="index.source.html" class="el_package">br.com.fiap.techchallengefiap.infrastructure.orcamento</a> &gt; <span class="el_source">OrcamentoJpaEntity.java</span></div><h1>OrcamentoJpaEntity.java</h1><pre class="source lang-java linenums">package br.com.fiap.techchallengefiap.infrastructure.orcamento;
+
+import br.com.fiap.techchallengefiap.domain.orcamento.model.StatusOrcamento;
+import jakarta.persistence.*;
+
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
+
+@Entity
+@Table(name = &quot;orcamento&quot;)
+class OrcamentoJpaEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+    @Column(name = &quot;ordem_servico_id&quot;, nullable = false)
+    Long ordemServicoId;
+    @Column(nullable = false)
+    Integer versao;
+    @Column(name = &quot;valor_servicos&quot;, nullable = false, precision = 15, scale = 2)
+    BigDecimal valorServicos;
+    @Column(name = &quot;valor_pecas&quot;, nullable = false, precision = 15, scale = 2)
+    BigDecimal valorPecas;
+    @Column(name = &quot;valor_insumos&quot;, nullable = false, precision = 15, scale = 2)
+    BigDecimal valorInsumos;
+    @Column(name = &quot;valor_total&quot;, nullable = false, precision = 15, scale = 2)
+    BigDecimal valorTotal;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    StatusOrcamento status;
+    @Column(name = &quot;data_geracao&quot;, nullable = false)
+    OffsetDateTime dataGeracao;
+    @Column(name = &quot;data_resposta&quot;)
+    OffsetDateTime dataResposta;
+    @Column(name = &quot;observacao_resposta&quot;)
+    String observacaoResposta;
+
+<span class="fc" id="L37">    protected OrcamentoJpaEntity() {}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

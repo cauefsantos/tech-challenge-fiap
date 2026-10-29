@@ -22,8 +22,7 @@ public class Veiculo {
     public Veiculo(Long id, Long clienteId, String placa, String marca, String modelo, Integer ano,
                    OffsetDateTime dataCadastro, boolean ativo) {
         if (clienteId == null || clienteId <= 0) throw new DomainException("O cliente do veiculo e obrigatorio.");
-        if (placa == null) throw new DomainException("A placa e obrigatoria.");
-        String placaNormalizada = placa.replace("-", "").replace(" ", "").toUpperCase();
+        String placaNormalizada = normalizarPlaca(placa);
         if (!placaNormalizada.matches("[A-Z]{3}[0-9][A-Z0-9][0-9]{2}")) {
             throw new DomainException("A placa do veiculo nao e valida.");
         }
@@ -42,6 +41,11 @@ public class Veiculo {
 
     public void desativar() { ativo = false; }
     public void ativar() { ativo = true; }
+
+    public static String normalizarPlaca(String placa) {
+        if (placa == null) throw new DomainException("A placa e obrigatoria.");
+        return placa.replace("-", "").replace(" ", "").toUpperCase();
+    }
 
     private static String obrigatorio(String texto, String mensagem) {
         if (texto == null || texto.isBlank()) throw new DomainException(mensagem);

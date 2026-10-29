@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UsuarioController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tech-challenge-fiap</a> &gt; <a href="index.source.html" class="el_package">br.com.fiap.techchallengefiap.presentation.rest.usuario</a> &gt; <span class="el_source">UsuarioController.java</span></div><h1>UsuarioController.java</h1><pre class="source lang-java linenums">package br.com.fiap.techchallengefiap.presentation.rest.usuario;
+
+import br.com.fiap.techchallengefiap.application.usuario.GerenciarUsuarioUseCase;
+import br.com.fiap.techchallengefiap.domain.usuario.model.Usuario;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+
+@RestController
+@RequestMapping(&quot;/api/v1/usuarios&quot;)
+public class UsuarioController {
+    private final GerenciarUsuarioUseCase useCase;
+
+<span class="fc" id="L16">    public UsuarioController(GerenciarUsuarioUseCase useCase) {</span>
+<span class="fc" id="L17">        this.useCase = useCase;</span>
+<span class="fc" id="L18">    }</span>
+
+    @PostMapping
+    public ResponseEntity&lt;UsuarioResponse&gt; criar(@Valid @RequestBody CriarUsuarioRequest request) {
+<span class="fc" id="L22">        var usuario = useCase.criar(request.username(), request.password(), request.papel(), request.documentoCliente());</span>
+<span class="fc" id="L23">        return ResponseEntity.created(URI.create(&quot;/api/v1/usuarios/&quot; + usuario.getId()))</span>
+<span class="fc" id="L24">                .body(resposta(usuario));</span>
+    }
+
+    @GetMapping
+    public PaginaUsuarioResponse listar(
+            @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @RequestParam(defaultValue = &quot;20&quot;) int size) {
+<span class="nc" id="L31">        var usuarios = useCase.listar(page, size);</span>
+<span class="nc" id="L32">        return new PaginaUsuarioResponse(usuarios.content().stream().map(this::resposta).toList(),</span>
+<span class="nc" id="L33">                usuarios.page(), usuarios.size(), usuarios.totalElements(), usuarios.totalPages());</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    public UsuarioResponse buscar(@PathVariable Long id) {
+<span class="nc" id="L38">        return resposta(useCase.buscar(id));</span>
+    }
+
+    @PutMapping(&quot;/{id}&quot;)
+    public UsuarioResponse atualizar(@PathVariable Long id, @Valid @RequestBody AtualizarUsuarioRequest request) {
+<span class="fc" id="L43">        return resposta(useCase.atualizar(id, request.papel(), request.documentoCliente(), request.enabled()));</span>
+    }
+
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Void&gt; desativar(@PathVariable Long id) {
+<span class="fc" id="L48">        useCase.desativar(id);</span>
+<span class="fc" id="L49">        return ResponseEntity.noContent().build();</span>
+    }
+
+    private UsuarioResponse resposta(Usuario usuario) {
+<span class="fc" id="L53">        return UsuarioResponse.from(usuario, useCase.documentoDoCliente(usuario));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

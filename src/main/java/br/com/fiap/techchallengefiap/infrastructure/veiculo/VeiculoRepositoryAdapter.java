@@ -26,6 +26,11 @@ public class VeiculoRepositoryAdapter implements VeiculoRepository {
     }
 
     @Override
+    public Optional<Veiculo> buscarPorPlaca(String placa) {
+        return jpa.findFirstByPlacaOrderByAtivoDescIdDesc(placa).map(this::toDomain);
+    }
+
+    @Override
     public List<Veiculo> listar() {
         return jpa.findAll().stream().map(this::toDomain).toList();
     }
