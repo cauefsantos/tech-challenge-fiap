@@ -50,6 +50,11 @@ public class OrdemServicoRepositoryAdapter implements OrdemServicoRepository {
         return jpa.findById(id).map(this::toDomain);
     }
 
+    @Override
+    public Optional<OrdemServico> buscarPorIdParaAtualizacao(Long id) {
+        return jpa.buscarPorIdParaAtualizacao(id).map(this::toDomain);
+    }
+
     public Optional<OrdemServico> buscarPorNumero(String numero) {
         if (numero == null || numero.isBlank()) return Optional.empty();
         return jpa.findAll().stream()

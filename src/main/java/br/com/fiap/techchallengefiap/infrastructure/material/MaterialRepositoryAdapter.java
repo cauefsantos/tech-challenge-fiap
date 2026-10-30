@@ -26,6 +26,11 @@ public class MaterialRepositoryAdapter implements MaterialRepository {
     }
 
     @Override
+    public Optional<Material> buscarPorIdParaAtualizacao(Long id) {
+        return jpa.buscarPorIdParaAtualizacao(id).map(this::toDomain);
+    }
+
+    @Override
     public List<Material> listar() {
         return jpa.findAll().stream().map(this::toDomain).toList();
     }

@@ -8,6 +8,8 @@ import java.util.Optional;
 public interface MaterialRepository {
     Material salvar(Material material);
     Optional<Material> buscarPorId(Long id);
+    /** Bloqueia o material ate o fim da transacao ativa para ler e alterar o saldo com seguranca. */
+    Optional<Material> buscarPorIdParaAtualizacao(Long id);
     List<Material> listar();
     boolean existeCodigo(String codigo);
     boolean existeCodigoParaOutroMaterial(String codigo, Long id);
