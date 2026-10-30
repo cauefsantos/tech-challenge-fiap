@@ -29,7 +29,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 
-/** Cada chamada ao caso de uso abre sua propria transacao; o teste nao compartilha uma transacao. */
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class EstoqueConcorrenciaIntegrationTest {

@@ -18,10 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * O saldo so muda por movimentacao relativa: uma edicao de cadastro feita a partir de uma leitura antiga
- * nao pode devolver ao estoque o que uma aprovacao ja consumiu.
- */
 @SpringBootTest
 @AutoConfigureMockMvc
 class MaterialEstoqueIntegrationTest {

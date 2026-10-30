@@ -42,7 +42,6 @@ public class GerenciarMaterialUseCase {
     public Material atualizar(Long id, String codigo, TipoMaterial tipo, String nome, String descricao,
                               BigDecimal valorUnitario, String unidadeMedida, BigDecimal estoqueMinimo) {
         Material existente = buscarParaAtualizacao(id);
-        // O saldo nao vem do cliente: uma edicao feita sobre uma leitura antiga desfaria baixas ja aprovadas.
         Material atualizado = new Material(id, codigo, tipo, nome, descricao, valorUnitario, unidadeMedida,
                 existente.getQuantidadeEstoque(), estoqueMinimo, existente.getDataCadastro(), existente.isAtivo());
         if (repository.existeCodigoParaOutroMaterial(atualizado.getCodigo(), id)) {

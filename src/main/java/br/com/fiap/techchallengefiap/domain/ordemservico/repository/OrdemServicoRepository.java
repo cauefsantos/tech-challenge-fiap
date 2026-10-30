@@ -10,7 +10,6 @@ public interface OrdemServicoRepository {
 
     Optional<OrdemServico> buscarPorId(Long id);
 
-    /** Serializa alteracoes do agregado durante a transacao ativa. */
     Optional<OrdemServico> buscarPorIdParaAtualizacao(Long id);
 
     Optional<OrdemServico> buscarPorNumero(String numero);

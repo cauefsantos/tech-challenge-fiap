@@ -96,8 +96,6 @@ public class OrdemServicoFluxoUseCase {
         var os = buscar(id);
         var orcamento = os.gerarOrcamento();
         var salva = repository.salvar(os);
-        // Devolve o orcamento persistido, com o id gerado pelo banco, para que o cliente da API
-        // consiga disponibiliza-lo e aprova-lo em seguida.
         return salva.getOrcamentos().stream()
                 .filter(item -> item.getVersao() == orcamento.getVersao())
                 .findFirst()
@@ -118,7 +116,6 @@ public class OrdemServicoFluxoUseCase {
     @Transactional
     public OrdemServico aprovarOrcamento(Long id, Long orcamentoId, String observacao) {
         var os = buscar(id);
-        // Agrupa itens repetidos e bloqueia os materiais sempre na mesma ordem para evitar deadlocks.
         var quantidades = new TreeMap<Long, BigDecimal>();
         for (var item : os.getItensMaterial()) {
             quantidades.merge(item.getMaterialId(), item.getQuantidade(), BigDecimal::add);
@@ -174,7 +171,6 @@ public class OrdemServicoFluxoUseCase {
     }
 
     private OrdemServico buscar(Long id) {
-        // Serializa alteracoes da mesma OS, inclusive tentativas simultaneas de aprovacao.
         return repository.buscarPorIdParaAtualizacao(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Ordem de servico nao encontrada."));
     }
