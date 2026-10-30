@@ -93,8 +93,13 @@ public class OrdemServicoFluxoUseCase {
     public Orcamento gerarOrcamento(Long id) {
         var os = buscar(id);
         var orcamento = os.gerarOrcamento();
-        repository.salvar(os);
-        return orcamento;
+        var salva = repository.salvar(os);
+        // Devolve o orcamento persistido, com o id gerado pelo banco, para que o cliente da API
+        // consiga disponibiliza-lo e aprova-lo em seguida.
+        return salva.getOrcamentos().stream()
+                .filter(item -> item.getVersao() == orcamento.getVersao())
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Orcamento gerado nao foi persistido."));
     }
 
     @Transactional

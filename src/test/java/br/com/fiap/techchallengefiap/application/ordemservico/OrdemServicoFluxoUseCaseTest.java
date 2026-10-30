@@ -119,6 +119,19 @@ class OrdemServicoFluxoUseCaseTest {
     }
 
     @Test
+    void geraOrcamentoDevolvendoOrcamentoPersistidoComId() {
+        OrdemServico os = os(StatusOrdemServico.EM_DIAGNOSTICO);
+        when(repository.buscarPorId(OS_ID)).thenReturn(Optional.of(os));
+        when(repository.salvar(any())).thenAnswer(inv -> {
+            OrdemServico salva = inv.getArgument(0);
+            salva.getOrcamentos().forEach(item -> item.setId(300L));
+            return salva;
+        });
+
+        assertEquals(300L, useCase.gerarOrcamento(OS_ID).getId());
+    }
+
+    @Test
     void disponibilizaOrcamentoEncontradoEPersisteOs() {
         OrdemServico os = new OrdemServico(OS_ID, "ABC12345", CLIENTE_ID, VEICULO_ID, StatusOrdemServico.EM_DIAGNOSTICO, false,
                 BigDecimal.TEN, DATA, null, null, null, null, null, null);

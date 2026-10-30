@@ -657,6 +657,7 @@ A placa pode aceitar o padrão antigo ou Mercosul, com ou sem hífen, conforme a
 - `GET /api/v1/ordens-servico/{id}`
 - `POST /api/v1/ordens-servico/{id}/diagnostico`
 - `POST /api/v1/ordens-servico/{id}/orcamentos`
+- `POST /api/v1/ordens-servico/{id}/orcamentos/{orcamentoId}/disponibilizar`
 - `POST /api/v1/ordens-servico/{id}/orcamentos/{orcamentoId}/aprovar`
 - `POST /api/v1/ordens-servico/{id}/orcamentos/{orcamentoId}/rejeitar`
 - `GET /api/v1/public/ordens-servico/{numero}?documento=...`
@@ -711,6 +712,14 @@ ENTREGUE
 ```
 
 As transições devem respeitar as regras do domínio e gerar histórico quando aplicável.
+
+### Orçamento: gerar, disponibilizar e aprovar
+
+1. `POST /api/v1/ordens-servico/{id}/orcamentos` gera o orçamento e devolve o seu `id`, com os valores de serviços, peças, insumos e o total.
+2. `POST /api/v1/ordens-servico/{id}/orcamentos/{orcamentoId}/disponibilizar` envia o orçamento para aprovação. A OS passa para `AGUARDANDO_APROVACAO`.
+3. `POST /api/v1/ordens-servico/{id}/orcamentos/{orcamentoId}/aprovar` (ou `/rejeitar`) registra a decisão do cliente.
+
+O mesmo `orcamentoId` é usado nos três passos. As respostas da OS (`GET /api/v1/ordens-servico/{id}` e as operações do fluxo) trazem `numero`, `diagnostico`, `itensServico`, `itensMaterial` e `orcamentos`, cada item com o seu `id`. Esses ids são usados, por exemplo, em `DELETE /api/v1/ordens-servico/{id}/itens-servico/{itemId}`.
 
 ---
 
