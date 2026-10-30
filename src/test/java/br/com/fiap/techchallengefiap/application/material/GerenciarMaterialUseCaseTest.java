@@ -36,9 +36,9 @@ class GerenciarMaterialUseCaseTest {
     void impedeCodigoDuplicadoNaCriacaoOuAtualizacao() {
         when(repository.existeCodigo("M-1")).thenReturn(true);
         assertThrows(ConflictException.class, () -> useCase.criar("M-1", TipoMaterial.PECA, "Filtro", null, BigDecimal.TEN, "un", BigDecimal.ONE, BigDecimal.ZERO));
-        when(repository.buscarPorId(3L)).thenReturn(Optional.of(material(3L, true)));
+        when(repository.buscarPorIdParaAtualizacao(3L)).thenReturn(Optional.of(material(3L, true)));
         when(repository.existeCodigoParaOutroMaterial("M-2", 3L)).thenReturn(true);
-        assertThrows(ConflictException.class, () -> useCase.atualizar(3L, "M-2", TipoMaterial.PECA, "Filtro", null, BigDecimal.TEN, "un", BigDecimal.ONE, BigDecimal.ZERO));
+        assertThrows(ConflictException.class, () -> useCase.atualizar(3L, "M-2", TipoMaterial.PECA, "Filtro", null, BigDecimal.TEN, "un", BigDecimal.ZERO));
         verify(repository, never()).salvar(any());
     }
 
@@ -56,11 +56,12 @@ class GerenciarMaterialUseCaseTest {
     @Test
     void atualizaPreservandoDadosDeCadastro() {
         Material existente = material(3L, true);
-        when(repository.buscarPorId(3L)).thenReturn(Optional.of(existente));
+        when(repository.buscarPorIdParaAtualizacao(3L)).thenReturn(Optional.of(existente));
         when(repository.existeCodigoParaOutroMaterial("M-2", 3L)).thenReturn(false);
         when(repository.salvar(any())).thenAnswer(inv -> inv.getArgument(0));
-        Material atualizado = useCase.atualizar(3L, "M-2", TipoMaterial.INSUMO, "Novo", "desc", BigDecimal.ONE, "kg", BigDecimal.TEN, BigDecimal.ONE);
+        Material atualizado = useCase.atualizar(3L, "M-2", TipoMaterial.INSUMO, "Novo", "desc", BigDecimal.ONE, "kg", BigDecimal.ONE);
         assertEquals(3L, atualizado.getId());
+        assertEquals(existente.getQuantidadeEstoque(), atualizado.getQuantidadeEstoque());
         assertEquals(existente.getDataCadastro(), atualizado.getDataCadastro());
         assertTrue(atualizado.isAtivo());
         assertEquals("M-2", atualizado.getCodigo());
@@ -68,9 +69,26 @@ class GerenciarMaterialUseCaseTest {
     }
 
     @Test
+    void registraEntradaSobreOSaldoBloqueado() {
+        Material material = material(3L, true);
+        when(repository.buscarPorIdParaAtualizacao(3L)).thenReturn(Optional.of(material));
+        when(repository.salvar(any())).thenAnswer(inv -> inv.getArgument(0));
+        assertEquals(new BigDecimal("3"), useCase.registrarEntrada(3L, new BigDecimal("2")).getQuantidadeEstoque());
+        verify(repository).salvar(material);
+        verify(repository, never()).buscarPorId(any());
+    }
+
+    @Test
+    void informaMaterialNaoEncontradoNaEntrada() {
+        when(repository.buscarPorIdParaAtualizacao(4L)).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> useCase.registrarEntrada(4L, BigDecimal.ONE));
+        verify(repository, never()).salvar(any());
+    }
+
+    @Test
     void alteraAtivacaoDoMaterial() {
         Material material = material(3L, true);
-        when(repository.buscarPorId(3L)).thenReturn(Optional.of(material));
+        when(repository.buscarPorIdParaAtualizacao(3L)).thenReturn(Optional.of(material));
         when(repository.salvar(any())).thenAnswer(inv -> inv.getArgument(0));
         assertFalse(useCase.alterarAtivo(3L, false).isAtivo());
         assertTrue(useCase.alterarAtivo(3L, true).isAtivo());

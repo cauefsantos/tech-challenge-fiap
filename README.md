@@ -651,6 +651,18 @@ A placa pode aceitar o padrão antigo ou Mercosul, com ou sem hífen, conforme a
 - `DELETE /api/v1/veiculos/{placa}`
 - `PATCH /api/v1/veiculos/{placa}/ativacao`
 
+### Materiais
+
+- `POST /api/v1/materiais`
+- `GET /api/v1/materiais`
+- `GET /api/v1/materiais/{id}`
+- `PUT /api/v1/materiais/{id}`
+- `POST /api/v1/materiais/{id}/entradas-estoque`
+- `DELETE /api/v1/materiais/{id}`
+- `PATCH /api/v1/materiais/{id}/ativacao`
+
+O saldo informado no cadastro é o saldo inicial. Depois disso, o `PUT` não altera `quantidadeEstoque`: o saldo só aumenta por `entradas-estoque` (`{"quantidade": 5}`) e só diminui pela aprovação de orçamento, ambas sob bloqueio do material.
+
 ### Ordens de Serviço
 
 - `POST /api/v1/ordens-servico`
