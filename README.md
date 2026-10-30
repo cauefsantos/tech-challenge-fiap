@@ -651,6 +651,16 @@ A placa pode aceitar o padrão antigo ou Mercosul, com ou sem hífen, conforme a
 - `DELETE /api/v1/veiculos/{placa}`
 - `PATCH /api/v1/veiculos/{placa}/ativacao`
 
+### Materiais
+
+- `POST /api/v1/materiais`
+- `GET /api/v1/materiais`
+- `GET /api/v1/materiais/{id}`
+- `PUT /api/v1/materiais/{id}`
+- `POST /api/v1/materiais/{id}/entradas-estoque`
+- `DELETE /api/v1/materiais/{id}`
+- `PATCH /api/v1/materiais/{id}/ativacao`
+
 ### Ordens de Serviço
 
 - `POST /api/v1/ordens-servico`

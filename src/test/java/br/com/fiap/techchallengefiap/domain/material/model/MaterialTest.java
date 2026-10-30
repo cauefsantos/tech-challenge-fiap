@@ -63,6 +63,17 @@ class MaterialTest {
     }
 
     @Test
+    void registraEntradaSomenteComQuantidadePositiva() {
+        Material material = material();
+        material.registrarEntrada(new BigDecimal("2.500"));
+        assertEquals(new BigDecimal("7.500"), material.getQuantidadeEstoque());
+        assertThrows(DomainException.class, () -> material.registrarEntrada(BigDecimal.ZERO));
+        assertThrows(DomainException.class, () -> material.registrarEntrada(new BigDecimal("-1")));
+        assertThrows(DomainException.class, () -> material.registrarEntrada(null));
+        assertEquals(new BigDecimal("7.500"), material.getQuantidadeEstoque());
+    }
+
+    @Test
     void alteraAtivacaoDoMaterial() {
         Material material = material();
         material.desativar();

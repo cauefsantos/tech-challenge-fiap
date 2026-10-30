@@ -37,8 +37,6 @@ public class OrdemServicoRepositoryAdapter implements OrdemServicoRepository {
     public OrdemServico salvar(OrdemServico os) {
         var entity = jpa.save(toEntity(os));
         os.setId(entity.id);
-        // Sincroniza os filhos do agregado preservando os ids ja persistidos: as referencias usadas
-        // pela API (orcamentoId, itemId) continuam validas entre uma operacao e outra.
         salvarItensServico(entity.id, os.getItensServico());
         salvarItensMaterial(entity.id, os.getItensMaterial());
         salvarOrcamentos(entity.id, os.getOrcamentos());
@@ -48,6 +46,11 @@ public class OrdemServicoRepositoryAdapter implements OrdemServicoRepository {
 
     public Optional<OrdemServico> buscarPorId(Long id) {
         return jpa.findById(id).map(this::toDomain);
+    }
+
+    @Override
+    public Optional<OrdemServico> buscarPorIdParaAtualizacao(Long id) {
+        return jpa.buscarPorIdParaAtualizacao(id).map(this::toDomain);
     }
 
     public Optional<OrdemServico> buscarPorNumero(String numero) {
@@ -62,7 +65,6 @@ public class OrdemServicoRepositoryAdapter implements OrdemServicoRepository {
         return jpa.findAll().stream().map(this::toDomain).toList();
     }
 
-    /** Remove da tabela os registros da OS que nao estao mais no agregado. */
     private void removerAusentes(String tabela, Long ordemServicoId, List<Long> idsMantidos) {
         if (idsMantidos.isEmpty()) {
             jdbcTemplate.update("DELETE FROM " + tabela + " WHERE ordem_servico_id = ?", ordemServicoId);
@@ -151,7 +153,6 @@ public class OrdemServicoRepositoryAdapter implements OrdemServicoRepository {
         if (historicos == null || historicos.isEmpty()) return;
         String sql = "INSERT INTO historico_status (ordem_servico_id, status_anterior, status_novo, data_alteracao, observacao) VALUES (?, ?, ?, ?, ?)";
         for (HistoricoStatus item : historicos) {
-            // O historico e somente de insercao: registros ja persistidos nunca sao regravados.
             if (item.getId() != null) continue;
             jdbcTemplate.update(sql,
                     ordemServicoId,

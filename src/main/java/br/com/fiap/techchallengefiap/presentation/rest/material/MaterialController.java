@@ -36,10 +36,14 @@ public class MaterialController {
     }
 
     @PutMapping("/{id}")
-    public MaterialResponse atualizar(@PathVariable Long id, @Valid @RequestBody MaterialRequest request) {
+    public MaterialResponse atualizar(@PathVariable Long id, @Valid @RequestBody MaterialAtualizacaoRequest request) {
         return MaterialResponse.from(useCase.atualizar(id, request.codigo(), request.tipo(), request.nome(),
-                request.descricao(), request.valorUnitario(), request.unidadeMedida(),
-                request.quantidadeEstoque(), request.estoqueMinimo()));
+                request.descricao(), request.valorUnitario(), request.unidadeMedida(), request.estoqueMinimo()));
+    }
+
+    @PostMapping("/{id}/entradas-estoque")
+    public MaterialResponse registrarEntrada(@PathVariable Long id, @Valid @RequestBody EntradaEstoqueRequest request) {
+        return MaterialResponse.from(useCase.registrarEntrada(id, request.quantidade()));
     }
 
     @DeleteMapping("/{id}")
