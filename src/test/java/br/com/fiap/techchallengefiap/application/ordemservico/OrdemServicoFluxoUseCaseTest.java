@@ -40,7 +40,7 @@ class OrdemServicoFluxoUseCaseTest {
     @Test
     void enviaParaDiagnosticoEConcluiPersistindoOs() {
         OrdemServico os = os(StatusOrdemServico.RECEBIDA);
-        when(repository.buscarPorId(OS_ID)).thenReturn(Optional.of(os));
+        when(repository.buscarPorIdParaAtualizacao(OS_ID)).thenReturn(Optional.of(os));
         when(repository.salvar(any())).thenAnswer(inv -> inv.getArgument(0));
         assertEquals(StatusOrdemServico.EM_DIAGNOSTICO, useCase.enviarParaDiagnostico(OS_ID).getStatus());
         verify(repository).salvar(os);
@@ -49,7 +49,7 @@ class OrdemServicoFluxoUseCaseTest {
     @Test
     void registraDiagnosticoEConcluiDiagnosticoPersistindoOs() {
         OrdemServico os = os(StatusOrdemServico.EM_DIAGNOSTICO);
-        when(repository.buscarPorId(OS_ID)).thenReturn(Optional.of(os));
+        when(repository.buscarPorIdParaAtualizacao(OS_ID)).thenReturn(Optional.of(os));
         when(repository.salvar(any())).thenAnswer(inv -> inv.getArgument(0));
         assertEquals("Diagnóstico concluído", useCase.registrarDiagnostico(OS_ID, " Diagnóstico concluído ").getDiagnostico());
         assertSame(os, useCase.concluirDiagnostico(OS_ID));
@@ -62,7 +62,7 @@ class OrdemServicoFluxoUseCaseTest {
         OrdemServico os = os(StatusOrdemServico.EM_DIAGNOSTICO);
         Servico servico = servico();
         ItemServico itemPersistido = new ItemServico(41L, OS_ID, 40L, "Reparo", BigDecimal.ONE, BigDecimal.TEN, BigDecimal.TEN, 60);
-        when(repository.buscarPorId(OS_ID)).thenReturn(Optional.of(os));
+        when(repository.buscarPorIdParaAtualizacao(OS_ID)).thenReturn(Optional.of(os));
         when(servicoRepository.buscarPorId(40L)).thenReturn(Optional.of(servico));
         when(repository.salvar(any())).thenAnswer(inv -> inv.getArgument(0));
         assertEquals(1, useCase.adicionarItemServico(OS_ID, 40L, BigDecimal.ONE).getItensServico().size());
@@ -73,7 +73,7 @@ class OrdemServicoFluxoUseCaseTest {
 
     @Test
     void informaServicoNaoEncontrado() {
-        when(repository.buscarPorId(OS_ID)).thenReturn(Optional.of(os(StatusOrdemServico.EM_DIAGNOSTICO)));
+        when(repository.buscarPorIdParaAtualizacao(OS_ID)).thenReturn(Optional.of(os(StatusOrdemServico.EM_DIAGNOSTICO)));
         when(servicoRepository.buscarPorId(40L)).thenReturn(Optional.empty());
         assertThrows(ResourceNotFoundException.class, () -> useCase.adicionarItemServico(OS_ID, 40L, BigDecimal.ONE));
         verify(repository, never()).salvar(any());
@@ -84,7 +84,7 @@ class OrdemServicoFluxoUseCaseTest {
         OrdemServico os = os(StatusOrdemServico.EM_DIAGNOSTICO);
         Material material = material(50L, BigDecimal.TEN);
         ItemMaterial itemPersistido = new ItemMaterial(51L, OS_ID, 50L, TipoMaterial.PECA, "Filtro", BigDecimal.ONE, BigDecimal.TEN, BigDecimal.TEN);
-        when(repository.buscarPorId(OS_ID)).thenReturn(Optional.of(os));
+        when(repository.buscarPorIdParaAtualizacao(OS_ID)).thenReturn(Optional.of(os));
         when(materialRepository.buscarPorId(50L)).thenReturn(Optional.of(material));
         when(repository.salvar(any())).thenAnswer(inv -> inv.getArgument(0));
         assertEquals(1, useCase.adicionarItemMaterial(OS_ID, 50L, BigDecimal.ONE).getItensMaterial().size());
@@ -95,7 +95,7 @@ class OrdemServicoFluxoUseCaseTest {
 
     @Test
     void informaMaterialNaoEncontrado() {
-        when(repository.buscarPorId(OS_ID)).thenReturn(Optional.of(os(StatusOrdemServico.EM_DIAGNOSTICO)));
+        when(repository.buscarPorIdParaAtualizacao(OS_ID)).thenReturn(Optional.of(os(StatusOrdemServico.EM_DIAGNOSTICO)));
         when(materialRepository.buscarPorId(50L)).thenReturn(Optional.empty());
         assertThrows(ResourceNotFoundException.class, () -> useCase.adicionarItemMaterial(OS_ID, 50L, BigDecimal.ONE));
         verify(repository, never()).salvar(any());
@@ -111,7 +111,7 @@ class OrdemServicoFluxoUseCaseTest {
     @Test
     void geraOrcamentoEPersisteOs() {
         OrdemServico os = os(StatusOrdemServico.EM_DIAGNOSTICO);
-        when(repository.buscarPorId(OS_ID)).thenReturn(Optional.of(os));
+        when(repository.buscarPorIdParaAtualizacao(OS_ID)).thenReturn(Optional.of(os));
         when(repository.salvar(any())).thenAnswer(inv -> inv.getArgument(0));
         Orcamento orcamento = useCase.gerarOrcamento(OS_ID);
         assertEquals(1, orcamento.getVersao());
@@ -121,7 +121,7 @@ class OrdemServicoFluxoUseCaseTest {
     @Test
     void geraOrcamentoDevolvendoOrcamentoPersistidoComId() {
         OrdemServico os = os(StatusOrdemServico.EM_DIAGNOSTICO);
-        when(repository.buscarPorId(OS_ID)).thenReturn(Optional.of(os));
+        when(repository.buscarPorIdParaAtualizacao(OS_ID)).thenReturn(Optional.of(os));
         when(repository.salvar(any())).thenAnswer(inv -> {
             OrdemServico salva = inv.getArgument(0);
             salva.getOrcamentos().forEach(item -> item.setId(300L));
@@ -138,7 +138,7 @@ class OrdemServicoFluxoUseCaseTest {
         Orcamento orcamento = new Orcamento(200L, OS_ID, 1, BigDecimal.ZERO, BigDecimal.TEN, BigDecimal.ZERO,
                 BigDecimal.TEN, br.com.fiap.techchallengefiap.domain.orcamento.model.StatusOrcamento.PENDENTE, DATA, null, null);
         os.carregarOrcamentosPersistidos(List.of(orcamento));
-        when(repository.buscarPorId(OS_ID)).thenReturn(Optional.of(os));
+        when(repository.buscarPorIdParaAtualizacao(OS_ID)).thenReturn(Optional.of(os));
         when(repository.salvar(any())).thenAnswer(inv -> inv.getArgument(0));
         assertEquals(StatusOrdemServico.AGUARDANDO_APROVACAO, useCase.disponibilizarOrcamento(OS_ID, 200L).getStatus());
         verify(repository).salvar(os);
@@ -147,7 +147,7 @@ class OrdemServicoFluxoUseCaseTest {
 
     @Test
     void informaOrcamentoNaoEncontradoNaOs() {
-        when(repository.buscarPorId(OS_ID)).thenReturn(Optional.of(os(StatusOrdemServico.EM_DIAGNOSTICO)));
+        when(repository.buscarPorIdParaAtualizacao(OS_ID)).thenReturn(Optional.of(os(StatusOrdemServico.EM_DIAGNOSTICO)));
         assertThrows(ResourceNotFoundException.class, () -> useCase.disponibilizarOrcamento(OS_ID, 99L));
         verify(repository, never()).salvar(any());
     }
@@ -155,7 +155,7 @@ class OrdemServicoFluxoUseCaseTest {
     @Test
     void rejeitaOrcamentoECancelaOsPersistindoResultado() {
         OrdemServico os = osAprovacao();
-        when(repository.buscarPorId(OS_ID)).thenReturn(Optional.of(os));
+        when(repository.buscarPorIdParaAtualizacao(OS_ID)).thenReturn(Optional.of(os));
         when(repository.salvar(any())).thenAnswer(inv -> inv.getArgument(0));
         OrdemServico resultado = useCase.rejeitarOrcamento(OS_ID, 200L, "Não aprovado");
         assertEquals(StatusOrdemServico.CANCELADA, resultado.getStatus());
@@ -170,7 +170,7 @@ class OrdemServicoFluxoUseCaseTest {
         OrdemServico finalizada = new OrdemServico(OS_ID, "ABC12345", CLIENTE_ID, VEICULO_ID,
                 StatusOrdemServico.FINALIZADA, true, BigDecimal.TEN, DATA, null, null, DATA,
                 DATA.plusSeconds(60), null, null);
-        when(repository.buscarPorId(OS_ID)).thenReturn(Optional.of(paraFinalizar), Optional.of(finalizada));
+        when(repository.buscarPorIdParaAtualizacao(OS_ID)).thenReturn(Optional.of(paraFinalizar), Optional.of(finalizada));
         when(repository.salvar(any())).thenAnswer(inv -> inv.getArgument(0));
         assertEquals(StatusOrdemServico.FINALIZADA, useCase.finalizar(OS_ID).getStatus());
         assertEquals(StatusOrdemServico.ENTREGUE, useCase.entregar(OS_ID).getStatus());
@@ -179,7 +179,7 @@ class OrdemServicoFluxoUseCaseTest {
 
     @Test
     void informaOsNaoEncontradaParaCadaOperacao() {
-        when(repository.buscarPorId(OS_ID)).thenReturn(Optional.empty());
+        when(repository.buscarPorIdParaAtualizacao(OS_ID)).thenReturn(Optional.empty());
         assertThrows(ResourceNotFoundException.class, () -> useCase.enviarParaDiagnostico(OS_ID));
         assertThrows(ResourceNotFoundException.class, () -> useCase.registrarDiagnostico(OS_ID, "texto"));
         assertThrows(ResourceNotFoundException.class, () -> useCase.concluirDiagnostico(OS_ID));
@@ -200,8 +200,8 @@ class OrdemServicoFluxoUseCaseTest {
     void aprovaOrcamentoComEstoqueSuficienteConsomeESalvaCadaMaterialEAOs() {
         OrdemServico os = osAprovacao();
         Material material = material(50L, BigDecimal.TEN);
-        when(repository.buscarPorId(OS_ID)).thenReturn(Optional.of(os));
-        when(materialRepository.buscarPorId(50L)).thenReturn(Optional.of(material));
+        when(repository.buscarPorIdParaAtualizacao(OS_ID)).thenReturn(Optional.of(os));
+        when(materialRepository.buscarPorIdParaAtualizacao(50L)).thenReturn(Optional.of(material));
         when(materialRepository.salvar(any())).thenAnswer(inv -> inv.getArgument(0));
         when(repository.salvar(any())).thenAnswer(inv -> inv.getArgument(0));
         OrdemServico resultado = useCase.aprovarOrcamento(OS_ID, 200L, "Aprovado");
@@ -215,8 +215,8 @@ class OrdemServicoFluxoUseCaseTest {
     void bloqueiaAprovacaoComEstoqueInsuficienteSemConsumirNemSalvarMateriaisOuOs() {
         OrdemServico os = osAprovacao();
         Material material = spy(material(50L, BigDecimal.ZERO));
-        when(repository.buscarPorId(OS_ID)).thenReturn(Optional.of(os));
-        when(materialRepository.buscarPorId(50L)).thenReturn(Optional.of(material));
+        when(repository.buscarPorIdParaAtualizacao(OS_ID)).thenReturn(Optional.of(os));
+        when(materialRepository.buscarPorIdParaAtualizacao(50L)).thenReturn(Optional.of(material));
         DomainException erro = assertThrows(DomainException.class, () -> useCase.aprovarOrcamento(OS_ID, 200L, null));
         assertTrue(erro.getMessage().contains("Filtro"));
         verify(material, never()).consumir(any());
@@ -232,9 +232,9 @@ class OrdemServicoFluxoUseCaseTest {
                 new ItemMaterial(102L, OS_ID, 51L, TipoMaterial.INSUMO, "Oleo", BigDecimal.ONE, BigDecimal.TEN, BigDecimal.TEN)));
         Material filtro = spy(material(50L, BigDecimal.ZERO));
         Material oleo = spy(material(51L, BigDecimal.ZERO));
-        when(repository.buscarPorId(OS_ID)).thenReturn(Optional.of(os));
-        when(materialRepository.buscarPorId(50L)).thenReturn(Optional.of(filtro));
-        when(materialRepository.buscarPorId(51L)).thenReturn(Optional.of(oleo));
+        when(repository.buscarPorIdParaAtualizacao(OS_ID)).thenReturn(Optional.of(os));
+        when(materialRepository.buscarPorIdParaAtualizacao(50L)).thenReturn(Optional.of(filtro));
+        when(materialRepository.buscarPorIdParaAtualizacao(51L)).thenReturn(Optional.of(oleo));
         DomainException erro = assertThrows(DomainException.class, () -> useCase.aprovarOrcamento(OS_ID, 200L, null));
         assertTrue(erro.getMessage().contains("Filtro"));
         assertTrue(erro.getMessage().contains("Oleo"));
@@ -247,8 +247,8 @@ class OrdemServicoFluxoUseCaseTest {
     @Test
     void interrompeQuandoMaterialDoItemNaoExisteSemSalvarMateriaisOuOs() {
         OrdemServico os = osAprovacao();
-        when(repository.buscarPorId(OS_ID)).thenReturn(Optional.of(os));
-        when(materialRepository.buscarPorId(50L)).thenReturn(Optional.empty());
+        when(repository.buscarPorIdParaAtualizacao(OS_ID)).thenReturn(Optional.of(os));
+        when(materialRepository.buscarPorIdParaAtualizacao(50L)).thenReturn(Optional.empty());
         assertThrows(ResourceNotFoundException.class, () -> useCase.aprovarOrcamento(OS_ID, 200L, null));
         verify(materialRepository, never()).salvar(any());
         verify(repository, never()).salvar(any());
@@ -257,10 +257,51 @@ class OrdemServicoFluxoUseCaseTest {
     @Test
     void repassaRegraDeAprovacaoInvalidaSemPersistir() {
         OrdemServico os = os(StatusOrdemServico.EM_DIAGNOSTICO);
-        when(repository.buscarPorId(OS_ID)).thenReturn(Optional.of(os));
+        when(repository.buscarPorIdParaAtualizacao(OS_ID)).thenReturn(Optional.of(os));
         assertThrows(DomainException.class, () -> useCase.aprovarOrcamento(OS_ID, 200L, null));
         verify(materialRepository, never()).salvar(any());
         verify(repository, never()).salvar(any());
+    }
+
+    @Test
+    void somaItensRepetidosAntesDeValidarEstoque() {
+        OrdemServico os = osAprovacao();
+        os.carregarMateriaisPersistidos(List.of(
+                new ItemMaterial(101L, OS_ID, 50L, TipoMaterial.PECA, "Filtro", new BigDecimal("7"), BigDecimal.TEN, new BigDecimal("70")),
+                new ItemMaterial(102L, OS_ID, 50L, TipoMaterial.PECA, "Filtro", new BigDecimal("7"), BigDecimal.TEN, new BigDecimal("70"))));
+        when(repository.buscarPorIdParaAtualizacao(OS_ID)).thenReturn(Optional.of(os));
+        when(materialRepository.buscarPorIdParaAtualizacao(50L)).thenReturn(Optional.of(material(50L, BigDecimal.TEN)));
+
+        assertThrows(DomainException.class, () -> useCase.aprovarOrcamento(OS_ID, 200L, null));
+        verify(materialRepository, times(1)).buscarPorIdParaAtualizacao(50L);
+        verify(materialRepository, never()).salvar(any());
+        verify(repository, never()).salvar(any());
+    }
+
+    @Test
+    void bloqueiaMateriaisEmOrdemDeIdEConsomeUmaVezPorMaterial() {
+        OrdemServico os = osAprovacao();
+        os.carregarMateriaisPersistidos(List.of(
+                new ItemMaterial(101L, OS_ID, 51L, TipoMaterial.INSUMO, "Oleo", BigDecimal.ONE, BigDecimal.TEN, BigDecimal.TEN),
+                new ItemMaterial(102L, OS_ID, 50L, TipoMaterial.PECA, "Filtro", BigDecimal.ONE, BigDecimal.TEN, BigDecimal.TEN),
+                new ItemMaterial(103L, OS_ID, 50L, TipoMaterial.PECA, "Filtro", BigDecimal.ONE, BigDecimal.TEN, BigDecimal.TEN)));
+        Material filtro = material(50L, BigDecimal.TEN);
+        Material oleo = material(51L, BigDecimal.TEN);
+        when(repository.buscarPorIdParaAtualizacao(OS_ID)).thenReturn(Optional.of(os));
+        when(materialRepository.buscarPorIdParaAtualizacao(50L)).thenReturn(Optional.of(filtro));
+        when(materialRepository.buscarPorIdParaAtualizacao(51L)).thenReturn(Optional.of(oleo));
+        when(repository.salvar(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        useCase.aprovarOrcamento(OS_ID, 200L, null);
+
+        var ordem = inOrder(materialRepository);
+        ordem.verify(materialRepository).buscarPorIdParaAtualizacao(50L);
+        ordem.verify(materialRepository).buscarPorIdParaAtualizacao(51L);
+        ordem.verify(materialRepository).salvar(filtro);
+        ordem.verify(materialRepository).salvar(oleo);
+        verify(materialRepository, times(1)).buscarPorIdParaAtualizacao(50L);
+        assertEquals(new BigDecimal("8"), filtro.getQuantidadeEstoque());
+        assertEquals(new BigDecimal("9"), oleo.getQuantidadeEstoque());
     }
 
     private Servico servico() { return new Servico(40L, "S-40", "Reparo", null, BigDecimal.TEN, Duration.ofMinutes(1), DATA, true); }
