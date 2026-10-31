@@ -6,6 +6,7 @@ import br.com.fiap.techchallengefiap.domain.shared.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.*;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +35,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     ResponseEntity<ApiErrorResponse> validation(MethodArgumentNotValidException ex, HttpServletRequest req) {
         return build(HttpStatus.BAD_REQUEST, "Dados de entrada invalidos.", req);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    ResponseEntity<ApiErrorResponse> corpoInvalido(HttpMessageNotReadableException ex, HttpServletRequest req) {
+        return build(HttpStatus.BAD_REQUEST,
+                "Corpo da requisicao invalido: verifique o formato do JSON, os tipos dos campos e os valores permitidos.", req);
     }
 
     private ResponseEntity<ApiErrorResponse> build(HttpStatus status, String msg, HttpServletRequest req) {

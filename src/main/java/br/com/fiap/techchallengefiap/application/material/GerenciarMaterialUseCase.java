@@ -40,11 +40,10 @@ public class GerenciarMaterialUseCase {
 
     @Transactional
     public Material atualizar(Long id, String codigo, TipoMaterial tipo, String nome, String descricao,
-                              BigDecimal valorUnitario, String unidadeMedida, BigDecimal quantidadeEstoque,
-                              BigDecimal estoqueMinimo) {
-        Material existente = buscar(id);
+                              BigDecimal valorUnitario, String unidadeMedida, BigDecimal estoqueMinimo) {
+        Material existente = buscarParaAtualizacao(id);
         Material atualizado = new Material(id, codigo, tipo, nome, descricao, valorUnitario, unidadeMedida,
-                quantidadeEstoque, estoqueMinimo, existente.getDataCadastro(), existente.isAtivo());
+                existente.getQuantidadeEstoque(), estoqueMinimo, existente.getDataCadastro(), existente.isAtivo());
         if (repository.existeCodigoParaOutroMaterial(atualizado.getCodigo(), id)) {
             throw new ConflictException("Ja existe um material com este codigo.");
         }
@@ -53,8 +52,20 @@ public class GerenciarMaterialUseCase {
 
     @Transactional
     public Material alterarAtivo(Long id, boolean ativo) {
-        Material material = buscar(id);
+        Material material = buscarParaAtualizacao(id);
         if (ativo) material.ativar(); else material.desativar();
         return repository.salvar(material);
+    }
+
+    @Transactional
+    public Material registrarEntrada(Long id, BigDecimal quantidade) {
+        Material material = buscarParaAtualizacao(id);
+        material.registrarEntrada(quantidade);
+        return repository.salvar(material);
+    }
+
+    private Material buscarParaAtualizacao(Long id) {
+        return repository.buscarPorIdParaAtualizacao(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Material nao encontrado."));
     }
 }

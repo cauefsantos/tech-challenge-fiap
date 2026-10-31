@@ -6,7 +6,8 @@ import br.com.fiap.techchallengefiap.domain.orcamento.model.StatusOrcamento;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
-public record OrcamentoResponse(Long id, Long ordemServicoId, int versao, BigDecimal valorTotal,
+public record OrcamentoResponse(Long id, Long ordemServicoId, int versao, BigDecimal valorServicos,
+                               BigDecimal valorPecas, BigDecimal valorInsumos, BigDecimal valorTotal,
                                StatusOrcamento status, OffsetDateTime dataGeracao,
                                OffsetDateTime dataResposta, String observacaoResposta) {
     public static OrcamentoResponse from(Orcamento orcamento) {
@@ -14,6 +15,9 @@ public record OrcamentoResponse(Long id, Long ordemServicoId, int versao, BigDec
                 orcamento.getId(),
                 orcamento.getOrdemServicoId(),
                 orcamento.getVersao(),
+                orcamento.getValorServicos(),
+                orcamento.getValorPecas(),
+                orcamento.getValorInsumos(),
                 orcamento.getValorTotal(),
                 orcamento.getStatus(),
                 orcamento.getDataGeracao(),

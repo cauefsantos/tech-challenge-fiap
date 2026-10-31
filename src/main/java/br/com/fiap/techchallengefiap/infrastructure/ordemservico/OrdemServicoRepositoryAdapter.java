@@ -17,8 +17,12 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Repository
 public class OrdemServicoRepositoryAdapter implements OrdemServicoRepository {
@@ -33,7 +37,6 @@ public class OrdemServicoRepositoryAdapter implements OrdemServicoRepository {
     public OrdemServico salvar(OrdemServico os) {
         var entity = jpa.save(toEntity(os));
         os.setId(entity.id);
-        limparRelacoes(entity.id);
         salvarItensServico(entity.id, os.getItensServico());
         salvarItensMaterial(entity.id, os.getItensMaterial());
         salvarOrcamentos(entity.id, os.getOrcamentos());
@@ -43,6 +46,11 @@ public class OrdemServicoRepositoryAdapter implements OrdemServicoRepository {
 
     public Optional<OrdemServico> buscarPorId(Long id) {
         return jpa.findById(id).map(this::toDomain);
+    }
+
+    @Override
+    public Optional<OrdemServico> buscarPorIdParaAtualizacao(Long id) {
+        return jpa.buscarPorIdParaAtualizacao(id).map(this::toDomain);
     }
 
     public Optional<OrdemServico> buscarPorNumero(String numero) {
@@ -57,17 +65,29 @@ public class OrdemServicoRepositoryAdapter implements OrdemServicoRepository {
         return jpa.findAll().stream().map(this::toDomain).toList();
     }
 
-    private void limparRelacoes(Long ordemServicoId) {
-        jdbcTemplate.update("DELETE FROM item_servico WHERE ordem_servico_id = ?", ordemServicoId);
-        jdbcTemplate.update("DELETE FROM item_material WHERE ordem_servico_id = ?", ordemServicoId);
-        jdbcTemplate.update("DELETE FROM orcamento WHERE ordem_servico_id = ?", ordemServicoId);
-        jdbcTemplate.update("DELETE FROM historico_status WHERE ordem_servico_id = ?", ordemServicoId);
+    private void removerAusentes(String tabela, Long ordemServicoId, List<Long> idsMantidos) {
+        if (idsMantidos.isEmpty()) {
+            jdbcTemplate.update("DELETE FROM " + tabela + " WHERE ordem_servico_id = ?", ordemServicoId);
+            return;
+        }
+        String marcadores = String.join(", ", Collections.nCopies(idsMantidos.size(), "?"));
+        List<Object> parametros = new ArrayList<>();
+        parametros.add(ordemServicoId);
+        parametros.addAll(idsMantidos);
+        jdbcTemplate.update("DELETE FROM " + tabela + " WHERE ordem_servico_id = ? AND id NOT IN (" + marcadores + ")",
+                parametros.toArray());
+    }
+
+    private static <T> List<Long> idsPersistidos(List<T> itens, Function<T, Long> id) {
+        return itens == null ? List.of() : itens.stream().map(id).filter(Objects::nonNull).toList();
     }
 
     private void salvarItensServico(Long ordemServicoId, List<ItemServico> itens) {
+        removerAusentes("item_servico", ordemServicoId, idsPersistidos(itens, ItemServico::getId));
         if (itens == null || itens.isEmpty()) return;
         String sql = "INSERT INTO item_servico (ordem_servico_id, servico_id, descricao, quantidade, valor_unitario, subtotal, tempo_estimado_segundos) VALUES (?, ?, ?, ?, ?, ?, ?)";
         for (ItemServico item : itens) {
+            if (item.getId() != null) continue;
             jdbcTemplate.update(sql,
                     ordemServicoId,
                     item.getServicoId(),
@@ -80,9 +100,11 @@ public class OrdemServicoRepositoryAdapter implements OrdemServicoRepository {
     }
 
     private void salvarItensMaterial(Long ordemServicoId, List<ItemMaterial> itens) {
+        removerAusentes("item_material", ordemServicoId, idsPersistidos(itens, ItemMaterial::getId));
         if (itens == null || itens.isEmpty()) return;
         String sql = "INSERT INTO item_material (ordem_servico_id, material_id, tipo, descricao, quantidade, valor_unitario, subtotal) VALUES (?, ?, ?, ?, ?, ?, ?)";
         for (ItemMaterial item : itens) {
+            if (item.getId() != null) continue;
             jdbcTemplate.update(sql,
                     ordemServicoId,
                     item.getMaterialId(),
@@ -95,10 +117,25 @@ public class OrdemServicoRepositoryAdapter implements OrdemServicoRepository {
     }
 
     private void salvarOrcamentos(Long ordemServicoId, List<Orcamento> orcamentos) {
+        removerAusentes("orcamento", ordemServicoId, idsPersistidos(orcamentos, Orcamento::getId));
         if (orcamentos == null || orcamentos.isEmpty()) return;
-        String sql = "INSERT INTO orcamento (ordem_servico_id, versao, valor_servicos, valor_pecas, valor_insumos, valor_total, status, data_geracao, data_resposta, observacao_resposta) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String insert = "INSERT INTO orcamento (ordem_servico_id, versao, valor_servicos, valor_pecas, valor_insumos, valor_total, status, data_geracao, data_resposta, observacao_resposta) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String update = "UPDATE orcamento SET valor_servicos = ?, valor_pecas = ?, valor_insumos = ?, valor_total = ?, status = ?, data_resposta = ?, observacao_resposta = ? WHERE id = ? AND ordem_servico_id = ?";
         for (Orcamento orcamento : orcamentos) {
-            jdbcTemplate.update(sql,
+            if (orcamento.getId() != null) {
+                jdbcTemplate.update(update,
+                        orcamento.getValorServicos(),
+                        orcamento.getValorPecas(),
+                        orcamento.getValorInsumos(),
+                        orcamento.getValorTotal(),
+                        orcamento.getStatus().name(),
+                        orcamento.getDataResposta(),
+                        orcamento.getObservacaoResposta(),
+                        orcamento.getId(),
+                        ordemServicoId);
+                continue;
+            }
+            jdbcTemplate.update(insert,
                     ordemServicoId,
                     orcamento.getVersao(),
                     orcamento.getValorServicos(),
@@ -116,6 +153,7 @@ public class OrdemServicoRepositoryAdapter implements OrdemServicoRepository {
         if (historicos == null || historicos.isEmpty()) return;
         String sql = "INSERT INTO historico_status (ordem_servico_id, status_anterior, status_novo, data_alteracao, observacao) VALUES (?, ?, ?, ?, ?)";
         for (HistoricoStatus item : historicos) {
+            if (item.getId() != null) continue;
             jdbcTemplate.update(sql,
                     ordemServicoId,
                     item.getStatusAnterior() == null ? null : item.getStatusAnterior().name(),

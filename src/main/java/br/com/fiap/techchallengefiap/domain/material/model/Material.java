@@ -54,6 +54,10 @@ public class Material {
         quantidadeEstoque = quantidadeEstoque.subtract(quantidade);
     }
 
+    public void registrarEntrada(BigDecimal quantidade) {
+        quantidadeEstoque = quantidadeEstoque.add(positiva(quantidade, "A quantidade de entrada deve ser maior que zero."));
+    }
+
     public void desativar() { ativo = false; }
     public void ativar() { ativo = true; }
 

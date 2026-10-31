@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.TreeMap;
 
 @Service
 public class OrdemServicoFluxoUseCase {
@@ -93,8 +95,11 @@ public class OrdemServicoFluxoUseCase {
     public Orcamento gerarOrcamento(Long id) {
         var os = buscar(id);
         var orcamento = os.gerarOrcamento();
-        repository.salvar(os);
-        return orcamento;
+        var salva = repository.salvar(os);
+        return salva.getOrcamentos().stream()
+                .filter(item -> item.getVersao() == orcamento.getVersao())
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Orcamento gerado nao foi persistido."));
     }
 
     @Transactional
@@ -111,13 +116,19 @@ public class OrdemServicoFluxoUseCase {
     @Transactional
     public OrdemServico aprovarOrcamento(Long id, Long orcamentoId, String observacao) {
         var os = buscar(id);
+        var quantidades = new TreeMap<Long, BigDecimal>();
+        for (var item : os.getItensMaterial()) {
+            quantidades.merge(item.getMaterialId(), item.getQuantidade(), BigDecimal::add);
+        }
+        var materiais = new LinkedHashMap<Long, Material>();
         var itensInsuficientes = new ArrayList<String>();
 
-        for (var item : os.getItensMaterial()) {
-            var material = materialRepository.buscarPorId(item.getMaterialId())
+        for (var entrada : quantidades.entrySet()) {
+            var material = materialRepository.buscarPorIdParaAtualizacao(entrada.getKey())
                     .orElseThrow(() -> new ResourceNotFoundException("Material nao encontrado."));
+            materiais.put(entrada.getKey(), material);
             try {
-                material.validarDisponibilidade(item.getQuantidade());
+                material.validarDisponibilidade(entrada.getValue());
             } catch (DomainException ex) {
                 itensInsuficientes.add(material.getNome());
             }
@@ -129,10 +140,9 @@ public class OrdemServicoFluxoUseCase {
 
         os.aprovarOrcamento(orcamentoId, observacao);
 
-        for (var item : os.getItensMaterial()) {
-            var material = materialRepository.buscarPorId(item.getMaterialId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Material nao encontrado."));
-            material.consumir(item.getQuantidade());
+        for (var entrada : materiais.entrySet()) {
+            var material = entrada.getValue();
+            material.consumir(quantidades.get(entrada.getKey()));
             materialRepository.salvar(material);
         }
 
@@ -161,6 +171,7 @@ public class OrdemServicoFluxoUseCase {
     }
 
     private OrdemServico buscar(Long id) {
-        return repository.buscarPorId(id).orElseThrow(() -> new ResourceNotFoundException("Ordem de servico nao encontrada."));
+        return repository.buscarPorIdParaAtualizacao(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Ordem de servico nao encontrada."));
     }
 }

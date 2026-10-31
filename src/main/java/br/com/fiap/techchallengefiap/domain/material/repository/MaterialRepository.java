@@ -8,6 +8,7 @@ import java.util.Optional;
 public interface MaterialRepository {
     Material salvar(Material material);
     Optional<Material> buscarPorId(Long id);
+    Optional<Material> buscarPorIdParaAtualizacao(Long id);
     List<Material> listar();
     boolean existeCodigo(String codigo);
     boolean existeCodigoParaOutroMaterial(String codigo, Long id);

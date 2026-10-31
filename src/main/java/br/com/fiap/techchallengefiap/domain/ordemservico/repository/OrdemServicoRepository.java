@@ -10,6 +10,8 @@ public interface OrdemServicoRepository {
 
     Optional<OrdemServico> buscarPorId(Long id);
 
+    Optional<OrdemServico> buscarPorIdParaAtualizacao(Long id);
+
     Optional<OrdemServico> buscarPorNumero(String numero);
 
     List<OrdemServico> listar();
