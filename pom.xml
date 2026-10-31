@@ -10,7 +10,7 @@
     </parent>
     <groupId>br.com.fiap.techchallengefiap</groupId>
     <artifactId>tech-challenge-fiap</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>tech-challenge-fiap</name>
     <description>tech-challenge-fiap</description>
     <url/>
