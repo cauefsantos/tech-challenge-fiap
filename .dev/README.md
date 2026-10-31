@@ -362,15 +362,54 @@ $env:SPRING_PROFILES_ACTIVE="dev"
 ./mvnw test
 ```
 
-### Executar verificações e gerar cobertura
+### Executar verificações e gerar documentação OpenAPI
 
-```bash
-./mvnw clean verify
+O build padrão `mvn clean verify` executa testes e cobertura, sem depender de uma aplicação local. A geração do OpenAPI é opcional, pelo profile Maven `openapi`; ela consulta `http://localhost:8080/v3/api-docs.yaml`. Para gerá-la, inicie a aplicação em uma primeira janela, com as variáveis válidas carregadas e Swagger/OpenAPI habilitado no profile ativo.
+
+No CMD do Windows:
+
+```bat
+call set-env.bat
+mvnw.cmd spring-boot:run
 ```
 
-O relatório do JaCoCo fica normalmente em:
+No PowerShell:
+
+```powershell
+. .\set-env.ps1
+.\mvnw.cmd spring-boot:run
+```
+
+No Bash:
+
+```bash
+source ./set-env.sh
+./mvnw spring-boot:run
+```
+
+Quando a aplicação estiver respondendo em `http://localhost:8080`, abra uma segunda janela na raiz do projeto e execute as verificações com o profile:
+
+```bash
+./mvnw verify -Popenapi
+```
+
+No Windows:
+
+```powershell
+.\mvnw.cmd verify -Popenapi
+```
+
+O Maven consulta `http://localhost:8080/v3/api-docs.yaml` durante o ciclo `integration-test`. Se a aplicação não estiver rodando ou o endpoint não estiver acessível, a geração falha e o comando termina com erro. Encerre a aplicação na primeira janela após o build. O CI usa `mvn clean verify`, sem ativar esse profile e sem iniciar a aplicação.
+
+Arquivos gerados:
+
+    docs/api/openapi.yaml
+
+O relatório JaCoCo fica em:
 
     target/site/jacoco/index.html
+
+A especificação OpenAPI gerada fica versionada em `docs/api/openapi.yaml`; revise e inclua as alterações nesse arquivo junto com as mudanças da API. O POM não inicia a aplicação nem define credenciais ou variáveis de ambiente.
 
 ### Gerar o arquivo JAR
 
@@ -1077,4 +1116,3 @@ Encerrar ambiente:
 ```bash
 docker compose down
 ```
-

@@ -303,6 +303,8 @@ call set-env.bat
 mvnw.cmd spring-boot:run
 ```
 
+O `set-env.bat` configura somente o processo atual do **Prompt de Comando (cmd.exe)**; executá-lo pelo PowerShell, IntelliJ ou outro processo filho não consegue alterar as variáveis do processo que o iniciou. No PowerShell, carregue o script no próprio terminal com `. .\set-env.ps1` antes de iniciar a aplicação. No Prompt de Comando, use `call set-env.bat` e inicie o Maven na mesma janela. Para conferir sem revelar valores, execute `if defined JWT_SECRET (echo JWT_SECRET carregado) else (echo JWT_SECRET ausente)` no CMD.
+
 #### Bash
 
 ```bash
@@ -513,6 +515,7 @@ Com a aplicação em execução e a documentação habilitada:
 
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
+- OpenAPI YAML versionado: [docs/api/openapi.yaml](docs/api/openapi.yaml). Para atualizá-lo, inicie a aplicação com OpenAPI habilitado e execute `mvn verify -Popenapi`; o CI padrão não ativa esse profile.
 
 Em produção, Swagger e OpenAPI devem permanecer desabilitados por padrão, salvo decisão consciente da equipe e proteção adequada do acesso.
 
@@ -827,7 +830,7 @@ Substitua os caminhos abaixo pelos arquivos ou links reais do repositório e do 
 
 Substitua ou ajuste os caminhos conforme a estrutura real do repositório:
 
-- [Documentação do projeto](docs/README.md)
+- [Documentação adcional do projeto](docs/README.md)
 - [Decisões da Fase 1](docs/decisoes-fase1.md)
 - [Linguagem Ubíqua](docs/ddd/linguagem-ubiqua.md)
 - [Event Storming](docs/ddd/event-storming.md)
