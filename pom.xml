@@ -200,12 +200,25 @@
                 <artifactId>dependency-check-maven</artifactId>
                 <version>13.0.0</version>
                 <configuration>
+                    <outputDirectory>
+                        ${project.basedir}/docs/owasp
+                    </outputDirectory>
                     <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
                     <formats>
                         <format>HTML</format>
                         <format>JSON</format>
                     </formats>
+                    <prettyPrint>true</prettyPrint>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>dependency-check</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -215,6 +228,22 @@
             <id>openapi</id>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <version>3.5.0</version>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>${project.basedir}/docs/owasp</directory>
+                                    <includes>
+                                        <include>dependency-check-report.*</include>
+                                    </includes>
+                                    <followSymlinks>false</followSymlinks>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </plugin>
                     <plugin>
                         <groupId>org.springdoc</groupId>
                         <artifactId>springdoc-openapi-maven-plugin</artifactId>

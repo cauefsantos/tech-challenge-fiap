@@ -765,7 +765,7 @@ O comando `verify`:
 Relatório HTML:
 
 ```text
-target/site/jacoco/index.html
+docs/relatorio-cobertura/index.html
 ```
 
 ### Último resultado registrado
@@ -785,8 +785,6 @@ target/site/jacoco/index.html
 Os percentuais informados não incluem `infrastructure` nem `presentation`. Testes de integração envolvendo persistência e comportamento transacional são complementares aos testes unitários e mocks.
 
 O [relatório JaCoCo HTML arquivado](docs/relatorio-cobertura/index.html) permite consultar a evidência registrada sem executar o projeto. Uma nova execução gera o relatório em `target/site/jacoco/index.html`; para atualizar a cópia versionada, siga `docs/relatorio-cobertura/README.md`. Os percentuais não incluem `infrastructure` nem `presentation`.
-
-Execute novamente o comando para atualizar o relatório e os números antes da entrega.
 
 ---
 
@@ -812,15 +810,11 @@ A solução utiliza:
 
 ### Relatórios e evidências
 
-Substitua os caminhos abaixo pelos arquivos ou links reais do repositório e do pipeline:
-
 - `docs/security/dependency-check-report.md`
 - `docs/security/trivy-report.md`
 - `.github/dependabot.yml`
 - `.github/workflows/security.yml`
-- `LINK_DOS_ARTEFATOS_DO_PIPELINE`
-
-> Não declare que um relatório está disponível se o arquivo ou artefato ainda não existir. Antes da entrega, valide todos os links.
+- [Link Artefato gerado](`https://github.com/cauefsantos/tech-challenge-fiap/actions/runs/41237809940/artifacts/13055313547`)
 
 ---
 
@@ -828,20 +822,21 @@ Substitua os caminhos abaixo pelos arquivos ou links reais do repositório e do 
 
 ### Artefatos da Fase 1
 
-Substitua ou ajuste os caminhos conforme a estrutura real do repositório:
-
 - [Documentação adcional do projeto](docs/README.md)
 - [Decisões da Fase 1](docs/decisoes-fase1.md)
 - [Linguagem Ubíqua](docs/ddd/linguagem-ubiqua.md)
 - [Event Storming](docs/ddd/event-storming.md)
 - [Entidades da Fase 1](docs/ddd/entidades-fase1.md)
 - [Regras de negócio](docs/ddd/regras-de-negocio.md)
+- [Documentação DDD Miro](https://miro.com/app/board/uXjVHhi5850=/?embedMode=view_only_without_ui&moveToViewport=-124649%2C16357%2C139774%2C66902&embedId=108324860674)
 
 ### Documentos de planejamento
 
 - `.dev/plans/00-plano-fase1-original-extraido.md`
 - `.dev/plans/01-analise-miro-fase01.md`
 - `.dev/plans/02-plano-fase1-revisado.md`
+- `.dev/plans/03-plano-implementacao-usuarios.md`
+- `.dev/plans/04-plano-testes-unitarios.md`
 
 ### Decisões do MVP
 
@@ -861,62 +856,6 @@ Os comportamentos abaixo foram identificados durante os testes e devem ser acomp
 1. `HistoricoStatus.setId` não atualiza o identificador.
 2. `OrdemServico.concluirDiagnostico` valida o diagnóstico, mas não altera o status nem registra o histórico.
 3. Uma falha de validação durante a disponibilização pode deixar o orçamento como `DISPONIBILIZADO` enquanto a Ordem de Serviço permanece em diagnóstico.
-
-### Ações recomendadas
-
-- criar uma issue para cada comportamento;
-- classificar a severidade e o impacto;
-- priorizar a correção da inconsistência transacional entre orçamento e Ordem de Serviço;
-- adicionar testes de regressão;
-- atualizar esta seção após as correções.
-
-Links das issues:
-
-- `LINK_ISSUE_HISTORICO_STATUS`
-- `LINK_ISSUE_CONCLUSAO_DIAGNOSTICO`
-- `LINK_ISSUE_CONSISTENCIA_ORCAMENTO_OS`
-
-> Caso as falhas sejam corrigidas antes da entrega, remova esta seção ou substitua pelo histórico das correções.
-
----
-
-## Vídeo de apresentação
-
-Adicione o link público da apresentação da Fase 1:
-
-- `LINK_PUBLICO_DO_VIDEO`
-
-Antes da entrega, valide:
-
-- se o vídeo está acessível sem solicitação de permissão;
-- se a versão demonstrada corresponde ao commit entregue;
-- se o tempo está dentro do limite definido pela Fase 1.
-
----
-
-## Integrantes
-
-| Nome | RM | Discord |
-|---|---|---|
-| NOME_DO_INTEGRANTE | RM000000 | USUARIO_DISCORD |
-| NOME_DO_INTEGRANTE | RM000000 | USUARIO_DISCORD |
-| NOME_DO_INTEGRANTE | RM000000 | USUARIO_DISCORD |
-
-Informe também no PDF final o número do grupo, a branch e o hash do commit entregue.
-
----
-
-## Referências
-
-- Documentação oficial do Java 21
-- Documentação oficial do Spring Boot
-- Documentação oficial do Spring Security
-- Documentação oficial do Spring Data JPA
-- Documentação oficial do PostgreSQL
-- Documentação oficial do Flyway
-- Documentação oficial do Docker
-- Especificação OpenAPI
-- Material da Fase 1 do Tech Challenge FIAP
 
 ---
 
