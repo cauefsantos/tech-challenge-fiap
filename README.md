@@ -26,9 +26,6 @@ API REST para gerenciamento de uma oficina mecânica, desenvolvida em **Java 21*
 - [Segurança e análise de vulnerabilidades](#segurança-e-análise-de-vulnerabilidades)
 - [Documentação DDD e decisões](#documentação-ddd-e-decisões)
 - [Limitações conhecidas](#limitações-conhecidas)
-- [Vídeo de apresentação](#vídeo-de-apresentação)
-- [Integrantes](#integrantes)
-- [Referências](#referências)
 
 ---
 
@@ -814,7 +811,6 @@ A solução utiliza:
 - `docs/security/trivy-report.md`
 - `.github/dependabot.yml`
 - `.github/workflows/security.yml`
-- [Link Artefato gerado](`https://github.com/cauefsantos/tech-challenge-fiap/actions/runs/41237809940/artifacts/13055313547`)
 
 ---
 
@@ -828,7 +824,9 @@ A solução utiliza:
 - [Event Storming](docs/ddd/event-storming.md)
 - [Entidades da Fase 1](docs/ddd/entidades-fase1.md)
 - [Regras de negócio](docs/ddd/regras-de-negocio.md)
-- [Documentação DDD Miro](https://miro.com/app/board/uXjVHhi5850=/?embedMode=view_only_without_ui&moveToViewport=-124649%2C16357%2C139774%2C66902&embedId=108324860674)
+- [Documentação DDD Miro - Somente leitura](https://miro.com/app/board/uXjVHhi5850=/?embedMode=view_only_without_ui&moveToViewport=-124649%2C16357%2C139774%2C66902&embedId=108324860674)
+- [Link Artefato gerado para fase 01 - Disponivel até 29/01/27](`https://github.com/cauefsantos/tech-challenge-fiap/actions/runs/41237809940/artifacts/13055313547`)
+
 
 ### Documentos de planejamento
 
