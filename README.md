@@ -759,6 +759,8 @@ O comando `verify`:
 - exige cobertura mínima de 80% das instruções em `domain.*`;
 - exige cobertura mínima de 80% das instruções em `application.*`.
 
+A análise de vulnerabilidades do OWASP não faz parte do `verify` padrão, porque depende de uma chave da NVD e de acesso à internet. Veja como executá-la em [Segurança e análise de vulnerabilidades](#segurança-e-análise-de-vulnerabilidades).
+
 Relatório HTML:
 
 ```text
@@ -805,12 +807,32 @@ A solução utiliza:
 - OWASP Dependency Check;
 - Trivy para a imagem Docker.
 
+### Executar a análise do OWASP
+
+A análise usa a base de vulnerabilidades da NVD e exige uma chave de API gratuita, obtida em https://nvd.nist.gov/developers/request-an-api-key.
+
+Windows PowerShell:
+
+```powershell
+$env:NVD_API_KEY = 'SUA_CHAVE_DA_NVD'
+.\mvnw.cmd verify -Psecurity
+```
+
+Linux ou macOS:
+
+```bash
+export NVD_API_KEY=SUA_CHAVE_DA_NVD
+./mvnw verify -Psecurity
+```
+
+Os relatórios são gerados em `docs/owasp/`. A primeira execução baixa a base da NVD e pode levar vários minutos.
+
 ### Relatórios e evidências
 
-- `docs/security/dependency-check-report.md`
-- `docs/security/trivy-report.md`
-- `.github/dependabot.yml`
-- `.github/workflows/security.yml`
+- Relatório do OWASP Dependency-Check: [docs/owasp/dependency-check-report.html](docs/owasp/dependency-check-report.html) (também em JSON)
+- Relatório do Trivy e do OWASP de cada execução: artefatos `trivy-report` e `dependency-check-report` do workflow `Security Analysis` no GitHub Actions
+- Configuração do Dependabot: `.github/dependabot.yml`
+- Workflow de segurança: `.github/workflows/security.yml`
 
 ---
 
