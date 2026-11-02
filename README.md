@@ -843,9 +843,9 @@ Os relatórios são gerados em `docs/owasp/`. A primeira execução baixa a base
 - [Documentação adcional do projeto](docs/README.md)
 - [Decisões da Fase 1](docs/decisoes-fase1.md)
 - [Linguagem Ubíqua](docs/ddd/linguagem-ubiqua.md)
-- [Event Storming](docs/ddd/event-storming.md)
-- [Entidades da Fase 1](docs/ddd/entidades-fase1.md)
-- [Regras de negócio](docs/ddd/regras-de-negocio.md)
+- [Event Storming (PDF exportado do Miro)](docs/ddd/event-storming.pdf)
+- [Diagramas DDD (PDF exportado do Miro)](docs/ddd/diagramas.pdf)
+- [Documentação DDD](docs/Documentacao_DDD_Fase1.md)
 - [Documentação DDD Miro - Somente leitura](https://miro.com/app/board/uXjVHhi5850=/?embedMode=view_only_without_ui&moveToViewport=-124649%2C16357%2C139774%2C66902&embedId=108324860674)
 - [Link Artefato gerado para fase 01 - Disponivel até 29/01/27](`https://github.com/cauefsantos/tech-challenge-fiap/actions/runs/41237809940/artifacts/13055313547`)
 
