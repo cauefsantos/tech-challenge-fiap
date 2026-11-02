@@ -27,7 +27,6 @@ API REST para gerenciamento de uma oficina mecânica, desenvolvida em **Java 21*
 - [Segurança e análise de vulnerabilidades](#segurança-e-análise-de-vulnerabilidades)
 - [Documentação DDD e decisões](#documentação-ddd-e-decisões)
 - [Vídeo da entrega](#vídeo-da-entrega)
-- [Limitações conhecidas](#limitações-conhecidas)
 
 ---
 
@@ -935,16 +934,6 @@ Os relatórios são gerados em `docs/owasp/`. A primeira execução baixa a base
 ## Vídeo da entrega
 
 - Vídeo de apresentação da Fase 1 (YouTube): _link a ser incluído após a publicação_.
-
----
-
-## Limitações conhecidas
-
-Comportamentos identificados durante os testes e mantidos nesta versão:
-
-1. `HistoricoStatus.setId` não atualiza o identificador. Não há efeito prático, porque o histórico é lido do banco já com o id.
-2. `OrdemServico.concluirDiagnostico` valida o diagnóstico, mas não altera o status nem registra o histórico.
-3. Se a validação falhar durante a disponibilização, o objeto do orçamento fica momentaneamente como `DISPONIBILIZADO` em memória. A operação é recusada e a transação é desfeita, então nada inconsistente é gravado no banco.
 
 ---
 
