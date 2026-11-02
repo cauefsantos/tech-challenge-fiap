@@ -26,6 +26,7 @@ API REST para gerenciamento de uma oficina mecânica, desenvolvida em **Java 21*
 - [Testes e cobertura](#testes-e-cobertura)
 - [Segurança e análise de vulnerabilidades](#segurança-e-análise-de-vulnerabilidades)
 - [Documentação DDD e decisões](#documentação-ddd-e-decisões)
+- [Vídeo da entrega](#vídeo-da-entrega)
 - [Limitações conhecidas](#limitações-conhecidas)
 
 ---
@@ -524,7 +525,13 @@ Com a aplicação em execução e a documentação habilitada:
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 - OpenAPI YAML versionado: [docs/api/openapi.yaml](docs/api/openapi.yaml). Para atualizá-lo, inicie a aplicação com OpenAPI habilitado e execute `mvn verify -Popenapi`; o CI padrão não ativa esse profile.
 
-Em produção, Swagger e OpenAPI devem permanecer desabilitados por padrão, salvo decisão consciente da equipe e proteção adequada do acesso.
+Quando a documentação fica disponível:
+
+- **Profile `dev`:** Swagger e OpenAPI ficam habilitados, sem configuração adicional.
+- **Profile `prod` (execução local ou JAR):** ficam desabilitados por padrão. Para habilitar, defina `OPENAPI_ENABLED=true` e `SWAGGER_UI_ENABLED=true` no `.env` antes de iniciar.
+- **Docker Compose:** a API sobe com o profile `prod` e o `compose.yml` não repassa essas duas variáveis ao contêiner, então o Swagger fica desabilitado. Para consultar a documentação, use o profile `dev` ou o arquivo [docs/api/openapi.yaml](docs/api/openapi.yaml).
+
+Para chamar as rotas protegidas pelo Swagger UI, faça o login, clique em **Authorize** e informe o `accessToken` recebido.
 
 ---
 
@@ -534,7 +541,23 @@ A API utiliza JWT emitido pelo endpoint:
 
 ```http
 POST /api/v1/auth/login
+Content-Type: application/json
 ```
+
+```json
+{
+  "username": "valor de ADMIN_USERNAME no .env",
+  "password": "valor de ADMIN_PASSWORD no .env"
+}
+```
+
+A resposta traz `accessToken`, `tokenType` e `expiresIn`. Nas demais chamadas, envie o cabeçalho:
+
+```http
+Authorization: Bearer <accessToken>
+```
+
+Não há usuários de demonstração fixos no repositório. O usuário `ADMIN` inicial é criado na primeira execução com as credenciais definidas no `.env`, e os demais usuários (`FUNCIONARIO` e `CLIENTE`) são criados por ele em `POST /api/v1/usuarios`.
 
 O administrador inicial é criado apenas quando o username ainda não existe. Reinícios não redefinem sua senha. A aplicação deve falhar ao iniciar quando as credenciais obrigatórias de bootstrap ou o segredo JWT não forem fornecidos.
 
@@ -812,9 +835,18 @@ target/site/jacoco/index.html
 | Cobertura de instruções em `application.*` | 97,24% |
 | Build e gates JaCoCo | Aprovados |
 
-Os percentuais informados não incluem `infrastructure` nem `presentation`. Testes de integração envolvendo persistência e comportamento transacional são complementares aos testes unitários e mocks.
+Os percentuais informados não incluem `infrastructure` nem `presentation`.
 
-O [relatório JaCoCo HTML arquivado](docs/relatorio-cobertura/index.html) permite consultar a evidência registrada sem executar o projeto. Uma nova execução gera o relatório em `target/site/jacoco/index.html`; para atualizar a cópia versionada, siga `docs/relatorio-cobertura/README.md`. Os percentuais não incluem `infrastructure` nem `presentation`.
+Além dos testes unitários, a suíte tem testes de integração com Spring Boot, H2 e Flyway para os fluxos principais:
+
+- `FluxoOrcamentoIntegrationTest`: geração, disponibilização e aprovação do orçamento pela API;
+- `IdentificacaoPorDocumentoEPlacaIntegrationTest`: cadastro de cliente, veículo e abertura da OS por CPF/CNPJ e placa;
+- `MaterialEstoqueIntegrationTest` e `EstoqueConcorrenciaIntegrationTest`: controle de estoque, inclusive aprovações concorrentes e desfazimento da baixa quando a transação falha;
+- `OrdemServicoRepositoryAdapterIntegrationTest` e `OrdemServicoRepositoryAdapterIdsEstaveisIntegrationTest`: persistência da Ordem de Serviço e dos seus itens;
+- `UsuarioSecurityIntegrationTest`: autenticação JWT e autorização por perfil;
+- `TratamentoDeErrosIntegrationTest`: proteção da rota interna de erro.
+
+O [relatório JaCoCo HTML arquivado](docs/relatorio-cobertura/index.html) permite consultar a evidência registrada sem executar o projeto. Uma nova execução gera o relatório em `target/site/jacoco/index.html`; para atualizar a cópia versionada, siga `docs/relatorio-cobertura/README.md`.
 
 ---
 
@@ -897,6 +929,12 @@ Os relatórios são gerados em `docs/owasp/`. A primeira execução baixa a base
 - itens de serviço e material adicionados somente durante o diagnóstico;
 - diagnóstico mantido como atributo da Ordem de Serviço;
 - peças e insumos representados pelo conceito de `Material`.
+
+---
+
+## Vídeo da entrega
+
+- Vídeo de apresentação da Fase 1 (YouTube): _link a ser incluído após a publicação_.
 
 ---
 
