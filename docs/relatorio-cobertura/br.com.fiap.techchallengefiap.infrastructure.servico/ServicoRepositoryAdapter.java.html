@@ -23,7 +23,7 @@ public class ServicoRepositoryAdapter implements ServicoRepository {
 
     @Override
     public Optional&lt;Servico&gt; buscarPorId(Long id) {
-<span class="nc" id="L26">        return jpa.findById(id).map(this::toDomain);</span>
+<span class="fc" id="L26">        return jpa.findById(id).map(this::toDomain);</span>
     }
 
     @Override
@@ -33,7 +33,7 @@ public class ServicoRepositoryAdapter implements ServicoRepository {
 
     @Override
     public boolean existeCodigo(String codigo) {
-<span class="nc" id="L36">        return jpa.existsByCodigo(codigo);</span>
+<span class="fc" id="L36">        return jpa.existsByCodigo(codigo);</span>
     }
 
     @Override
@@ -59,4 +59,4 @@ public class ServicoRepositoryAdapter implements ServicoRepository {
 <span class="fc" id="L59">                Duration.ofSeconds(entity.tempoEstimadoSegundos), entity.dataCadastro, entity.ativo);</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.16.202610240946</span></div></body></html>

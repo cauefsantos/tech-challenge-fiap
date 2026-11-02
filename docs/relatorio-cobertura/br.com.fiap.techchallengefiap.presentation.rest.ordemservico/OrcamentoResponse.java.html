@@ -6,19 +6,23 @@ import br.com.fiap.techchallengefiap.domain.orcamento.model.StatusOrcamento;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
-<span class="nc" id="L9">public record OrcamentoResponse(Long id, Long ordemServicoId, int versao, BigDecimal valorTotal,</span>
+<span class="fc" id="L9">public record OrcamentoResponse(Long id, Long ordemServicoId, int versao, BigDecimal valorServicos,</span>
+                               BigDecimal valorPecas, BigDecimal valorInsumos, BigDecimal valorTotal,
                                StatusOrcamento status, OffsetDateTime dataGeracao,
                                OffsetDateTime dataResposta, String observacaoResposta) {
     public static OrcamentoResponse from(Orcamento orcamento) {
-<span class="nc" id="L13">        return new OrcamentoResponse(</span>
-<span class="nc" id="L14">                orcamento.getId(),</span>
-<span class="nc" id="L15">                orcamento.getOrdemServicoId(),</span>
-<span class="nc" id="L16">                orcamento.getVersao(),</span>
-<span class="nc" id="L17">                orcamento.getValorTotal(),</span>
-<span class="nc" id="L18">                orcamento.getStatus(),</span>
-<span class="nc" id="L19">                orcamento.getDataGeracao(),</span>
-<span class="nc" id="L20">                orcamento.getDataResposta(),</span>
-<span class="nc" id="L21">                orcamento.getObservacaoResposta());</span>
+<span class="fc" id="L14">        return new OrcamentoResponse(</span>
+<span class="fc" id="L15">                orcamento.getId(),</span>
+<span class="fc" id="L16">                orcamento.getOrdemServicoId(),</span>
+<span class="fc" id="L17">                orcamento.getVersao(),</span>
+<span class="fc" id="L18">                orcamento.getValorServicos(),</span>
+<span class="fc" id="L19">                orcamento.getValorPecas(),</span>
+<span class="fc" id="L20">                orcamento.getValorInsumos(),</span>
+<span class="fc" id="L21">                orcamento.getValorTotal(),</span>
+<span class="fc" id="L22">                orcamento.getStatus(),</span>
+<span class="fc" id="L23">                orcamento.getDataGeracao(),</span>
+<span class="fc" id="L24">                orcamento.getDataResposta(),</span>
+<span class="fc" id="L25">                orcamento.getObservacaoResposta());</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.16.202610240946</span></div></body></html>

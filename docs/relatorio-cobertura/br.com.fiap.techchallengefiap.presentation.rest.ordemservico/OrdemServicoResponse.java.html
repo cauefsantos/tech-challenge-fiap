@@ -5,13 +5,19 @@ import br.com.fiap.techchallengefiap.domain.ordemservico.model.OrdemServico;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.List;
 
-<span class="fc" id="L9">public record OrdemServicoResponse(Long id, String numero, String documentoCliente, String placa, String status,</span>
-                                   boolean orcamentoAprovado, BigDecimal valorTotal, OffsetDateTime criadaEm) {
+<span class="fc" id="L10">public record OrdemServicoResponse(Long id, String numero, String documentoCliente, String placa, String status,</span>
+                                   boolean orcamentoAprovado, BigDecimal valorTotal, OffsetDateTime criadaEm,
+                                   String diagnostico, List&lt;ItemServicoResponse&gt; itensServico,
+                                   List&lt;ItemMaterialResponse&gt; itensMaterial, List&lt;OrcamentoResponse&gt; orcamentos) {
     public static OrdemServicoResponse from(OrdemServico os, IdentificacaoOrdemServico identificacao) {
-<span class="fc" id="L12">        return new OrdemServicoResponse(os.getId(), os.getNumero(), identificacao.documentoCliente(),</span>
-<span class="fc" id="L13">                identificacao.placa(), os.getStatus().name(), os.isOrcamentoAprovado(), os.getValorTotal(),</span>
-<span class="fc" id="L14">                os.getCriadaEm());</span>
+<span class="fc" id="L15">        return new OrdemServicoResponse(os.getId(), os.getNumero(), identificacao.documentoCliente(),</span>
+<span class="fc" id="L16">                identificacao.placa(), os.getStatus().name(), os.isOrcamentoAprovado(), os.getValorTotal(),</span>
+<span class="fc" id="L17">                os.getCriadaEm(), os.getDiagnostico(),</span>
+<span class="fc" id="L18">                os.getItensServico().stream().map(ItemServicoResponse::from).toList(),</span>
+<span class="fc" id="L19">                os.getItensMaterial().stream().map(ItemMaterialResponse::from).toList(),</span>
+<span class="fc" id="L20">                os.getOrcamentos().stream().map(OrcamentoResponse::from).toList());</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.16.202610240946</span></div></body></html>

@@ -20,9 +20,9 @@ public class ServicoController {
 
     @PostMapping
     public ResponseEntity&lt;ServicoResponse&gt; criar(@Valid @RequestBody ServicoRequest request) {
-<span class="nc" id="L23">        var servico = useCase.criar(request.codigo(), request.nome(), request.descricao(), request.valorBase(),</span>
-<span class="nc" id="L24">                request.tempoEstimadoSegundos());</span>
-<span class="nc" id="L25">        return ResponseEntity.created(URI.create(&quot;/api/v1/servicos/&quot; + servico.getId())).body(ServicoResponse.from(servico));</span>
+<span class="fc" id="L23">        var servico = useCase.criar(request.codigo(), request.nome(), request.descricao(), request.valorBase(),</span>
+<span class="fc" id="L24">                request.tempoEstimadoSegundos());</span>
+<span class="fc" id="L25">        return ResponseEntity.created(URI.create(&quot;/api/v1/servicos/&quot; + servico.getId())).body(ServicoResponse.from(servico));</span>
     }
 
     @GetMapping(&quot;/{id}&quot;)
@@ -52,4 +52,4 @@ public class ServicoController {
 <span class="nc" id="L52">        return ServicoResponse.from(useCase.alterarAtivo(id, request.ativo()));</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.16.202610240946</span></div></body></html>

@@ -20,14 +20,14 @@ public class MaterialController {
 
     @PostMapping
     public ResponseEntity&lt;MaterialResponse&gt; criar(@Valid @RequestBody MaterialRequest request) {
-<span class="nc" id="L23">        var material = useCase.criar(request.codigo(), request.tipo(), request.nome(), request.descricao(),</span>
-<span class="nc" id="L24">                request.valorUnitario(), request.unidadeMedida(), request.quantidadeEstoque(), request.estoqueMinimo());</span>
-<span class="nc" id="L25">        return ResponseEntity.created(URI.create(&quot;/api/v1/materiais/&quot; + material.getId())).body(MaterialResponse.from(material));</span>
+<span class="fc" id="L23">        var material = useCase.criar(request.codigo(), request.tipo(), request.nome(), request.descricao(),</span>
+<span class="fc" id="L24">                request.valorUnitario(), request.unidadeMedida(), request.quantidadeEstoque(), request.estoqueMinimo());</span>
+<span class="fc" id="L25">        return ResponseEntity.created(URI.create(&quot;/api/v1/materiais/&quot; + material.getId())).body(MaterialResponse.from(material));</span>
     }
 
     @GetMapping(&quot;/{id}&quot;)
     public MaterialResponse buscar(@PathVariable Long id) {
-<span class="nc" id="L30">        return MaterialResponse.from(useCase.buscar(id));</span>
+<span class="fc" id="L30">        return MaterialResponse.from(useCase.buscar(id));</span>
     }
 
     @GetMapping
@@ -36,21 +36,25 @@ public class MaterialController {
     }
 
     @PutMapping(&quot;/{id}&quot;)
-    public MaterialResponse atualizar(@PathVariable Long id, @Valid @RequestBody MaterialRequest request) {
-<span class="nc" id="L40">        return MaterialResponse.from(useCase.atualizar(id, request.codigo(), request.tipo(), request.nome(),</span>
-<span class="nc" id="L41">                request.descricao(), request.valorUnitario(), request.unidadeMedida(),</span>
-<span class="nc" id="L42">                request.quantidadeEstoque(), request.estoqueMinimo()));</span>
+    public MaterialResponse atualizar(@PathVariable Long id, @Valid @RequestBody MaterialAtualizacaoRequest request) {
+<span class="fc" id="L40">        return MaterialResponse.from(useCase.atualizar(id, request.codigo(), request.tipo(), request.nome(),</span>
+<span class="fc" id="L41">                request.descricao(), request.valorUnitario(), request.unidadeMedida(), request.estoqueMinimo()));</span>
+    }
+
+    @PostMapping(&quot;/{id}/entradas-estoque&quot;)
+    public MaterialResponse registrarEntrada(@PathVariable Long id, @Valid @RequestBody EntradaEstoqueRequest request) {
+<span class="fc" id="L46">        return MaterialResponse.from(useCase.registrarEntrada(id, request.quantidade()));</span>
     }
 
     @DeleteMapping(&quot;/{id}&quot;)
     public ResponseEntity&lt;Void&gt; desativar(@PathVariable Long id) {
-<span class="nc" id="L47">        useCase.alterarAtivo(id, false);</span>
-<span class="nc" id="L48">        return ResponseEntity.noContent().build();</span>
+<span class="nc" id="L51">        useCase.alterarAtivo(id, false);</span>
+<span class="nc" id="L52">        return ResponseEntity.noContent().build();</span>
     }
 
     @PatchMapping(&quot;/{id}/ativacao&quot;)
     public MaterialResponse alterarAtivo(@PathVariable Long id, @Valid @RequestBody AtivoRequest request) {
-<span class="nc" id="L53">        return MaterialResponse.from(useCase.alterarAtivo(id, request.ativo()));</span>
+<span class="nc" id="L57">        return MaterialResponse.from(useCase.alterarAtivo(id, request.ativo()));</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.16.202610240946</span></div></body></html>
