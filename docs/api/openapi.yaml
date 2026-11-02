@@ -1,0 +1,1508 @@
+openapi: 3.1.0
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+paths:
+  /api/v1/veiculos/{placa}:
+    get:
+      tags:
+      - veiculo-controller
+      operationId: buscar
+      parameters:
+      - name: placa
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/VeiculoResponse"
+    put:
+      tags:
+      - veiculo-controller
+      operationId: atualizar
+      parameters:
+      - name: placa
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VeiculoRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/VeiculoResponse"
+    delete:
+      tags:
+      - veiculo-controller
+      operationId: desativar
+      parameters:
+      - name: placa
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+  /api/v1/usuarios/{id}:
+    get:
+      tags:
+      - usuario-controller
+      operationId: buscar_1
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UsuarioResponse"
+    put:
+      tags:
+      - usuario-controller
+      operationId: atualizar_1
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AtualizarUsuarioRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UsuarioResponse"
+    delete:
+      tags:
+      - usuario-controller
+      operationId: desativar_1
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+  /api/v1/servicos/{id}:
+    get:
+      tags:
+      - servico-controller
+      operationId: buscar_2
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ServicoResponse"
+    put:
+      tags:
+      - servico-controller
+      operationId: atualizar_2
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServicoRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ServicoResponse"
+    delete:
+      tags:
+      - servico-controller
+      operationId: desativar_2
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+  /api/v1/materiais/{id}:
+    get:
+      tags:
+      - material-controller
+      operationId: buscar_3
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/MaterialResponse"
+    put:
+      tags:
+      - material-controller
+      operationId: atualizar_3
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MaterialAtualizacaoRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/MaterialResponse"
+    delete:
+      tags:
+      - material-controller
+      operationId: desativar_3
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+  /api/v1/clientes/{documento}:
+    get:
+      tags:
+      - cliente-controller
+      operationId: buscar_4
+      parameters:
+      - name: documento
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClienteResponse"
+    put:
+      tags:
+      - cliente-controller
+      operationId: atualizar_4
+      parameters:
+      - name: documento
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClienteRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClienteResponse"
+    delete:
+      tags:
+      - cliente-controller
+      operationId: desativar_4
+      parameters:
+      - name: documento
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+  /api/v1/veiculos:
+    get:
+      tags:
+      - veiculo-controller
+      operationId: listar
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VeiculoResponse"
+    post:
+      tags:
+      - veiculo-controller
+      operationId: criar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VeiculoRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/VeiculoResponse"
+  /api/v1/usuarios:
+    get:
+      tags:
+      - usuario-controller
+      operationId: listar_1
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PaginaUsuarioResponse"
+    post:
+      tags:
+      - usuario-controller
+      operationId: criar_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CriarUsuarioRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UsuarioResponse"
+  /api/v1/servicos:
+    get:
+      tags:
+      - servico-controller
+      operationId: listar_2
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ServicoResponse"
+    post:
+      tags:
+      - servico-controller
+      operationId: criar_2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServicoRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ServicoResponse"
+  /api/v1/ordens-servico:
+    get:
+      tags:
+      - ordem-servico-controller
+      operationId: listar_3
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrdemServicoResponse"
+    post:
+      tags:
+      - ordem-servico-controller
+      operationId: criar_3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CriarOrdemServicoRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrdemServicoResponse"
+  /api/v1/ordens-servico/{id}/orcamentos:
+    post:
+      tags:
+      - ordem-servico-controller
+      operationId: gerarOrcamento
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrcamentoResponse"
+  /api/v1/ordens-servico/{id}/orcamentos/{orcamentoId}/rejeitar:
+    post:
+      tags:
+      - ordem-servico-controller
+      operationId: rejeitarOrcamento
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: orcamentoId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AprovacaoOrcamentoRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrdemServicoResponse"
+  /api/v1/ordens-servico/{id}/orcamentos/{orcamentoId}/disponibilizar:
+    post:
+      tags:
+      - ordem-servico-controller
+      operationId: disponibilizarOrcamento
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: orcamentoId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrdemServicoResponse"
+  /api/v1/ordens-servico/{id}/orcamentos/{orcamentoId}/aprovar:
+    post:
+      tags:
+      - ordem-servico-controller
+      operationId: aprovarOrcamento
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: orcamentoId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AprovacaoOrcamentoRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrdemServicoResponse"
+  /api/v1/ordens-servico/{id}/itens-servico:
+    post:
+      tags:
+      - ordem-servico-controller
+      operationId: adicionarItemServico
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemServicoRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrdemServicoResponse"
+  /api/v1/ordens-servico/{id}/itens-material:
+    post:
+      tags:
+      - ordem-servico-controller
+      operationId: adicionarItemMaterial
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemMaterialRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrdemServicoResponse"
+  /api/v1/ordens-servico/{id}/finalizacao:
+    post:
+      tags:
+      - ordem-servico-controller
+      operationId: finalizar
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrdemServicoResponse"
+  /api/v1/ordens-servico/{id}/entrega:
+    post:
+      tags:
+      - ordem-servico-controller
+      operationId: entregar
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrdemServicoResponse"
+  /api/v1/ordens-servico/{id}/diagnostico:
+    post:
+      tags:
+      - ordem-servico-controller
+      operationId: registrarDiagnostico
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DiagnosticoRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrdemServicoResponse"
+  /api/v1/ordens-servico/{id}/diagnostico/inicio:
+    post:
+      tags:
+      - ordem-servico-controller
+      operationId: enviarParaDiagnostico
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrdemServicoResponse"
+  /api/v1/ordens-servico/{id}/diagnostico/conclusao:
+    post:
+      tags:
+      - ordem-servico-controller
+      operationId: concluirDiagnostico
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrdemServicoResponse"
+  /api/v1/materiais:
+    get:
+      tags:
+      - material-controller
+      operationId: listar_4
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MaterialResponse"
+    post:
+      tags:
+      - material-controller
+      operationId: criar_4
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MaterialRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/MaterialResponse"
+  /api/v1/materiais/{id}/entradas-estoque:
+    post:
+      tags:
+      - material-controller
+      operationId: registrarEntrada
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EntradaEstoqueRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/MaterialResponse"
+  /api/v1/clientes:
+    get:
+      tags:
+      - cliente-controller
+      operationId: listar_5
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ClienteResponse"
+    post:
+      tags:
+      - cliente-controller
+      operationId: criar_5
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClienteRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClienteResponse"
+  /api/v1/auth/login:
+    post:
+      tags:
+      - authentication-controller
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+  /api/v1/veiculos/{placa}/ativacao:
+    patch:
+      tags:
+      - veiculo-controller
+      operationId: alterarAtivo
+      parameters:
+      - name: placa
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AtivoRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/VeiculoResponse"
+  /api/v1/servicos/{id}/ativacao:
+    patch:
+      tags:
+      - servico-controller
+      operationId: alterarAtivo_1
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AtivoRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ServicoResponse"
+  /api/v1/materiais/{id}/ativacao:
+    patch:
+      tags:
+      - material-controller
+      operationId: alterarAtivo_2
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AtivoRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/MaterialResponse"
+  /api/v1/clientes/{documento}/ativacao:
+    patch:
+      tags:
+      - cliente-controller
+      operationId: alterarAtivo_3
+      parameters:
+      - name: documento
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AtivoRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClienteResponse"
+  /api/v1/public/ordens-servico/{numero}:
+    get:
+      tags:
+      - public-ordem-servico-controller
+      operationId: consultarPorNumero
+      parameters:
+      - name: numero
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: documento
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PublicOrdemServicoResponse"
+  /api/v1/ordens-servico/{id}:
+    get:
+      tags:
+      - ordem-servico-controller
+      operationId: buscar_5
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrdemServicoResponse"
+  /api/v1/ordens-servico/metricas/tempo-medio-execucao:
+    get:
+      tags:
+      - public-ordem-servico-controller
+      operationId: tempoMedioExecucao
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TempoMedioExecucaoResponse"
+  /api/v1/ordens-servico/{id}/itens-servico/{itemId}:
+    delete:
+      tags:
+      - ordem-servico-controller
+      operationId: removerItemServico
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: itemId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrdemServicoResponse"
+  /api/v1/ordens-servico/{id}/itens-material/{itemId}:
+    delete:
+      tags:
+      - ordem-servico-controller
+      operationId: removerItemMaterial
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: itemId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OrdemServicoResponse"
+components:
+  schemas:
+    VeiculoRequest:
+      type: object
+      properties:
+        documentoCliente:
+          type: string
+          minLength: 1
+        placa:
+          type: string
+          minLength: 1
+        marca:
+          type: string
+          minLength: 1
+        modelo:
+          type: string
+          minLength: 1
+        ano:
+          type: integer
+          format: int32
+      required:
+      - ano
+      - documentoCliente
+      - marca
+      - modelo
+      - placa
+    VeiculoResponse:
+      type: object
+      properties:
+        placa:
+          type: string
+        documentoCliente:
+          type: string
+        marca:
+          type: string
+        modelo:
+          type: string
+        ano:
+          type: integer
+          format: int32
+        dataCadastro:
+          type: string
+          format: date-time
+        ativo:
+          type: boolean
+    AtualizarUsuarioRequest:
+      type: object
+      properties:
+        papel:
+          type: string
+          enum:
+          - ADMIN
+          - FUNCIONARIO
+          - CLIENTE
+        documentoCliente:
+          type: string
+        enabled:
+          type: boolean
+      required:
+      - enabled
+      - papel
+    UsuarioResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        papel:
+          type: string
+          enum:
+          - ADMIN
+          - FUNCIONARIO
+          - CLIENTE
+        enabled:
+          type: boolean
+        documentoCliente:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ServicoRequest:
+      type: object
+      properties:
+        codigo:
+          type: string
+          minLength: 1
+        nome:
+          type: string
+          minLength: 1
+        descricao:
+          type: string
+        valorBase:
+          type: number
+        tempoEstimadoSegundos:
+          type: integer
+          format: int64
+      required:
+      - codigo
+      - nome
+      - tempoEstimadoSegundos
+      - valorBase
+    ServicoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        codigo:
+          type: string
+        nome:
+          type: string
+        descricao:
+          type: string
+        valorBase:
+          type: number
+        tempoEstimadoSegundos:
+          type: integer
+          format: int64
+        dataCadastro:
+          type: string
+          format: date-time
+        ativo:
+          type: boolean
+    MaterialAtualizacaoRequest:
+      type: object
+      properties:
+        codigo:
+          type: string
+          minLength: 1
+        tipo:
+          type: string
+          enum:
+          - PECA
+          - INSUMO
+        nome:
+          type: string
+          minLength: 1
+        descricao:
+          type: string
+        valorUnitario:
+          type: number
+        unidadeMedida:
+          type: string
+          minLength: 1
+        estoqueMinimo:
+          type: number
+      required:
+      - codigo
+      - estoqueMinimo
+      - nome
+      - tipo
+      - unidadeMedida
+      - valorUnitario
+    MaterialResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        codigo:
+          type: string
+        tipo:
+          type: string
+        nome:
+          type: string
+        descricao:
+          type: string
+        valorUnitario:
+          type: number
+        unidadeMedida:
+          type: string
+        quantidadeEstoque:
+          type: number
+        estoqueMinimo:
+          type: number
+        dataCadastro:
+          type: string
+          format: date-time
+        ativo:
+          type: boolean
+    ClienteRequest:
+      type: object
+      properties:
+        tipoPessoa:
+          type: string
+          enum:
+          - FISICA
+          - JURIDICA
+        documento:
+          type: string
+          minLength: 1
+        nome:
+          type: string
+          minLength: 1
+        email:
+          type: string
+        telefone:
+          type: string
+      required:
+      - documento
+      - nome
+      - tipoPessoa
+    ClienteResponse:
+      type: object
+      properties:
+        documento:
+          type: string
+        tipoPessoa:
+          type: string
+        nome:
+          type: string
+        email:
+          type: string
+        telefone:
+          type: string
+        dataCadastro:
+          type: string
+          format: date-time
+        ativo:
+          type: boolean
+    CriarUsuarioRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          maxLength: 100
+          minLength: 0
+        password:
+          type: string
+          maxLength: 72
+          minLength: 12
+        papel:
+          type: string
+          enum:
+          - ADMIN
+          - FUNCIONARIO
+          - CLIENTE
+        documentoCliente:
+          type: string
+      required:
+      - papel
+      - password
+      - username
+    CriarOrdemServicoRequest:
+      type: object
+      properties:
+        documentoCliente:
+          type: string
+          minLength: 1
+        placa:
+          type: string
+          minLength: 1
+      required:
+      - documentoCliente
+      - placa
+    ItemMaterialResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        materialId:
+          type: integer
+          format: int64
+        tipo:
+          type: string
+          enum:
+          - PECA
+          - INSUMO
+        descricao:
+          type: string
+        quantidade:
+          type: number
+        valorUnitario:
+          type: number
+        subtotal:
+          type: number
+    ItemServicoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        servicoId:
+          type: integer
+          format: int64
+        descricao:
+          type: string
+        quantidade:
+          type: number
+        valorUnitario:
+          type: number
+        subtotal:
+          type: number
+    OrcamentoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        ordemServicoId:
+          type: integer
+          format: int64
+        versao:
+          type: integer
+          format: int32
+        valorServicos:
+          type: number
+        valorPecas:
+          type: number
+        valorInsumos:
+          type: number
+        valorTotal:
+          type: number
+        status:
+          type: string
+          enum:
+          - PENDENTE
+          - DISPONIBILIZADO
+          - APROVADO
+          - REJEITADO
+          - CANCELADO
+        dataGeracao:
+          type: string
+          format: date-time
+        dataResposta:
+          type: string
+          format: date-time
+        observacaoResposta:
+          type: string
+    OrdemServicoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        numero:
+          type: string
+        documentoCliente:
+          type: string
+        placa:
+          type: string
+        status:
+          type: string
+        orcamentoAprovado:
+          type: boolean
+        valorTotal:
+          type: number
+        criadaEm:
+          type: string
+          format: date-time
+        diagnostico:
+          type: string
+        itensServico:
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemServicoResponse"
+        itensMaterial:
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemMaterialResponse"
+        orcamentos:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrcamentoResponse"
+    AprovacaoOrcamentoRequest:
+      type: object
+      properties:
+        observacao:
+          type: string
+    ItemServicoRequest:
+      type: object
+      properties:
+        servicoId:
+          type: integer
+          format: int64
+        quantidade:
+          type: number
+          exclusiveMinimum: 0
+      required:
+      - quantidade
+      - servicoId
+    ItemMaterialRequest:
+      type: object
+      properties:
+        materialId:
+          type: integer
+          format: int64
+        quantidade:
+          type: number
+          exclusiveMinimum: 0
+      required:
+      - materialId
+      - quantidade
+    DiagnosticoRequest:
+      type: object
+      properties:
+        diagnostico:
+          type: string
+          minLength: 1
+      required:
+      - diagnostico
+    MaterialRequest:
+      type: object
+      properties:
+        codigo:
+          type: string
+          minLength: 1
+        tipo:
+          type: string
+          enum:
+          - PECA
+          - INSUMO
+        nome:
+          type: string
+          minLength: 1
+        descricao:
+          type: string
+        valorUnitario:
+          type: number
+        unidadeMedida:
+          type: string
+          minLength: 1
+        quantidadeEstoque:
+          type: number
+        estoqueMinimo:
+          type: number
+      required:
+      - codigo
+      - estoqueMinimo
+      - nome
+      - quantidadeEstoque
+      - tipo
+      - unidadeMedida
+      - valorUnitario
+    EntradaEstoqueRequest:
+      type: object
+      properties:
+        quantidade:
+          type: number
+      required:
+      - quantidade
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          minLength: 1
+      required:
+      - password
+      - username
+    TokenResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        tokenType:
+          type: string
+        expiresIn:
+          type: integer
+          format: int64
+    AtivoRequest:
+      type: object
+      properties:
+        ativo:
+          type: boolean
+      required:
+      - ativo
+    PaginaUsuarioResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/UsuarioResponse"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+    PublicOrdemServicoResponse:
+      type: object
+      properties:
+        numero:
+          type: string
+        status:
+          type: string
+        valorTotal:
+          type: number
+        dataInicioExecucao:
+          type: string
+          format: date-time
+        dataFinalizacao:
+          type: string
+          format: date-time
+        dataEntrega:
+          type: string
+          format: date-time
+    TempoMedioExecucaoResponse:
+      type: object
+      properties:
+        amostras:
+          type: integer
+          format: int64
+        tempoMedioSegundos:
+          type: integer
+          format: int64
