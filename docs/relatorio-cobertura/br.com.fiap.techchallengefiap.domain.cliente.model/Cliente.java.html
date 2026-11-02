@@ -63,7 +63,7 @@ public class Cliente {
 <span class="fc" id="L63">        soma = 0;</span>
 <span class="fc bfc" id="L64" title="All 2 branches covered.">        for (int i = 0; i &lt; 10; i++) soma += (cpf.charAt(i) - '0') * (11 - i);</span>
 <span class="fc" id="L65">        digito = (soma * 10) % 11;</span>
-<span class="pc bpc" id="L66" title="1 of 2 branches missed.">        if (digito == 10) digito = 0;</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        if (digito == 10) digito = 0;</span>
 <span class="fc bfc" id="L67" title="All 2 branches covered.">        return digito == cpf.charAt(10) - '0';</span>
     }
 
@@ -106,4 +106,4 @@ public class Cliente {
 <span class="fc" id="L106">    public OffsetDateTime getDataCadastro() { return dataCadastro; }</span>
 <span class="fc" id="L107">    public boolean isAtivo() { return ativo; }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.16.202610240946</span></div></body></html>

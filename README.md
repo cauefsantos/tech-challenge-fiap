@@ -20,12 +20,13 @@ API REST para gerenciamento de uma oficina mecânica, desenvolvida em **Java 21*
 - [Banco de dados e migrations](#banco-de-dados-e-migrations)
 - [Documentação da API](#documentação-da-api)
 - [Autenticação e autorização](#autenticação-e-autorização)
+- [Identificação de clientes e veículos](#identificação-de-clientes-e-veículos)
 - [Endpoints principais](#endpoints-principais)
 - [Fluxo principal da Ordem de Serviço](#fluxo-principal-da-ordem-de-serviço)
 - [Testes e cobertura](#testes-e-cobertura)
 - [Segurança e análise de vulnerabilidades](#segurança-e-análise-de-vulnerabilidades)
 - [Documentação DDD e decisões](#documentação-ddd-e-decisões)
-- [Limitações conhecidas](#limitações-conhecidas)
+- [Vídeo da entrega](#vídeo-da-entrega)
 
 ---
 
@@ -65,7 +66,7 @@ A solução foi desenvolvida como uma **aplicação monolítica organizada em ca
 
 ### Responsabilidades das camadas
 
-- **Domain:** entidades, agregados, objetos de valor, regras de negócio e contratos de repositório.
+- **Domain:** entidades, agregados, enums de status e tipos, regras de negócio e contratos de repositório.
 - **Application:** casos de uso e coordenação das operações do domínio.
 - **Infrastructure:** persistência JPA, banco de dados, segurança JWT e configurações técnicas.
 - **Presentation:** controllers REST, DTOs, validações HTTP e tratamento de exceções.
@@ -100,19 +101,23 @@ O domínio não deve depender de detalhes de API, banco de dados, JWT ou classes
 │   └── workflows/
 ├── docs/
 │   ├── README.md
+│   ├── Documentacao_DDD_Fase1.md
 │   ├── decisoes-fase1.md
+│   ├── api/
 │   ├── ddd/
-│   └── security/
+│   ├── owasp/
+│   └── relatorio-cobertura/
 ├── src/
 │   ├── main/
 │   │   ├── java/
-│   │   │   └── br/com/fiap/oficina/
+│   │   │   └── br/com/fiap/techchallengefiap/
 │   │   │       ├── application/
 │   │   │       ├── domain/
 │   │   │       ├── infrastructure/
 │   │   │       └── presentation/
 │   │   └── resources/
-│   │       ├── db/migration/
+│   │       ├── db/migration/postgresql/
+│   │       ├── db/migration/h2/
 │   │       ├── application.yml
 │   │       ├── application-dev.yml
 │   │       └── application-prod.yml
@@ -124,6 +129,7 @@ O domínio não deve depender de detalhes de API, banco de dados, JWT ou classes
 ├── Dockerfile
 ├── mvnw
 ├── mvnw.cmd
+├── set-env.ps1 / set-env.sh / set-env.bat
 ├── pom.xml
 └── README.md
 ```
@@ -133,20 +139,22 @@ O domínio não deve depender de detalhes de API, banco de dados, JWT ou classes
 - **`.dev/plans/`:** planos de implementação, revisões de escopo e registros de planejamento.
 - **`.github/`:** configurações de automação, atualização de dependências e pipelines.
 - **`docs/`:** documentação complementar do projeto.
-- **`docs/ddd/`:** Linguagem Ubíqua, Event Storming, entidades e regras do domínio.
-- **`docs/security/`:** relatórios e evidências de análise de vulnerabilidades.
+- **`docs/api/`:** especificação OpenAPI exportada (`openapi.yaml`).
+- **`docs/ddd/`:** Linguagem Ubíqua e exportações do Miro (Event Storming e diagramas).
+- **`docs/owasp/`:** relatório da análise de vulnerabilidades (OWASP Dependency-Check).
+- **`docs/relatorio-cobertura/`:** relatório JaCoCo arquivado como evidência de cobertura.
 - **`src/main/java/`:** código-fonte principal da aplicação.
 - **`application/`:** casos de uso da aplicação.
 - **`domain/`:** regras de negócio independentes de frameworks e infraestrutura.
 - **`infrastructure/`:** persistência, segurança e configurações técnicas.
 - **`presentation/`:** endpoints REST e contratos HTTP.
-- **`src/main/resources/`:** configurações, profiles e migrations do Flyway.
+- **`src/main/resources/`:** configurações, profiles e migrations do Flyway (uma pasta para PostgreSQL e outra para H2).
+- **`set-env.*`:** scripts que carregam o `.env` no terminal (PowerShell, Bash e Prompt de Comando).
 - **`src/test/java/`:** testes automatizados.
 - **`compose.yml`:** definição da API e do PostgreSQL para execução coordenada.
 - **`Dockerfile`:** construção da imagem da aplicação.
 - **`pom.xml`:** dependências, plugins e configurações do Maven.
 
-> Ajuste a árvore acima caso alguma pasta ainda não exista no repositório.
 
 ---
 
@@ -325,7 +333,7 @@ Os scripts configuram somente o terminal atual e não devem exibir os valores se
 
 ### Profile `dev`
 
-Indicado para desenvolvimento local. Dependendo da configuração do projeto, pode usar H2 em memória ou PostgreSQL local.
+Indicado para desenvolvimento local. Usa o banco **H2 em memória**, recriado a cada execução, e é o profile padrão quando nenhum outro é informado.
 
 Execute explicitamente com:
 
@@ -344,18 +352,17 @@ No Windows:
 Indicado para execução com PostgreSQL e configurações externalizadas. Não deve conter senhas ou chaves padrão.
 
 ```bash
-java -jar target/ARQUIVO_DA_APLICACAO.jar \
+java -jar target/tech-challenge-fiap-0.0.2-SNAPSHOT.jar \
   --spring.profiles.active=prod
 ```
 
 ### Ambientes de banco
 
 - **H2:** execução rápida e cenários de teste definidos pelo projeto.
-- **PostgreSQL local:** desenvolvimento integrado.
+- **PostgreSQL local:** profile `prod` com `DB_URL`, `DB_USERNAME` e `DB_PASSWORD` apontando para o banco local.
 - **PostgreSQL via Docker Compose:** ambiente local próximo ao produtivo.
 - **PostgreSQL externo ou gerenciado:** produção e cloud.
 
-> Confirme no `application-dev.yml` se o profile `dev` utiliza H2 ou PostgreSQL por padrão. A documentação deve refletir exatamente a configuração vigente.
 
 ---
 
@@ -404,11 +411,11 @@ No Windows:
 ### Executar o JAR
 
 ```bash
-java -jar target/ARQUIVO_DA_APLICACAO.jar \
+java -jar target/tech-challenge-fiap-0.0.2-SNAPSHOT.jar \
   --spring.profiles.active=dev
 ```
 
-Substitua `ARQUIVO_DA_APLICACAO.jar` pelo nome realmente gerado no diretório `target`.
+O nome do arquivo acompanha a versão definida no `pom.xml`.
 
 ---
 
@@ -472,8 +479,11 @@ O H2 é utilizado apenas nos cenários definidos para desenvolvimento rápido ou
 O Flyway é responsável pela criação e evolução do schema. As migrations estão localizadas em:
 
 ```text
-src/main/resources/db/migration/
+src/main/resources/db/migration/postgresql/
+src/main/resources/db/migration/h2/
 ```
+
+Cada tabela tem a sua migration (`V1` a `V10`), aplicada na ordem das chaves estrangeiras. A pasta `h2` reproduz as mesmas regras para o banco em memória usado no profile `dev` e nos testes.
 
 O padrão dos nomes é:
 
@@ -484,7 +494,7 @@ V<versão>__<descrição>.sql
 Exemplo:
 
 ```text
-V1__create_ordem_servico.sql
+V1__create_cliente.sql
 ```
 
 O Hibernate deve permanecer com `ddl-auto: validate`, usando o schema criado pelas migrations.
@@ -492,14 +502,14 @@ O Hibernate deve permanecer com `ddl-auto: validate`, usando o schema criado pel
 ### Verificar as tabelas no Compose
 
 ```bash
-docker compose exec postgres \
+docker compose exec db \
   psql -U "$DB_USERNAME" -d oficina -c "\dt"
 ```
 
 ### Consultar o histórico do Flyway
 
 ```bash
-docker compose exec postgres \
+docker compose exec db \
   psql -U "$DB_USERNAME" -d oficina \
   -c "SELECT version, description, script, success FROM flyway_schema_history ORDER BY installed_rank;"
 ```
@@ -514,7 +524,13 @@ Com a aplicação em execução e a documentação habilitada:
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 - OpenAPI YAML versionado: [docs/api/openapi.yaml](docs/api/openapi.yaml). Para atualizá-lo, inicie a aplicação com OpenAPI habilitado e execute `mvn verify -Popenapi`; o CI padrão não ativa esse profile.
 
-Em produção, Swagger e OpenAPI devem permanecer desabilitados por padrão, salvo decisão consciente da equipe e proteção adequada do acesso.
+Quando a documentação fica disponível:
+
+- **Profile `dev`:** Swagger e OpenAPI ficam habilitados, sem configuração adicional.
+- **Profile `prod` (execução local ou JAR):** ficam desabilitados por padrão. Para habilitar, defina `OPENAPI_ENABLED=true` e `SWAGGER_UI_ENABLED=true` no `.env` antes de iniciar.
+- **Docker Compose:** a API sobe com o profile `prod` e o `compose.yml` não repassa essas duas variáveis ao contêiner, então o Swagger fica desabilitado. Para consultar a documentação, use o profile `dev` ou o arquivo [docs/api/openapi.yaml](docs/api/openapi.yaml).
+
+Para chamar as rotas protegidas pelo Swagger UI, faça o login, clique em **Authorize** e informe o `accessToken` recebido.
 
 ---
 
@@ -524,7 +540,23 @@ A API utiliza JWT emitido pelo endpoint:
 
 ```http
 POST /api/v1/auth/login
+Content-Type: application/json
 ```
+
+```json
+{
+  "username": "valor de ADMIN_USERNAME no .env",
+  "password": "valor de ADMIN_PASSWORD no .env"
+}
+```
+
+A resposta traz `accessToken`, `tokenType` e `expiresIn`. Nas demais chamadas, envie o cabeçalho:
+
+```http
+Authorization: Bearer <accessToken>
+```
+
+Não há usuários de demonstração fixos no repositório. O usuário `ADMIN` inicial é criado na primeira execução com as credenciais definidas no `.env`, e os demais usuários (`FUNCIONARIO` e `CLIENTE`) são criados por ele em `POST /api/v1/usuarios`.
 
 O administrador inicial é criado apenas quando o username ainda não existe. Reinícios não redefinem sua senha. A aplicação deve falhar ao iniciar quando as credenciais obrigatórias de bootstrap ou o segredo JWT não forem fornecidos.
 
@@ -533,12 +565,14 @@ O administrador inicial é criado apenas quando o username ainda não existe. Re
 #### `ADMIN`
 
 - Gerencia usuários.
-- Acessa os endpoints autenticados de clientes, veículos, serviços, materiais e Ordens de Serviço.
+- Cadastra, altera e desativa clientes, veículos, serviços e materiais, e registra entradas de estoque.
+- Executa todo o fluxo da Ordem de Serviço, inclusive a aprovação e a rejeição de orçamentos.
 
 #### `FUNCIONARIO`
 
-- Acessa os endpoints operacionais.
-- Não pode gerenciar usuários.
+- Consulta clientes, veículos, serviços, materiais e Ordens de Serviço.
+- Opera o fluxo da Ordem de Serviço: abertura, diagnóstico, itens, geração e disponibilização do orçamento, finalização e entrega.
+- Não cadastra nem altera clientes, veículos, serviços e materiais, não aprova nem rejeita orçamentos e não gerencia usuários.
 
 #### `CLIENTE`
 
@@ -651,6 +685,15 @@ A placa pode aceitar o padrão antigo ou Mercosul, com ou sem hífen, conforme a
 - `DELETE /api/v1/veiculos/{placa}`
 - `PATCH /api/v1/veiculos/{placa}/ativacao`
 
+### Serviços
+
+- `POST /api/v1/servicos`
+- `GET /api/v1/servicos`
+- `GET /api/v1/servicos/{id}`
+- `PUT /api/v1/servicos/{id}`
+- `DELETE /api/v1/servicos/{id}`
+- `PATCH /api/v1/servicos/{id}/ativacao`
+
 ### Materiais
 
 - `POST /api/v1/materiais`
@@ -664,12 +707,21 @@ A placa pode aceitar o padrão antigo ou Mercosul, com ou sem hífen, conforme a
 ### Ordens de Serviço
 
 - `POST /api/v1/ordens-servico`
+- `GET /api/v1/ordens-servico`
 - `GET /api/v1/ordens-servico/{id}`
+- `POST /api/v1/ordens-servico/{id}/diagnostico/inicio`
 - `POST /api/v1/ordens-servico/{id}/diagnostico`
+- `POST /api/v1/ordens-servico/{id}/diagnostico/conclusao`
+- `POST /api/v1/ordens-servico/{id}/itens-servico`
+- `DELETE /api/v1/ordens-servico/{id}/itens-servico/{itemId}`
+- `POST /api/v1/ordens-servico/{id}/itens-material`
+- `DELETE /api/v1/ordens-servico/{id}/itens-material/{itemId}`
 - `POST /api/v1/ordens-servico/{id}/orcamentos`
 - `POST /api/v1/ordens-servico/{id}/orcamentos/{orcamentoId}/disponibilizar`
 - `POST /api/v1/ordens-servico/{id}/orcamentos/{orcamentoId}/aprovar`
 - `POST /api/v1/ordens-servico/{id}/orcamentos/{orcamentoId}/rejeitar`
+- `POST /api/v1/ordens-servico/{id}/finalizacao`
+- `POST /api/v1/ordens-servico/{id}/entrega`
 - `GET /api/v1/public/ordens-servico/{numero}?documento=...`
 - `GET /api/v1/ordens-servico/metricas/tempo-medio-execucao`
 
@@ -719,9 +771,10 @@ AGUARDANDO_APROVACAO
 EM_EXECUCAO
 FINALIZADA
 ENTREGUE
+CANCELADA
 ```
 
-As transições devem respeitar as regras do domínio e gerar histórico quando aplicável.
+Se o orçamento é rejeitado, a OS vai de `AGUARDANDO_APROVACAO` para `CANCELADA`, sem execução e sem baixa de estoque. `ENTREGUE` e `CANCELADA` são finais. Transições fora dessa sequência são recusadas pelo domínio, e cada mudança de status fica registrada no histórico da OS.
 
 ### Orçamento: gerar, disponibilizar e aprovar
 
@@ -761,29 +814,38 @@ O comando `verify`:
 
 A análise de vulnerabilidades do OWASP não faz parte do `verify` padrão, porque depende de uma chave da NVD e de acesso à internet. Veja como executá-la em [Segurança e análise de vulnerabilidades](#segurança-e-análise-de-vulnerabilidades).
 
-Relatório HTML:
+Relatório HTML gerado pela execução:
 
 ```text
-docs/relatorio-cobertura/index.html
+target/site/jacoco/index.html
 ```
 
 ### Último resultado registrado
 
-Última execução registrada em **28/10/2026**, com **JDK 21.0.2**:
+Última execução registrada em **02/11/2026**, com **JDK 21.0.9**:
 
 | Resultado | Valor |
 |---|---:|
-| Testes executados | 175 |
+| Testes executados | 197 |
 | Falhas | 0 |
 | Erros | 0 |
 | Testes ignorados | 0 |
-| Cobertura de instruções em `domain.*` | 95,91% |
-| Cobertura de instruções em `application.*` | 97,16% |
+| Cobertura de instruções em `domain.*` | 95,99% |
+| Cobertura de instruções em `application.*` | 97,24% |
 | Build e gates JaCoCo | Aprovados |
 
-Os percentuais informados não incluem `infrastructure` nem `presentation`. Testes de integração envolvendo persistência e comportamento transacional são complementares aos testes unitários e mocks.
+Os percentuais informados não incluem `infrastructure` nem `presentation`.
 
-O [relatório JaCoCo HTML arquivado](docs/relatorio-cobertura/index.html) permite consultar a evidência registrada sem executar o projeto. Uma nova execução gera o relatório em `target/site/jacoco/index.html`; para atualizar a cópia versionada, siga `docs/relatorio-cobertura/README.md`. Os percentuais não incluem `infrastructure` nem `presentation`.
+Além dos testes unitários, a suíte tem testes de integração com Spring Boot, H2 e Flyway para os fluxos principais:
+
+- `FluxoOrcamentoIntegrationTest`: geração, disponibilização e aprovação do orçamento pela API;
+- `IdentificacaoPorDocumentoEPlacaIntegrationTest`: cadastro de cliente, veículo e abertura da OS por CPF/CNPJ e placa;
+- `MaterialEstoqueIntegrationTest` e `EstoqueConcorrenciaIntegrationTest`: controle de estoque, inclusive aprovações concorrentes e desfazimento da baixa quando a transação falha;
+- `OrdemServicoRepositoryAdapterIntegrationTest` e `OrdemServicoRepositoryAdapterIdsEstaveisIntegrationTest`: persistência da Ordem de Serviço e dos seus itens;
+- `UsuarioSecurityIntegrationTest`: autenticação JWT e autorização por perfil;
+- `TratamentoDeErrosIntegrationTest`: proteção da rota interna de erro.
+
+O [relatório JaCoCo HTML arquivado](docs/relatorio-cobertura/index.html) permite consultar a evidência registrada sem executar o projeto. Uma nova execução gera o relatório em `target/site/jacoco/index.html`; para atualizar a cópia versionada, siga `docs/relatorio-cobertura/README.md`.
 
 ---
 
@@ -840,14 +902,14 @@ Os relatórios são gerados em `docs/owasp/`. A primeira execução baixa a base
 
 ### Artefatos da Fase 1
 
-- [Documentação adcional do projeto](docs/README.md)
+- [Documentação adicional do projeto](docs/README.md)
 - [Decisões da Fase 1](docs/decisoes-fase1.md)
 - [Linguagem Ubíqua](docs/ddd/linguagem-ubiqua.md)
 - [Event Storming (PDF exportado do Miro)](docs/ddd/event-storming.pdf)
 - [Diagramas DDD (PDF exportado do Miro)](docs/ddd/diagramas.pdf)
 - [Documentação DDD](docs/Documentacao_DDD_Fase1.md)
 - [Documentação DDD Miro - Somente leitura](https://miro.com/app/board/uXjVHhi5850=/?embedMode=view_only_without_ui&moveToViewport=-124649%2C16357%2C139774%2C66902&embedId=108324860674)
-- [Link Artefato gerado para fase 01 - Disponivel até 29/01/27](`https://github.com/cauefsantos/tech-challenge-fiap/actions/runs/41237809940/artifacts/13055313547`)
+- [Artefato gerado para a Fase 1 - disponível até 29/01/2027](https://github.com/cauefsantos/tech-challenge-fiap/actions/runs/41237809940/artifacts/13055313547)
 
 
 ### Documentos de planejamento
@@ -856,7 +918,7 @@ Os relatórios são gerados em `docs/owasp/`. A primeira execução baixa a base
 - `.dev/plans/01-analise-miro-fase01.md`
 - `.dev/plans/02-plano-fase1-revisado.md`
 - `.dev/plans/03-plano-implementacao-usuarios.md`
-- `.dev/plans/04-plano-testes-unitarios.md`
+- `.dev/plans/04-plano-testes-unitarios-fase1.md`
 
 ### Decisões do MVP
 
@@ -869,16 +931,12 @@ Os relatórios são gerados em `docs/owasp/`. A primeira execução baixa a base
 
 ---
 
-## Limitações conhecidas
+## Vídeo da entrega
 
-Os comportamentos abaixo foram identificados durante os testes e devem ser acompanhados por issues ou tarefas técnicas antes da entrega final:
-
-1. `HistoricoStatus.setId` não atualiza o identificador.
-2. `OrdemServico.concluirDiagnostico` valida o diagnóstico, mas não altera o status nem registra o histórico.
-3. Uma falha de validação durante a disponibilização pode deixar o orçamento como `DISPONIBILIZADO` enquanto a Ordem de Serviço permanece em diagnóstico.
+- Vídeo de apresentação da Fase 1 (YouTube): _link a ser incluído após a publicação_.
 
 ---
 
 ## Observação final
 
-O projeto implementa o núcleo funcional da Fase 1, com fluxo de Ordem de Serviço, regras de domínio, autenticação, persistência, migrations, execução em contêineres e testes automatizados. Antes da entrega, todos os placeholders, links, caminhos de documentos, resultados de testes e limitações conhecidas devem ser revisados para refletir exatamente o conteúdo do repositório e a versão identificada pelo commit entregue.
+O projeto implementa o núcleo funcional da Fase 1, com fluxo de Ordem de Serviço, regras de domínio, autenticação, persistência, migrations, execução em contêineres e testes automatizados. Inclui ainda controle de estoque, documentação OpenAPI, cobertura de testes acima de 80% nas camadas de domínio e aplicação e análise de vulnerabilidades com OWASP Dependency-Check.

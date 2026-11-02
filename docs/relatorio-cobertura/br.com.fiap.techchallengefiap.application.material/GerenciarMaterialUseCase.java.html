@@ -40,22 +40,33 @@ public class GerenciarMaterialUseCase {
 
     @Transactional
     public Material atualizar(Long id, String codigo, TipoMaterial tipo, String nome, String descricao,
-                              BigDecimal valorUnitario, String unidadeMedida, BigDecimal quantidadeEstoque,
-                              BigDecimal estoqueMinimo) {
-<span class="fc" id="L45">        Material existente = buscar(id);</span>
-<span class="fc" id="L46">        Material atualizado = new Material(id, codigo, tipo, nome, descricao, valorUnitario, unidadeMedida,</span>
-<span class="fc" id="L47">                quantidadeEstoque, estoqueMinimo, existente.getDataCadastro(), existente.isAtivo());</span>
-<span class="fc bfc" id="L48" title="All 2 branches covered.">        if (repository.existeCodigoParaOutroMaterial(atualizado.getCodigo(), id)) {</span>
-<span class="fc" id="L49">            throw new ConflictException(&quot;Ja existe um material com este codigo.&quot;);</span>
+                              BigDecimal valorUnitario, String unidadeMedida, BigDecimal estoqueMinimo) {
+<span class="fc" id="L44">        Material existente = buscarParaAtualizacao(id);</span>
+<span class="fc" id="L45">        Material atualizado = new Material(id, codigo, tipo, nome, descricao, valorUnitario, unidadeMedida,</span>
+<span class="fc" id="L46">                existente.getQuantidadeEstoque(), estoqueMinimo, existente.getDataCadastro(), existente.isAtivo());</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (repository.existeCodigoParaOutroMaterial(atualizado.getCodigo(), id)) {</span>
+<span class="fc" id="L48">            throw new ConflictException(&quot;Ja existe um material com este codigo.&quot;);</span>
         }
-<span class="fc" id="L51">        return repository.salvar(atualizado);</span>
+<span class="fc" id="L50">        return repository.salvar(atualizado);</span>
     }
 
     @Transactional
     public Material alterarAtivo(Long id, boolean ativo) {
-<span class="fc" id="L56">        Material material = buscar(id);</span>
-<span class="fc bfc" id="L57" title="All 2 branches covered.">        if (ativo) material.ativar(); else material.desativar();</span>
-<span class="fc" id="L58">        return repository.salvar(material);</span>
+<span class="fc" id="L55">        Material material = buscarParaAtualizacao(id);</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        if (ativo) material.ativar(); else material.desativar();</span>
+<span class="fc" id="L57">        return repository.salvar(material);</span>
+    }
+
+    @Transactional
+    public Material registrarEntrada(Long id, BigDecimal quantidade) {
+<span class="fc" id="L62">        Material material = buscarParaAtualizacao(id);</span>
+<span class="fc" id="L63">        material.registrarEntrada(quantidade);</span>
+<span class="fc" id="L64">        return repository.salvar(material);</span>
+    }
+
+    private Material buscarParaAtualizacao(Long id) {
+<span class="fc" id="L68">        return repository.buscarPorIdParaAtualizacao(id)</span>
+<span class="fc" id="L69">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Material nao encontrado.&quot;));</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.16.202610240946</span></div></body></html>

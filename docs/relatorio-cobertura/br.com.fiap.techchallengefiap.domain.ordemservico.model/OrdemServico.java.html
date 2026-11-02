@@ -105,7 +105,7 @@ public class OrdemServico {
 
     public void removerItemServico(Long itemId) {
 <span class="fc" id="L107">        verificarEdicao();</span>
-<span class="pc bpc" id="L108" title="1 of 6 branches missed.">        if (!itensServico.removeIf(item -&gt; item.getId() != null &amp;&amp; item.getId().equals(itemId))) {</span>
+<span class="fc bfc" id="L108" title="All 6 branches covered.">        if (!itensServico.removeIf(item -&gt; item.getId() != null &amp;&amp; item.getId().equals(itemId))) {</span>
 <span class="fc" id="L109">            throw new DomainException(&quot;Item de servico nao encontrado.&quot;);</span>
         }
 <span class="fc" id="L111">        recalcularValorTotal();</span>
@@ -313,4 +313,4 @@ public class OrdemServico {
 <span class="fc" id="L313">    public List&lt;Orcamento&gt; getOrcamentos() { return Collections.unmodifiableList(orcamentos); }</span>
 <span class="fc" id="L314">    public List&lt;HistoricoStatus&gt; getHistoricoStatus() { return Collections.unmodifiableList(historicoStatus); }</span>
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.16.202610240946</span></div></body></html>

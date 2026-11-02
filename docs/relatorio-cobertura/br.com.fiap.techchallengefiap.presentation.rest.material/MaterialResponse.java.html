@@ -5,14 +5,14 @@ import br.com.fiap.techchallengefiap.domain.material.model.Material;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
-<span class="nc" id="L8">public record MaterialResponse(Long id, String codigo, String tipo, String nome, String descricao,</span>
+<span class="fc" id="L8">public record MaterialResponse(Long id, String codigo, String tipo, String nome, String descricao,</span>
                                BigDecimal valorUnitario, String unidadeMedida, BigDecimal quantidadeEstoque,
                                BigDecimal estoqueMinimo, OffsetDateTime dataCadastro, boolean ativo) {
     public static MaterialResponse from(Material material) {
-<span class="nc" id="L12">        return new MaterialResponse(material.getId(), material.getCodigo(), material.getTipo().name(),</span>
-<span class="nc" id="L13">                material.getNome(), material.getDescricao(), material.getValorUnitario(),</span>
-<span class="nc" id="L14">                material.getUnidadeMedida(), material.getQuantidadeEstoque(), material.getEstoqueMinimo(),</span>
-<span class="nc" id="L15">                material.getDataCadastro(), material.isAtivo());</span>
+<span class="fc" id="L12">        return new MaterialResponse(material.getId(), material.getCodigo(), material.getTipo().name(),</span>
+<span class="fc" id="L13">                material.getNome(), material.getDescricao(), material.getValorUnitario(),</span>
+<span class="fc" id="L14">                material.getUnidadeMedida(), material.getQuantidadeEstoque(), material.getEstoqueMinimo(),</span>
+<span class="fc" id="L15">                material.getDataCadastro(), material.isAtivo());</span>
     }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.16.202610240946</span></div></body></html>
