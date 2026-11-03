@@ -933,7 +933,7 @@ Os relatórios são gerados em `docs/owasp/`. A primeira execução baixa a base
 
 ## Vídeo da entrega
 
-- Vídeo de apresentação da Fase 1 (YouTube): _link a ser incluído após a publicação_.
+- [Vídeo de apresentação da Fase 1 (YouTube)](https://www.youtube.com/watch?v=UjN33sLeGrk)
 
 ---
 
